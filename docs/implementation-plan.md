@@ -10,9 +10,9 @@ This is the go-to document for **what exists, what comes next, how to implement 
 |---|---|
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
-| Current implementation work | Requested S1–S4 implementation complete; no S5 work started |
-| Next feature | F5.1 (outside this implementation request) |
-| Next concrete action | Inspect S4 evidence and clean develop, then implement F5.1 authentication/account binding on a new feature branch when requested |
+| Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
+| Next feature | F5.2 |
+| Next concrete action | Continue F5.2; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -274,7 +274,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 ## S5 — broker feasibility and read-only shadow operation
 
-### F5.1 — cTrader authentication and account binding — TODO
+### F5.1 — cTrader authentication and account binding — IN_PROGRESS
 
 **Depends on:** F1.1, F1.4. **Code:** `gateways/ctrader/client.py`, `auth.py`, gateway image/secret configuration.
 
@@ -562,3 +562,7 @@ Verification on 2026-10-15:
 Current limits and scope: synthetic file input and GBP linear-contract paper economics; no real broker gateway/feed or profitability evidence. Daily breakers inhibit entries and permit risk reduction; account-wide emergency flatten/operator controls remain future work. Paper protections/timed exits require subsequent ticks. Halted workers remain halted across restarts until explicit recovery; operational resume/repair is not a user-facing S4 control. Single-host trusted-package deployment; production backup, retention, soak and cross-platform qualification remain later gates. See `docs/container-deployment.md` for details.
 
 All 20 requested implementation features F1.1–F4.6 are DONE (plus existing F0.1 scaffold). Each has a feature branch from develop and a tested merge. Next eligible feature is F5.1; do not activate real broker trading as part of this completed S4 scope.
+
+### Delivery F5.1 — implementation slice
+
+Branch: `feature/ctrader_authentication`. Status: IN_PROGRESS. Implemented verified-TLS demo binding, bounded SDK reconnect, read-only allowlist and atomic private token rotation. Gateway suite: 80 tests and 4 subtests pass. Actual authorized connection pending credentials; F5.1 remains IN_PROGRESS. Feature commit: `git log --all --grep="F5.1:"`.

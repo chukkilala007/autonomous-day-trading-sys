@@ -1,0 +1,36 @@
+import pytest
+pytest.importorskip('ctrader_open_api')
+from twisted.internet.defer import succeed
+from trading_platform.gateways.ctrader.client import Session, VerifiedClient, HOST
+
+
+class Client:
+    def setConnectedCallback(self,cb): self.connected=cb
+    def setDisconnectedCallback(self,cb): self.disconnected=cb
+    def stopService(self): self.stopped=True
+
+
+class Tokens:
+    def read(self): return dict(client_id='synthetic',client_secret='secret-test',access_token='token-test',refresh_token='refresh-test',expires_at=1000)
+
+
+def test_session_reauth_read_allowlist_and_stale_generation():
+    client=Client();session=Session(client,Tokens(),12,now=lambda:1);sent=[]
+    def wire(name,**fields):
+        sent.append((name,fields))
+        return succeed({'ctidTraderAccount':[{'ctidTraderAccountId':'12','isLive':False}]} if name=='ProtoOAGetAccountListByAccessTokenReq' else {'ctidTraderAccountId':'12'})
+    session.wire=wire;client.connected()
+    assert session.ready and len(sent)==3
+    with pytest.raises(ValueError): session.read('ProtoOANewOrderReq')
+    with pytest.raises(ValueError): session.read('ProtoOATraderReq',ctidTraderAccountId=999)
+    session.read('ProtoOATraderReq');assert sent[-1][1]['ctidTraderAccountId']==12
+    client.disconnected();assert not session.ready
+    client.connected();assert session.ready and session.generation==3
+    failure=[];session.authenticate(1).addErrback(lambda e:failure.append(e))
+    assert failure
+
+
+def test_sdk_uses_verified_demo_tls_and_private_queues():
+    client=VerifiedClient()
+    assert client._endpoint._host==HOST
+    assert client._endpoint._sslContextFactory._hostnameASCII==HOST.encode()
