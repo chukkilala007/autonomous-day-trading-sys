@@ -1,0 +1,14 @@
+{
+  "instance_id": "timer_fixture",
+  "strategy": "timer_fixture@1",
+  "package_digest": "edca669866f390df853a8bc9af52badf1b3d27ab37cfaa4af337ee09ffd3c1ef",
+  "mode": "paper",
+  "universe": [
+    "TEST"
+  ],
+  "account": {
+    "alias": "paper",
+    "environment": "paper"
+  },
+  "allocation": "0.005"
+}
