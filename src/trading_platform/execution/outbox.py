@@ -44,6 +44,8 @@ class Executor:
         if cmd['status']!='QUEUED': raise ValueError('already attempted; reconcile before retry')
         body=cmd['body'];decision=Decision.model_validate_json(json.dumps(body['decision']))
         if body['type']=='entry':
+            from trading_platform.runtime.controls import Controls
+            if Controls(self.db).state()['paused']: raise ValueError('OPERATOR_PAUSED')
             if self.db.connection.execute("SELECT 1 FROM commands WHERE status IN ('UNKNOWN','SUBMITTING')").fetchone():
                 raise ValueError('UNKNOWN_BROKER_OUTCOME')
             check_entry(decision.proposal,quote,now)
@@ -55,6 +57,7 @@ class Executor:
             target=self.command(body['target'])
             decision.proposal.authorize(cmd['instance'],target['instance'],target['revision'],now)
         with self.db.transaction() as c:
+            if body["type"]=="entry" and Controls(self.db).state()["paused"]: raise ValueError("OPERATOR_PAUSED")
             if c.execute("UPDATE commands SET status='SUBMITTING' WHERE id=? AND status='QUEUED'",(id,)).rowcount != 1:
                 raise ValueError('command already claimed')
             c.execute('INSERT INTO attempts(command,at,outcome) VALUES (?,?,?)',(id,now.isoformat(),'SENDING'))

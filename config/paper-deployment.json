@@ -28,6 +28,7 @@
   },
   "api": {
     "port": 9010,
-    "reader_token": "/run/secrets/reader_token"
+    "reader_token": "/run/secrets/reader_token",
+    "operator_token": "/run/secrets/operator_token"
   }
 }

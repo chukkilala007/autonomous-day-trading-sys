@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F7.2 |
-| Next concrete action | Continue F7.2; preserve pending external acceptance gates |
+| Next feature | F7.3 |
+| Next concrete action | Continue F7.3; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -354,7 +354,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** UI restart has no trading effect; stale data clearly labelled; no broker secrets exposed; dashboard reads via API without mounting SQLite; every displayed fill is attributable to authoritative events.
 
-### F7.2 — Explicit controls and alert deduplication — TODO
+### F7.2 — Explicit controls and alert deduplication — DONE
 
 **Depends on:** F7.1, F4.4. **Code:** control API/CLI, `observability/alerts.py`.
 
@@ -602,3 +602,7 @@ Branch: `feature/demo_qualification`. Status: BLOCKED. Added immutable qualifica
 ### Delivery F7.1 — implementation slice
 
 Branch: `feature/status_dashboard`. Status: IN_PROGRESS. Added authenticated status/evidence API, separate no-database dashboard and loopback UI profile. 95 tests and 4 subtests pass; installed API verified two closed orders and stale-data label. Browser visual acceptance pending: both available browser runtimes failed to attach. Feature commit: `git log --all --grep="F7.1:"`.
+
+### Delivery F7.2 — implementation slice
+
+Branch: `feature/operator_controls`. Status: DONE. Implemented authenticated idempotent control API/CLI, immediate entry pause, checked resume, owned paper flatten-and-halt and persistent transition alerts. 97 tests and 4 subtests pass. Actual demo integration remains gated; stale/disconnected flatten stays pending. Feature commit: `git log --all --grep="F7.2:"`.

@@ -59,7 +59,7 @@ services:
     <<: *app
     command: [trading-platform, run-paper, --deployment, /app/config/paper-deployment.json, --input, /app/tests/fixtures/paper.json, --state, /state/core.db]
     networks: [workers, brokers, control]
-    secrets: [tpr_token, timer_token, broker_token, reader_token]
+    secrets: [tpr_token, timer_token, broker_token, reader_token, operator_token]
     volumes: ["core-state:/state"]
     depends_on:
       worker-tpr: {condition: service_healthy}
@@ -94,6 +94,7 @@ volumes:
   core-state:
   broker-state:
 secrets:
+  operator_token: {file: tests/smoke/operator-token.txt}
   reader_token: {file: tests/smoke/reader-token.txt}
   tpr_token: {file: tests/smoke/tpr-token.txt}
   timer_token: {file: tests/smoke/timer-token.txt}
