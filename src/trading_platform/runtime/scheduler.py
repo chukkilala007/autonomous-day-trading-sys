@@ -43,4 +43,5 @@ def evaluate(plugin,manifest,instance,event,snapshot,portfolio,state):
     if event.available_at>snapshot.cutoff: raise ValueError('event not available at cutoff')
     if not snapshot.coverage_complete: raise ValueError('DATA_GAP')
     if event.kind not in manifest.subscriptions: return Evaluation(state=state)
-    return plugin.evaluate(instance,event,snapshot,portfolio,state)
+    result=plugin.evaluate(instance,event,snapshot,portfolio,state)
+    return Evaluation.model_validate_json(result.model_dump_json())

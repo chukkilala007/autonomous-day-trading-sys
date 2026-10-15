@@ -1,6 +1,7 @@
 """Only reviewed, digest-bound packages may be loaded. No dynamic user modules."""
 import hashlib
 import importlib
+import sys
 import importlib.metadata
 from pathlib import Path
 from trading_platform.contracts.capabilities import require_capabilities
@@ -14,6 +15,9 @@ def package_digest(path):
         h.update((str(p.relative_to(root)) if root.is_dir() else p.name).encode())
         h.update(b'\0');h.update(p.read_bytes())
     return h.hexdigest()
+
+
+_LOADED = {}
 
 
 class Registry:
@@ -34,9 +38,17 @@ class Registry:
             if importlib.metadata.version(dependency) != expected:
                 raise ValueError('dependency version mismatch: '+dependency)
         module_name, name=manifest.entrypoint.split(':')
+        # Locate source without importing potentially changed plugin code first.
+        relative=Path(*module_name.split('.'))
+        candidates=[Path(base)/relative.with_suffix('.py') for base in sys.path]
+        candidates += [Path(base)/relative/'__init__.py' for base in sys.path]
+        path=next((p for p in candidates if p.is_file()),None)
+        if path is None: raise ValueError('reviewed source package not found')
+        if package_digest(path.parent)!=manifest.digest: raise ValueError('installed package digest mismatch')
+        if module_name in _LOADED and _LOADED[module_name]!=manifest.digest:
+            raise ValueError('changed package requires worker restart')
         module=importlib.import_module(module_name)
-        root=Path(module.__file__).parent
-        if package_digest(root)!=manifest.digest: raise ValueError('installed package digest mismatch')
+        _LOADED[module_name]=manifest.digest
         plugin=getattr(module,name)()
         for method in ('initialize','evaluate','validate_proposal','migrate_state'):
             if not callable(getattr(plugin,method,None)): raise ValueError('incomplete protocol: '+method)

@@ -2,6 +2,10 @@
 
 Technical rationale and original high-level build sequence. For authoritative feature status, dependencies, acceptance criteria and session handoff, use the [implementation tracker](implementation-plan.md). The five increments below are a conceptual summary, not a second progress tracker.
 
+## Delivered through S4
+
+The implementation uses Python 3.12, hashed dependency locks, strict Pydantic contracts, SQLite WAL, authenticated TCP worker RPC and a persistent paper simulator. The current file-driven runtime processes events sequentially; bounded scheduler primitives are tested, but streaming concurrency/backpressure integration belongs to S5. Evidence lives transactionally in SQLite at this stage. See the implementation tracker for acceptance results and the Docker document for operating limits. Recommendations below describe the wider target architecture.
+
 ## Recommended stack
 
 Deploy the Python project as Linux containers managed by Docker Compose. Docker is the required runtime target from the first implementation milestone, with application dependencies installed inside images. See [container deployment](container-deployment.md) for the service topology and operational contract. Start with a CLI and recorded-data replay, then add market connectivity and a local status interface. Keep infrastructure small enough that a complete decision can be traced from input event through broker acknowledgement.

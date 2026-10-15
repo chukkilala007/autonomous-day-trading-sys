@@ -39,7 +39,8 @@ def canonical(value):
         value = value.model_dump(mode='python')
     def encode(obj):
         if isinstance(obj, Decimal):
-            return format(obj.normalize(), 'f') if obj else '0'
+            text=format(obj, 'f')
+            return (text.rstrip('0').rstrip('.') if '.' in text else text) if obj else '0'
         if isinstance(obj, datetime):
             return utc(obj).isoformat()
         if isinstance(obj, BaseModel):

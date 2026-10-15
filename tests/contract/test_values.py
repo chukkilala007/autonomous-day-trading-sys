@@ -28,3 +28,10 @@ def test_quote_time_and_publication():
     f=Event(event_id='news',kind='feature',instrument='X',source_time=T,available_at='2024-01-01T00:10:00Z')
     with pytest.raises(ValueError): Snapshot(cutoff=T,features=(f,))
     with pytest.raises(ValueError): Bar(instrument='X',start=T,end='2024-01-01T00:01:00Z',available_at=T,basis='bid',open='1',high='2',low='1',close='1')
+
+
+def test_hash_preserves_beyond_decimal_context_precision():
+    a=Money(amount='1.1234567890123456789012345678901',currency='GBP')
+    b=Money(amount='1.1234567890123456789012345678902',currency='GBP')
+    assert digest(a)!=digest(b)
+    assert str(a.amount) in canonical(a)

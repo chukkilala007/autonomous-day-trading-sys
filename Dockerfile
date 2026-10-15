@@ -9,6 +9,7 @@ COPY src/ src/
 RUN pip install --no-build-isolation --no-deps .
 COPY config/ config/
 COPY tests/ tests/
+COPY scripts/ scripts/
 USER 10001:10001
 CMD ["trading-platform", "validate-config", "/app/config/instances/paper.example.json"]
 FROM base AS gateway-check

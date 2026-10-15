@@ -108,6 +108,8 @@ class PaperBroker:
         if o is None: raise ValueError('unknown broker target')
         m.authorize(cmd['instance'],o['command']['instance'],o['revision'],now)
         start=len(self.state['events'])
+        if m.action=='reduce' and D(o['filled'])<D(o['command']['body']['size']['quantity']) and o['status'] not in ('CANCELLED','EXPIRED'):
+            raise ValueError('cancel unfilled remainder before reducing')
         if m.action=='cancel':
             self.emit(m.target_id,'CANCELLED',now)
         elif m.action=='protect':
@@ -125,3 +127,19 @@ class PaperBroker:
         self.state['management'][id]=True;self.save()
         if fault=='timeout_after_accept': raise TimeoutError('management acknowledgement lost')
         return self.events()[start:]
+
+    def account(self):
+        realized=sum((D(o['net']) for o in self.state['orders'].values()),D(0))
+        balance=D(10000)+realized;unrealized=D(0);margin=D(0)
+        for o in self.state['orders'].values():
+            p=o['command']['body']['decision']['proposal'];c=o['command']['body']['contract']
+            qty=D(o['open'])
+            if qty:
+                q=self.state['quotes'].get(p['instrument'])
+                if not q: raise ValueError('open exposure has no mark')
+                price=D(q['bid'] if p['side']=='buy' else q['ask'])
+                unrealized+=(price-D(o['average']))*(1 if p['side']=='buy' else -1)*qty*D(c['contract_value_per_unit'])*D(c['quote_to_account'])-D(c['commission_per_unit'])*qty
+            reserved=qty if o['status'] in ('CANCELLED','EXPIRED','REJECTED','CLOSED') else D(o['command']['body']['size']['quantity'])
+            margin+=reserved*D(c['margin_per_unit'])
+        equity=balance+unrealized
+        return {'balance':str(balance),'equity':str(equity),'free_margin':str(equity-margin),'currency':'GBP'}
