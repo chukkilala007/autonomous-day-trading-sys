@@ -1,4 +1,4 @@
-"""Offline scaffold inspection. No broker access or execution commands."""
+"""Strategy validation, causal replay and persistent paper simulation."""
 import argparse
 import json
 from pathlib import Path
@@ -37,10 +37,20 @@ def main(argv=None):
         replay.add_argument("--"+flag, required=True)
     instance = sub.add_parser("validate-instance", help="validate versioned deployment mandate")
     instance.add_argument("path", type=Path)
-    sub.add_parser("status", help="show scaffold capabilities")
+    status = sub.add_parser("status", help="show capabilities or persisted paper state")
+    status.add_argument("--state", type=Path)
+    paper=sub.add_parser("run-paper",help="run durable paper simulation only")
+    paper.add_argument("--deployment",required=True)
+    paper.add_argument("--input",required=True)
+    paper.add_argument("--state",required=True)
+    paper.add_argument("--once",action="store_true")
+    paper.add_argument("--step-delay",type=float,default=0)
     validate = sub.add_parser("validate-config", help="validate an offline example configuration")
     validate.add_argument("path", type=Path)
     args = parser.parse_args(argv)
+    if args.command == "run-paper":
+        from .runtime.service import run
+        return run(args)
     if args.command == "replay":
         from .simulation.replay import run
         try:
@@ -50,7 +60,13 @@ def main(argv=None):
         print(json.dumps(result["counts"]))
         return 0
     if args.command == "status":
-        print(json.dumps({"stage": "scaffold", "trading_enabled": False}))
+        if args.state:
+            import sqlite3
+            with sqlite3.connect("file:"+str(args.state.resolve())+"?mode=ro",uri=True) as c:
+                c.row_factory=sqlite3.Row
+                print(json.dumps({"instances":[dict(r) for r in c.execute("SELECT id,cursor,status,halt FROM instances")],"orders":[dict(r) for r in c.execute("SELECT id,instance,status FROM commands")],"positions":[json.loads(r["body"]) for r in c.execute("SELECT body FROM positions")],"active_risk":[dict(r) for r in c.execute("SELECT * FROM reservations WHERE status!='RELEASED'")],"rejections":[json.loads(r["body"]) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'rejection:%'")]}))
+        else:
+            print(json.dumps({"stage":"paper-runtime","real_broker_enabled":False}))
         return 0
     if args.command == "validate-instance":
         from .contracts.config import Instance
@@ -58,7 +74,7 @@ def main(argv=None):
             item = Instance.model_validate_json(args.path.read_text())
         except (OSError, ValueError) as exc:
             parser.error(str(exc))
-        print(json.dumps({"valid": True, "config_hash": item.hash, "mode": item.mode, "runtime_implemented": False}))
+        print(json.dumps({"valid": True, "config_hash": item.hash, "mode": item.mode, "paper_runtime_available": True, "note": "Mandate validation only; registry and deployment readiness checked at startup."}))
         return 0
     try:
         result = validate_config(json.loads(args.path.read_text()))

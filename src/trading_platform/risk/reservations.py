@@ -23,7 +23,7 @@ class RiskBook:
         if amount>balance*self.policy.per_trade: raise ValueError('TRADE_LIMIT')
         if amount+sum((D(r['amount']) for r in rows),D(0))+ext>balance*self.policy.total_risk: raise ValueError('ACCOUNT_LIMIT')
         if amount+sum((D(r['amount']) for r in rows if r['instance']==instance),D(0))>balance*allocation: raise ValueError('ALLOCATION_LIMIT')
-        bucket_external=external_risk([e for e in external if e.get('bucket')==bucket])
+        bucket_external=external_risk([e for e in external if e.get('bucket') is None or e.get('bucket')==bucket])
         if amount+sum((D(r['amount']) for r in rows if r['bucket']==bucket),D(0))+bucket_external>balance*self.policy.concentration: raise ValueError('CONCENTRATION_LIMIT')
         c.execute('INSERT INTO reservations VALUES (?,?,?,?,?,?)',(intent,instance,instrument,bucket,str(amount),'RESERVED'))
         return True

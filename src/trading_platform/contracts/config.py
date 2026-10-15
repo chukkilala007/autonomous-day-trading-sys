@@ -16,7 +16,7 @@ class AccountPolicy(Record):
 
     @model_validator(mode='after')
     def limits(self):
-        if self.per_trade > self.total_risk or self.total_risk > 1 or self.daily_loss > 1 or self.free_margin_fraction > 1:
+        if self.per_trade > self.total_risk or self.total_risk > 1 or self.daily_loss > 1 or self.free_margin_fraction > 1 or self.concentration > self.total_risk:
             raise ValueError('invalid account limits')
         if self.environment != 'paper' and not self.broker_account:
             raise ValueError('broker account binding required')

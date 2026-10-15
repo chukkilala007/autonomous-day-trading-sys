@@ -1,15 +1,20 @@
-name: Scaffold checks
+name: Paper platform checks
 on: [push, pull_request]
 permissions:
   contents: read
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - name: Validate Compose
-        run: docker compose config --quiet
-      - name: Build and validate scaffold
-        run: docker compose up --build --abort-on-container-exit --exit-code-from validate
-      - name: Run tests inside container
-        run: docker compose --profile tools run --rm tests
+      - name: Validate and build Docker deployment
+        run: |
+          docker compose config --quiet
+          docker compose build core
+      - name: Validate configuration and run container tests
+        run: |
+          docker compose --profile tools run --rm validate
+          docker compose --profile tools run --rm tests
+      - name: Restart paper stack with open exposure
+        run: python3 scripts/paper_smoke.py

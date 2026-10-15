@@ -1,67 +1,61 @@
 # Autonomous Day Trading System
 
-Strategy-independent trading platform targeting Docker Compose. **Current stage: repository scaffold.** The CLI validates an offline configuration example; strategy loading, simulation, broker connectivity and trading are not implemented yet.
+Strategy-independent paper-trading platform running in Docker Compose. **S1–S4 are implemented:** versioned strategy packages, isolated analysis workers, durable decisions, shared portfolio risk, order reconciliation and a persistent simulated broker. TPR-1 and a different timer strategy exercise the same core.
 
-## Quick start
+## Run the paper stack
 
 With Docker and Docker Compose installed, run from this repository:
 
 ```sh
-docker compose up --build --abort-on-container-exit --exit-code-from validate
-docker compose --profile tools run --rm tests
+docker compose up --build -d
+docker compose logs -f core
 ```
 
-The first command builds the image, validates the example configuration and exits. No credentials, network access from the container, or broker connection are required. A successful validation does not mean the named strategy exists or that the configuration is executable.
-
-Optional local checks with Python 3.12 or newer:
+The default stack processes four deterministic synthetic market events. Both strategies independently propose entries; core validates and sizes them; the simulator fills and closes the trades. After completion, the services remain running, waiting for new input. This is a reproducible paper scenario, not a live market feed or a strategy performance assessment.
 
 ```sh
-PYTHONPATH=src python3 -m trading_platform status
-PYTHONPATH=src python3 -m unittest discover -s tests -v
+docker compose exec core trading-platform status --state /state/core.db
+docker compose --profile tools run --rm validate
+docker compose --profile tools run --rm tests
+python3 scripts/paper_smoke.py
+docker compose down
 ```
 
-## Layout
+`paper_smoke.py` launches a unique isolated test project, kills core with open exposure, restarts the workers and simulator, verifies closure without duplicate orders, and removes only that test project's volumes. Normal `docker compose down` preserves your state. Existing completed input events are skipped on restart; use a separate Compose project name for a fresh scenario.
 
-```text
-config/                  Account-policy and strategy-instance examples
-deploy/                  Deployment guidance
-src/trading_platform/
-  contracts/             Typed inputs and decisions
-  registry/              Strategy packages and capability checks
-  runtime/               Worker scheduling and transport
-  market_data/           Feed normalization and validation
-  portfolio/             Ownership and capital allocation
-  risk/                  Limits, sizing and reservations
-  execution/             Order lifecycle and reconciliation
-  persistence/           Durable state and migrations
-  gateways/ctrader/      cTrader integration boundary
-  strategies/tpr1/       First strategy adapter boundary
-  simulation/            Replay and paper execution
-  observability/         Health and operational metrics
-tests/                   Scaffold tests and future acceptance-test areas
-docs/                    Architecture, contracts and build plan
-.github/workflows/       Container-based CI
-```
-
-Module directories are explicit implementation boundaries, not completed services. The scaffold has no third-party runtime dependencies. The Python base image and build-tool versions must be locked after the broker compatibility spike; the current Docker tag is not a reproducible digest pin.
+The default stack has no external network, published ports, real broker endpoint or broker credentials. Checked-in RPC tokens are public **synthetic test credentials**, suitable only for this isolated paper setup. Workers have no operational database mount. Core and simulator use separate named volumes, non-root runtime users and read-only root filesystems.
 
 ## Implementation tracking
 
-Start with the [implementation tracker and session handoff](docs/implementation-plan.md). It records the verified baseline, feature status, dependencies, acceptance checks and the next concrete action. Update it alongside each implementation change; see [repository working instructions](AGENTS.md). Only the scaffold is complete today.
+The [implementation tracker](docs/implementation-plan.md) records feature status, test evidence, limitations and the next concrete action. Each implemented feature has its own `feature/<name>` branch merged into `develop` after passing tests. See [repository working instructions](AGENTS.md).
 
-## Design documents
+S5 is next: cTrader authentication, provider capability verification, market data and read-only account reconciliation. Real broker execution, an operator dashboard and production qualification remain future stages.
+
+## Layout
+
+| Path | Purpose |
+|---|---|
+| `config/` | Versioned deployment mandates, reviewed manifests and paper topology |
+| `src/trading_platform/contracts/` | Strict values, events, snapshots and decisions |
+| `src/trading_platform/registry/` | Digest and capability validation |
+| `src/trading_platform/runtime/` | Journal, recovery, worker RPC and paper orchestration |
+| `src/trading_platform/portfolio/`, `risk/` | Ownership, arbitration, sizing and atomic reservations |
+| `src/trading_platform/execution/` | Durable outbox, lifecycle and reconciliation |
+| `src/trading_platform/strategies/` | Pinned TPR-1 adapter and timer fixture |
+| `src/trading_platform/simulation/` | Causal replay and persistent tick-driven broker |
+| `requirements/` | Hashed dependency locks for Python 3.12 |
+| `tests/` | Contracts, causality, risk, execution and crash recovery |
+| `docs/` | Design, implementation tracker and decisions |
+
+The gateway and observability directories are future implementation boundaries. The gateway dependency spike verifies imports, not an authenticated broker integration.
+
+## Design and extension
 
 * [Architecture](docs/autonomous-scalping-agent.md)
 * [Strategy API v1](docs/strategy-contract.md)
-* [Implementation tracker](docs/implementation-plan.md)
+* [Docker deployment and current operating limits](docs/container-deployment.md)
 * [Technical implementation notes](docs/implementation-notes.md)
-* [Docker deployment](docs/container-deployment.md)
-* [Initial artifact migration record](artifact-migration.json)
 
-Next milestone: generic strategy registry, causal replay, isolated workers and durable state, tested using TPR-1 and a different timer-based fixture. Then add shared risk and paper execution before real broker integration.
+Add a reviewed strategy package implementing the common interface, register its digest and capabilities, and configure its instance/worker. Core contains no concrete strategy imports. The timer fixture demonstrates a different timeframe and timed exit without changes to core risk/execution. TPR research code was ported with provenance into the repository; no personal skill directory is loaded at runtime.
 
-## Existing research dependencies
-
-Design references to `skills/` and `reporting/` describe the original private research workspace. Those resources are not part of this repository and are not required for the scaffold checks. Port a reviewed, pinned TPR baseline with provenance and fixtures when implementing the first adapter. Do not import mutable personal skill folders or existing alert-monitor state at runtime.
-
-Secrets, account records and runtime databases are excluded from Git and Docker build context. Future demo/live deployment requires explicit account binding and separate configuration. The existing repository license is preserved in [LICENSE](LICENSE).
+Secrets, account records and runtime databases are excluded from Git and Docker build context. The existing repository [license](LICENSE) is preserved.

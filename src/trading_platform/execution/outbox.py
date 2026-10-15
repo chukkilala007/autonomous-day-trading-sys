@@ -44,6 +44,8 @@ class Executor:
         if cmd['status']!='QUEUED': raise ValueError('already attempted; reconcile before retry')
         body=cmd['body'];decision=Decision.model_validate_json(json.dumps(body['decision']))
         if body['type']=='entry':
+            if self.db.connection.execute("SELECT 1 FROM commands WHERE status IN ('UNKNOWN','SUBMITTING')").fetchone():
+                raise ValueError('UNKNOWN_BROKER_OUTCOME')
             check_entry(decision.proposal,quote,now)
             from trading_platform.contracts.values import utc
             if not 0 <= (now-utc(body['contract']['verified_at'])).total_seconds() <= 30:

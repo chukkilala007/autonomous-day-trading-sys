@@ -2,7 +2,19 @@
 
 Docker containers are a required implementation target, not a later packaging exercise. Use Docker Compose on one host initially: Docker Desktop on the development Mac, Docker Engine on an always-on Linux host for sustained operation. Support linux/arm64 and linux/amd64 after dependency compatibility and image tests. Docker Desktop does not keep trading services running while its host sleeps.
 
-Status: infrastructure specification with an offline Docker scaffold. The current Dockerfile and Compose manifest run configuration validation and tests only; the services below remain to be implemented. Container checks are included in CI.
+Status: S4 paper stack implemented. Root Compose launches `core`, `worker-tpr`, `worker-timer` and `simulator`, plus a one-shot volume ownership initializer. Use the [README](../README.md) commands. The service table below describes the target production architecture; gateway, dashboard, supervisor, external feeds and demo/live overrides are still future work.
+
+## Implemented paper deployment and limits
+
+The Python 3.12 base image is digest-pinned, dependencies have hashed locks, and the runtime runs as UID 10001 with a read-only root. Only the volume initializer briefly runs as root, without networking and with limited filesystem capabilities. Worker and broker networks are internal and publish no ports. RPC is authenticated with instance-scoped tokens and bounded JSON; transport is plaintext on the private single-host networks, not suitable for a hostile/multi-host deployment.
+
+Core is the sole SQLite WAL writer. Event/snapshot evidence is stored in the same transactional database volume at this stage. Simulator state is atomically persisted on an independent volume. `status --state` reads SQLite without starting another writer. Restart reconciles broker events before evaluation; instances show WARMING until a fresh input event passes coverage/reconciliation checks. A failed worker latches its instance halt; operator resume controls and data repair are S7/S5 work.
+
+Input is a versioned synthetic/recorded JSON event file. The service polls it and durably checkpoints completed events; it does not retrieve prices or run a wall-clock trading schedule. The default finite scenario ends with two closed paper orders and zero open risk. Quotes and valuations are synthetic, explicitly supplied, and validated against event time. Paper account currency is GBP with starting balance 10000; changing account economics requires a reviewed simulator/configuration change.
+
+Daily loss and streak breakers block new entries while allowing owned risk reduction; automatic account-wide emergency flattening and operator controls are not implemented in S4. Existing paper protection/timed exits execute on subsequent supplied ticks. There is no guarantee of a close without a new executable quote. All contracts currently use the verified linear risk model; nonlinear instruments reject. Strategy packages are reviewed trusted code, not arbitrary untrusted programs.
+
+CI builds the deployment, runs the container suite, and runs `scripts/paper_smoke.py`, an isolated open-exposure crash/restart drill. ARM64 local verification does not establish AMD64 qualification; CI results must be inspected separately. Backups, retention, log rotation, load/soak testing, TLS across hosts and disaster recovery remain S7 release gates.
 
 ## Services
 

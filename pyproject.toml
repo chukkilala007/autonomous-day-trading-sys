@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "autonomous-day-trading-sys"
 version = "0.1.0"
-description = "Strategy-independent trading platform scaffold"
+description = "Strategy-independent durable paper trading platform"
 requires-python = ">=3.12"
 dependencies = ["pydantic>=2,<3"]
 

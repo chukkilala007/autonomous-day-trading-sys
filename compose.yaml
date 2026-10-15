@@ -1,28 +1,91 @@
-# One-shot scaffold validation. This is not a trading daemon.
+x-app: &app
+  build: .
+  image: autonomous-trading-paper:local
+  user: "10001:10001"
+  init: true
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  tmpfs: [/tmp]
+  pids_limit: 128
+  mem_limit: 512m
+  cpus: 1
+  stop_grace_period: 5s
+  restart: unless-stopped
 services:
-  validate:
-    build: .
-    network_mode: none
-    read_only: true
-    user: "10001:10001"
+  volume-init:
+    <<: *app
+    user: "0:0"
     cap_drop: [ALL]
-    security_opt: ["no-new-privileges:true"]
-    init: true
-    pids_limit: 64
-    mem_limit: 256m
-    cpus: 1
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
+    command: [python, -c, "import os; os.chown('/state',10001,10001); os.chown('/broker-state',10001,10001)"]
+    volumes: ["core-state:/state", "broker-state:/broker-state"]
+    network_mode: none
+    restart: "no"
+  worker-tpr:
+    <<: *app
+    command: [python, -m, trading_platform.runtime.worker, --instance, tpr1, --token-file, /run/secrets/tpr_token, --registry, /app/config/registry.json]
+    networks: [workers]
+    secrets: [tpr_token]
+    healthcheck:
+      test: [CMD, python, -c, "from pathlib import Path; from trading_platform.runtime.transport import request; request('localhost',9000,Path('/run/secrets/tpr_token').read_text().strip(),'tpr1',{'op':'ping'})"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+  worker-timer:
+    <<: *app
+    command: [python, -m, trading_platform.runtime.worker, --instance, timer_fixture, --token-file, /run/secrets/timer_token, --registry, /app/config/registry.json]
+    networks: [workers]
+    secrets: [timer_token]
+    healthcheck:
+      test: [CMD, python, -c, "from pathlib import Path; from trading_platform.runtime.transport import request; request('localhost',9000,Path('/run/secrets/timer_token').read_text().strip(),'timer_fixture',{'op':'ping'})"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+  simulator:
+    <<: *app
+    command: [python, -m, trading_platform.simulation.server, --state, /broker-state/paper.json, --token-file, /run/secrets/broker_token]
+    networks: [brokers]
+    secrets: [broker_token]
+    volumes: ["broker-state:/broker-state"]
+    depends_on:
+      volume-init: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, python, -c, "from pathlib import Path; from trading_platform.runtime.transport import request; request('localhost',9000,Path('/run/secrets/broker_token').read_text().strip(),'paper-broker',{'op':'ping'})"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+  core:
+    <<: *app
+    command: [trading-platform, run-paper, --deployment, /app/config/paper-deployment.json, --input, /app/tests/fixtures/paper.json, --state, /state/core.db]
+    networks: [workers, brokers]
+    secrets: [tpr_token, timer_token, broker_token]
+    volumes: ["core-state:/state"]
+    depends_on:
+      worker-tpr: {condition: service_healthy}
+      worker-timer: {condition: service_healthy}
+      simulator: {condition: service_healthy}
+      volume-init: {condition: service_completed_successfully}
+  validate:
+    <<: *app
+    profiles: [tools]
+    network_mode: none
+    command: [trading-platform, validate-instance, /app/config/instances/tpr1.json]
     restart: "no"
   tests:
-    build: .
+    <<: *app
     profiles: [tools]
-    command: ["python", "-m", "pytest", "-q", "-p", "no:cacheprovider"]
     network_mode: none
-    read_only: true
-    user: "10001:10001"
-    cap_drop: [ALL]
-    security_opt: ["no-new-privileges:true"]
-    init: true
-    pids_limit: 64
-    mem_limit: 256m
-    cpus: 1
+    environment: {HYPOTHESIS_STORAGE_DIRECTORY: /tmp/hypothesis}
+    command: [python, -m, pytest, -q, -p, no:cacheprovider]
     restart: "no"
+networks:
+  workers: {internal: true}
+  brokers: {internal: true}
+volumes:
+  core-state:
+  broker-state:
+secrets:
+  tpr_token: {file: tests/smoke/tpr-token.txt}
+  timer_token: {file: tests/smoke/timer-token.txt}
+  broker_token: {file: tests/smoke/broker-token.txt}

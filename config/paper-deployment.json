@@ -1,0 +1,8 @@
+{
+  "registry": "/app/config/registry.json",
+  "instances": ["/app/config/instances/tpr1.json", "/app/config/instances/timer_fixture.json"],
+  "workers": {"tpr1":{"host":"worker-tpr"},"timer_fixture":{"host":"worker-timer"}},
+  "broker": {"host":"simulator"},
+  "tokens": {"tpr1":"/run/secrets/tpr_token","timer_fixture":"/run/secrets/timer_token","broker":"/run/secrets/broker_token"},
+  "factors": {"XAUUSD":{"buy":"USD:short","sell":"USD:long"}}
+}

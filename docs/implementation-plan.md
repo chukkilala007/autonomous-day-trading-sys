@@ -8,20 +8,20 @@ This is the go-to document for **what exists, what comes next, how to implement 
 
 | Item | Current value |
 |---|---|
-| Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
-| Completed stage | S1: locked toolchain, contracts and registry (container suite) |
-| Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F4.6 |
-| Next concrete action | Implement and verify F4.6 using its feature branch and acceptance criteria |
-| Next milestone | S1 gate: tested typed contracts, configuration and package registry |
+| Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
+| Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
+| Current implementation work | Requested S1–S4 implementation complete; no S5 work started |
+| Next feature | F5.1 (outside this implementation request) |
+| Next concrete action | Inspect S4 evidence and clean develop, then implement F5.1 authentication/account binding on a new feature branch when requested |
+| Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
-| Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
-| External inputs | TPR source/provenance needed at F3.1; broker application/account authorization needed at F5.1; neither blocks F1.1 |
-| Known limitations | Module directories mostly contain placeholder docstrings; example strategy is not installed; no persistent runtime exists |
-| Verification evidence | Scaffold session: Compose config, Docker validation, and four unit tests locally/in Docker passed. GitHub-hosted CI outcome has not been inspected |
-| Uncommitted implementation | None at tracker creation; inspect `git status` on every resumption |
+| Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
+| External inputs | F5.1 needs cTrader application/account authorization; TPR source is already ported with pinned provenance |
+| Known limitations | Finite file-driven synthetic scenario, GBP linear-contract simulator, single-host topology. No real feed/gateway, UI, emergency account-wide flatten or production qualification |
+| Verification evidence | 76 tests and 4 subtests passed in the installed Docker image; crash-during-evaluation replay matches clean decisions. Docker open-exposure restart drill recorded below. GitHub CI not yet inspected |
+| Uncommitted implementation | None intended after the F4.6 commit; always inspect git status when resuming |
 
-The tracker-writing commit is documentation work, not a new runtime milestone. Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
+Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
 ## Resume procedure
 
@@ -38,12 +38,13 @@ Commands available **now**, from repository root:
 git status --short --branch
 git log -5 --oneline
 docker compose config --quiet
-docker compose up --build --abort-on-container-exit --exit-code-from validate
+docker compose up --build -d
+docker compose exec core trading-platform status --state /state/core.db
 docker compose --profile tools run --rm tests
-PYTHONPATH=src python3 -m unittest discover -s tests -v
+python3 scripts/paper_smoke.py
 ```
 
-The Compose `validate` service currently checks example configuration and exits. It is not a paper-trading runtime. Commands described in future features are proposed until implemented and documented.
+The default stack runs the two-strategy synthetic paper scenario and remains waiting for input. The tools-profile `validate` service checks an instance mandate; `tests` runs the full suite. Future S5–S8 commands remain proposed until implemented.
 
 ## Status and completion rules
 
@@ -74,9 +75,9 @@ References: [architecture](autonomous-scalping-agent.md), [strategy interface](s
 |---|---|---|---|
 | S0 | Repository and offline container scaffold | DONE | Existing four tests and container validation pass |
 | S1 | Contracts, configuration, registry and reproducible toolchain | DONE | Valid/invalid package and proposal fixtures behave consistently inside Docker |
-| S2 | Durable event processing and isolated workers | TODO | Crash/replay preserves state without cross-instance contamination |
+| S2 | Durable event processing and isolated workers | DONE | Crash/replay preserves state without cross-instance contamination |
 | S3 | Strategy adapters and causal replay | DONE | TPR parity plus unrelated fixture proves strategy independence |
-| S4 | Portfolio risk and autonomous paper lifecycle | TODO | Two strategies share risk and recover safely from simulated failures |
+| S4 | Portfolio risk and autonomous paper lifecycle | DONE | Two strategies share risk and recover safely from simulated failures |
 | S5 | Verified broker data and read-only shadow runtime | TODO | Provider contract evidenced; no execution path enabled |
 | S6 | Autonomous demo order lifecycle | TODO | End-to-end demo and fault suite pass with reconciled exposure |
 | S7 | Operable release: controls, deployment and recovery | TODO | Restore/restart/upgrade drills and dashboard evidence complete |
@@ -181,7 +182,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** restart does not clear a halt; unavailable state migration fails explicitly; duplicate instance registration rejected; replacement cannot adopt another version's exposure silently. Use synthetic owned-position fixtures until real execution exists.
 
-**S2 gate:** restart core and one worker during evaluation, replay the journal and reproduce the same committed decisions with isolated state. Gate evidence includes container logs and state assertions.
+**S2 gate — passed:** `test_core_and_worker_killed_during_evaluation_replay_identically` kills actual core/worker subprocesses mid-RPC inside the test container, then verifies replay produces identical committed state and decisions to a clean run. `test_worker_failure_preserves_state_and_sibling_progress` verifies the failed instance cannot commit while its sibling progresses. The Docker restart drill additionally restarts both independent worker containers with owned exposure.
 
 ## S3 — strategy adapters and causal replay
 
@@ -261,7 +262,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** no fill at an unavailable price; entry touch alone does not prove a fill; full event lifecycle matches broker contract fixtures; configurable faults reproduce cancel/fill race and accepted-but-unacknowledged submission without duplicates. Unknown costs remain unknown.
 
-### F4.6 — Integrated persistent paper stack — TODO
+### F4.6 — Integrated persistent paper stack — DONE
 
 **Depends on:** F4.5, F2.5. **Code:** Compose services, CLI run/status commands, `tests/execution/` end-to-end suite.
 
@@ -269,7 +270,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** documented single Compose command runs two configured instances; trades and reasons trace to evidence; core/worker/simulator restarts preserve limits and ownership; repeat the fault matrix and show no unexplained exposure. Default stack contains no real broker credentials or reachable order endpoint.
 
-**S4 gate:** complete paper entry/protection/exit plus restart recovery for both strategies. This is the first autonomous trading runtime milestone, entirely simulated.
+**S4 gate — passed:** both strategies complete protected paper entry/exit and release all reservations; process crash/replay and independent-container restart preserve order IDs, ownership and state. See F4.6 delivery evidence below. This milestone is entirely simulated.
 
 ## S5 — broker feasibility and read-only shadow operation
 
@@ -543,3 +544,21 @@ Status: DONE. Branch: `feature/order_lifecycle`. Persist order attempts and reco
 ### Delivery F4.5
 
 Status: DONE. Branch: `feature/paper_broker`. Simulate durable bid-ask fills expiry partial cancellations and lost acknowledgements; 70 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F4.5"`).
+
+### Delivery F4.6
+
+Status: DONE. Branch: `feature/integrated_paper_stack`. Commit reference: this feature commit (`git log --all --grep="F4.6"`).
+
+Delivered authenticated core → two strategy workers → shared risk/outbox → independent persistent simulator orchestration; `run-paper` and read-only persisted `status`; named volumes, private networks, non-root/read-only containers and an isolated automated restart drill. Added failure checks for worker isolation, core/worker death mid-evaluation and unknown broker acknowledgements. Fixed exact high-precision Decimal hashing, validation of worker state/output, pre-import package digest checks and concentration accounting. Unknown sends block subsequent entry dispatch; a partial order must cancel its unfilled remainder before reduction.
+
+Verification on 2026-10-15:
+
+- `docker compose build core`: passed with pinned Python image and hashed dependencies.
+- `docker compose -p s4-final-tests --profile tools run --rm tests`: **76 passed, 4 subtests passed** in the installed image.
+- `python3 scripts/paper_smoke.py`: **PASS**. Unique project started with two orders and two active risk reservations; core received SIGKILL while exposure was open; both worker containers and simulator restarted; recovered core completed the same two order IDs. Final state: both cursors 4, both READY, two CLOSED orders, zero positions, zero reservations and zero rejections. The script removed only its own generated test volumes.
+- Earlier completed-scenario restart also preserved both closed orders without duplicate submissions; WARMING after restart without new input is expected.
+- CI definition now runs build, configuration validation, the container suite and the isolated restart drill. These are observed local results; GitHub-hosted CI has not been claimed as passed.
+
+Current limits and scope: synthetic file input and GBP linear-contract paper economics; no real broker gateway/feed or profitability evidence. Daily breakers inhibit entries and permit risk reduction; account-wide emergency flatten/operator controls remain future work. Paper protections/timed exits require subsequent ticks. Halted workers remain halted across restarts until explicit recovery; operational resume/repair is not a user-facing S4 control. Single-host trusted-package deployment; production backup, retention, soak and cross-platform qualification remain later gates. See `docs/container-deployment.md` for details.
+
+All 20 requested implementation features F1.1–F4.6 are DONE (plus existing F0.1 scaffold). Each has a feature branch from develop and a tested merge. Next eligible feature is F5.1; do not activate real broker trading as part of this completed S4 scope.
