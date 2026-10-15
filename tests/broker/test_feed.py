@@ -47,7 +47,7 @@ def test_stream_history_incompleteness_and_foreign_quotes(tmp_path):
     from trading_platform.gateways.ctrader.stream import Stream
     class Session:
         generation=1;ready=True;account_id=12
-        def read(self,name,**kw): return succeed({'hasMore':True} if 'Trendbars' in name else {})
+        def read(self,name,**kw): return succeed({'hasMore':True,'ctidTraderAccountId':'12'} if 'Trendbars' in name else {})
     with Database(tmp_path/'db') as db:
         stream=Stream(Session(),Feed(db),{'X':1},[('X','bid',1,3)],lambda:T)
         errors=[];stream.repair().addErrback(lambda e:errors.append(e))

@@ -14,13 +14,85 @@ services:
     pids_limit: 128
     cpus: 1
     restart: unless-stopped
-    command: [python, -m, trading_platform.gateways.ctrader.service, --credentials, /private/credentials.json, --tokens, /state/tokens.json, --account, "${CTRADER_DEMO_ACCOUNT:?set explicit demo account}", --state, /state/shadow.db, --feed-config, /private/feed.json]
+    command: [python, -m, trading_platform.gateways.ctrader.service, --credentials, /private/credentials.json, --tokens, /state/tokens.json, --account, "${CTRADER_DEMO_ACCOUNT:?set explicit demo account}", --state, /state/shadow.db, --feed-config, /private/feed.json, --rpc-token, /run/secrets/gateway_token]
     volumes:
       - "${SHADOW_SECRET_DIR:?set private credential/config directory}:/private:ro"
       - "${SHADOW_STATE_DIR:?set private UID10001 writable directory}:/state"
-    networks: [egress]
+    networks: [egress, broker]
+    secrets: [gateway_token]
     logging:
       driver: json-file
       options: {max-size: 10m, max-file: "3"}
+  shadow-core:
+    profiles: [analysis]
+    build: {context: ., target: runtime}
+    image: autonomous-trading-paper:local
+    user: "10001:10001"
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: [/tmp]
+    mem_limit: 256m
+    pids_limit: 128
+    cpus: 1
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+    command: [python, -m, trading_platform.runtime.shadow_service, --deployment, /analysis/deployment.json, --state, /state/core.db]
+    volumes:
+      - "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/deployment.json:/analysis/deployment.json:ro"
+      - "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/tpr1.json:/analysis/tpr1.json:ro"
+      - "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/timer_fixture.json:/analysis/timer_fixture.json:ro"
+      - "${SHADOW_CORE_STATE_DIR:-./var/shadow-core-state}:/state"
+    secrets: [gateway_token, tpr1_token, timer_fixture_token, reader_token]
+    networks: [broker, workers]
+    depends_on: [shadow-gateway, shadow-tpr, shadow-timer]
+  shadow-tpr:
+    profiles: [analysis]
+    build: {context: ., target: runtime}
+    image: autonomous-trading-paper:local
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: [/tmp]
+    mem_limit: 256m
+    pids_limit: 128
+    cpus: 1
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+    command: [python, -m, trading_platform.runtime.worker, --instance, tpr1, --token-file, /run/secrets/tpr1_token, --registry, /app/config/registry.json]
+    secrets: [tpr1_token]
+    networks: [workers]
+  shadow-timer:
+    profiles: [analysis]
+    build: {context: ., target: runtime}
+    image: autonomous-trading-paper:local
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: [/tmp]
+    mem_limit: 256m
+    pids_limit: 128
+    cpus: 1
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+    command: [python, -m, trading_platform.runtime.worker, --instance, timer_fixture, --token-file, /run/secrets/timer_fixture_token, --registry, /app/config/registry.json]
+    secrets: [timer_fixture_token]
+    networks: [workers]
 networks:
   egress: {}
+  broker: {internal: true}
+  workers: {internal: true}
+secrets:
+  gateway_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/gateway.token"}
+  tpr1_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/tpr1.token"}
+  timer_fixture_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/timer_fixture.token"}
+  reader_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/reader.token"}

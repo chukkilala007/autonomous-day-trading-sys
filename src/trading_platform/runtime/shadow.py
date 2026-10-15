@@ -16,6 +16,7 @@ class ShadowRuntime:
 
     def process(self,event,snapshot,account):
         if not account['history_complete']: raise ValueError('incomplete account history')
+        if any(account["account_id"]!=i.account.broker_account for i in self.instances): raise ValueError("account mandate mismatch")
         seq=self.journal.append(event);evidence=self.journal.snapshot(snapshot)
         for instance in self.instances:
             if account['account_id']!=instance.account.broker_account: raise ValueError('account mandate mismatch')
@@ -30,4 +31,5 @@ class ShadowRuntime:
             for decision in out.decisions:
                 if (decision.instance,decision.account,decision.environment,decision.package,decision.config_hash,decision.snapshot_hash,decision.at)!=(instance.instance_id,instance.account.alias,instance.account.environment,instance.strategy,instance.hash,evidence,snapshot.cutoff): raise ValueError('shadow evidence mismatch')
             self.journal.commit(instance.instance_id,seq,out)
+            with self.db.transaction() as c: c.execute("UPDATE instances SET status='READY' WHERE id=?",(instance.instance_id,))
         return {'mode':'shadow','event':event.event_id,'submission_enabled':False}

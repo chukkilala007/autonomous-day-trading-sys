@@ -80,6 +80,17 @@ class Session:
         if generation != self.generation: raise ValueError('stale authentication')
         self.ready=True; self.error=None
 
+    @defer.inlineCallbacks
+    def refresh_if_due(self):
+        if not self.ready: raise ValueError("account not ready")
+        try:
+            if self.tokens.read()["expires_at"] <= self.now()+60:
+                self.ready=False
+                yield self.authenticate(self.generation)
+        except Exception:
+            self.failed(None)
+            raise ValueError("authentication refresh failed") from None
+
     def read(self, name, **fields):
         if name not in READ_REQUESTS: raise ValueError('read-only gateway rejects operation')
         if not self.ready: raise ValueError('account not ready')
