@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F5.3 |
-| Next concrete action | Continue F5.3; preserve pending external acceptance gates |
+| Next feature | F5.4 |
+| Next concrete action | Continue F5.4; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -290,7 +290,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** documented field-by-field evidence and conversion fixtures; no digits-as-tick or schedule-as-live-state inference; unsatisfied mandatory capability blocks execution. If broker-native extension is necessary, create a scoped feature/decision record rather than loosening validation.
 
-### F5.3 — Streaming feed, history and gap repair — TODO
+### F5.3 — Streaming feed, history and gap repair — IN_PROGRESS
 
 **Depends on:** F5.2, F2.3. **Code:** `market_data/service.py`, `bars.py`, `coverage.py`; gateway subscriptions.
 
@@ -574,3 +574,7 @@ Branch: `feature/ctrader_authentication_checks`. Status: IN_PROGRESS. Corrected 
 ### Delivery F5.2 — implementation slice
 
 Branch: `feature/provider_normalization`. Status: IN_PROGRESS. Added exact protocol price/volume/time conversion and expiring capability evidence; unknown or synthetic metadata cannot enable orders. 83 gateway tests and 4 subtests pass. Actual broker verification pending. Feature commit: `git log --all --grep="F5.2:"`.
+
+### Delivery F5.3 — implementation slice
+
+Branch: `feature/market_data_coverage`. Status: IN_PROGRESS. Implemented durable causal feed cache, verified-session gap handling, SDK subscription/history bridge and reconnect coverage gating. 86 tests and 4 subtests pass. Streaming provider qualification and paginated deep history remain pending; incomplete history blocks decisions. Feature commit: `git log --all --grep="F5.3:"`.
