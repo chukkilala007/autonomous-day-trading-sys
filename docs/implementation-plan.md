@@ -565,4 +565,8 @@ All 20 requested implementation features F1.1–F4.6 are DONE (plus existing F0.
 
 ### Delivery F5.1 — implementation slice
 
-Branch: `feature/ctrader_authentication`. Status: IN_PROGRESS. Implemented verified-TLS demo binding, bounded SDK reconnect, read-only allowlist and atomic private token rotation. Gateway suite: 80 tests and 4 subtests pass. Actual authorized connection pending credentials; F5.1 remains IN_PROGRESS. Feature commit: `git log --all --grep="F5.1:"`.
+Branch: `feature/ctrader_authentication`. Status: IN_PROGRESS. Implemented verified-TLS demo binding, bounded SDK reconnect, read-only allowlist and atomic private token rotation. Initial gateway suite: 79 passed, 1 TLS-test inspection failure, 4 subtests passed; correction and rerun recorded in the follow-up delivery. Actual authorized connection pending credentials; F5.1 remains IN_PROGRESS. Feature commit: `git log --all --grep="F5.1:"`.
+
+### Delivery F5.1 — implementation slice
+
+Branch: `feature/ctrader_authentication_checks`. Status: IN_PROGRESS. Corrected TLS endpoint test for the pinned Twisted implementation; gateway suite now verified: 80 passed and 4 subtests passed. Actual authentication pending mounted credentials. Feature commit: `git log --all --grep="F5.1:"`.

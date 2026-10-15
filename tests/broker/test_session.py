@@ -30,7 +30,14 @@ def test_session_reauth_read_allowlist_and_stale_generation():
     assert failure
 
 
-def test_sdk_uses_verified_demo_tls_and_private_queues():
-    client=VerifiedClient()
-    assert client._endpoint._host==HOST
-    assert client._endpoint._sslContextFactory._hostnameASCII==HOST.encode()
+def test_sdk_uses_verified_demo_tls_and_private_queues(monkeypatch):
+    from trading_platform.gateways.ctrader import client as module
+    captured=[]
+    endpoint=module.SSL4ClientEndpoint
+    def record(clock,host,port,context,**kwargs):
+        captured.append((host,port,context))
+        return endpoint(clock,host,port,context,**kwargs)
+    monkeypatch.setattr(module,'SSL4ClientEndpoint',record)
+    VerifiedClient()
+    assert captured[0][:2]==(HOST,5035)
+    assert captured[0][2]._hostnameASCII==HOST
