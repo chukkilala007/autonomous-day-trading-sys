@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F6.3 |
-| Next concrete action | Continue F6.3; preserve pending external acceptance gates |
+| Next feature | F6.4 |
+| Next concrete action | Continue F6.4; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -326,7 +326,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** demo entry through exit reconciles with broker deals; all filled quantities have confirmed protection or invoke the documented recovery path; late fill after cancellation is handled; entry expiry never silently closes an established position. Test unsupported server expiry explicitly.
 
-### F6.3 — Unknown outcomes and emergency recovery — TODO
+### F6.3 — Unknown outcomes and emergency recovery — IN_PROGRESS
 
 **Depends on:** F6.2. **Code:** `execution/recovery.py`, reconciliation matching and supervisor hooks.
 
@@ -590,3 +590,7 @@ Branch: `feature/fenced_demo_transport`. Status: IN_PROGRESS. Implemented persis
 ### Delivery F6.2 — implementation slice
 
 Branch: `feature/broker_execution_lifecycle`. Status: IN_PROGRESS. Added durable broker-event ledger, partial-fill ownership, revision checks, protection halts and owned close/reduce/protect request mapping. 92 tests and 4 subtests pass. Actual demo entry-to-exit, trigger sides, cancellation and cost qualification remain pending. Feature commit: `git log --all --grep="F6.2:"`.
+
+### Delivery F6.3 — implementation slice
+
+Branch: `feature/demo_uncertainty_recovery`. Status: IN_PROGRESS. Added conservative unique history matching, durable unresolved halts and explicit protection-repair/owned-close policy outcomes. 93 tests and 4 subtests pass. Disconnection never reports successful closure; actual demo recovery remains unqualified. Feature commit: `git log --all --grep="F6.3:"`.
