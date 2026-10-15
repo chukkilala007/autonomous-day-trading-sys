@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=75,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autonomous-day-trading-sys"
+version = "0.1.0"
+description = "Strategy-independent trading platform scaffold"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+trading-platform = "trading_platform.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

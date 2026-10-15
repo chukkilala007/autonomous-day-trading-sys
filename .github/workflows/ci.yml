@@ -1,0 +1,15 @@
+name: Scaffold checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose
+        run: docker compose config --quiet
+      - name: Build and validate scaffold
+        run: docker compose up --build --abort-on-container-exit --exit-code-from validate
+      - name: Run tests inside container
+        run: docker compose --profile tools run --rm tests

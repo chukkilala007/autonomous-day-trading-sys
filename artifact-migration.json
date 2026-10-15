@@ -1,0 +1,15 @@
+{
+  "moved": [
+    {
+      "from": "design/autonomous-scalping-agent.md",
+      "to": "autonomous-trading/docs/autonomous-scalping-agent.md",
+      "sha256": "0e2f9d9080e9b5e58a3dc917cc4df45131a3f25d7f697927cde37f5320cdf5b3"
+    },
+    {
+      "from": "design/strategy-contract.md",
+      "to": "autonomous-trading/docs/strategy-contract.md",
+      "sha256": "3e8773018ab2c4f5791fe67057f7531d72a6f97c162b462258731f928777b021"
+    }
+  ],
+  "scope": "Artifacts created for this autonomous trading design. Existing shared skills, historical reports and alert-monitor state remain external dependencies."
+}

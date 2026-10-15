@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "instance_id": "timer-fixture-paper",
+  "strategy": "timer-fixture@0.1.0",
+  "mode": "paper",
+  "universe": [
+    "TEST"
+  ]
+}
