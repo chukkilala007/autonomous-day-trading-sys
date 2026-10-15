@@ -35,10 +35,12 @@ class Limits:
         if c.execute('SELECT 1 FROM halts').fetchone(): raise ValueError('ACCOUNT_HALT')
 
     def record_trade(self,trade_id,net,at):
-        with self.db.transaction() as c:
-            key='trade:'+trade_id
-            if c.execute('SELECT 1 FROM checkpoints WHERE id=?',(key,)).fetchone(): return
-            s=self.read(c);s['streak']=s.get('streak',0)+1 if net<0 else 0
-            if s['streak']>=3:
-                s['cooldown']=(at+timedelta(minutes=60)).isoformat();s['streak']=0
-            self.save(c,s);c.execute('INSERT INTO checkpoints VALUES (?,?)',(key,canonical({'net':net,'at':at})))
+        with self.db.transaction() as c: self.record_trade_in(c,trade_id,net,at)
+
+    def record_trade_in(self,c,trade_id,net,at):
+        key='trade:'+trade_id
+        if c.execute('SELECT 1 FROM checkpoints WHERE id=?',(key,)).fetchone(): return
+        s=self.read(c);s['streak']=s.get('streak',0)+1 if net<0 else 0
+        if s['streak']>=3:
+            s['cooldown']=(at+timedelta(minutes=60)).isoformat();s['streak']=0
+        self.save(c,s);c.execute('INSERT INTO checkpoints VALUES (?,?)',(key,canonical({'net':net,'at':at})))
