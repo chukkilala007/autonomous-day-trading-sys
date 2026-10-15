@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F6.1 |
-| Next concrete action | Continue F6.1; preserve pending external acceptance gates |
+| Next feature | F6.2 |
+| Next concrete action | Continue F6.2; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -310,7 +310,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 ## S6 — autonomous demo execution
 
-### F6.1 — Fenced order transport and send-time validation — TODO
+### F6.1 — Fenced order transport and send-time validation — IN_PROGRESS
 
 **Depends on:** S4 gate, S5 gate. **Code:** `gateways/ctrader/orders.py`, `execution/dispatch.py`.
 
@@ -582,3 +582,7 @@ Branch: `feature/market_data_coverage`. Status: IN_PROGRESS. Implemented durable
 ### Delivery F5.4 — implementation slice
 
 Branch: `feature/readonly_shadow`. Status: IN_PROGRESS. Added demo read-only collector, account identity/ownership reconciliation, no-executor shadow evaluation path and separate credential-scoped Compose deployment. 88 tests and 4 subtests pass. Actual provider flow and full shadow deployment qualification pending. Feature commit: `git log --all --grep="F5.4:"`.
+
+### Delivery F6.1 — implementation slice
+
+Branch: `feature/fenced_demo_transport`. Status: IN_PROGRESS. Implemented persistent core fencing, demo-only opt-in, fresh account/quote and capability checks, exact volume mapping and write-ahead uncertainty with no blind resend. 90 tests and 4 subtests pass. Tested with fake transport; S5 provider gate prevents actual demo activation. Feature commit: `git log --all --grep="F6.1:"`.
