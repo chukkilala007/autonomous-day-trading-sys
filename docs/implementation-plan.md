@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F2.3 |
-| Next concrete action | Implement and verify F2.3 using its feature branch and acceptance criteria |
+| Next feature | F2.4 |
+| Next concrete action | Implement and verify F2.4 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -157,7 +157,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** crash before/after commit yields either old or complete new state; duplicate delivery cannot duplicate decisions; evidence hash mismatch blocks use; replay cursor never skips unprocessed events. Retain earlier evidence when provider revisions arrive.
 
-### F2.3 — Causal scheduler and virtual clock — TODO
+### F2.3 — Causal scheduler and virtual clock — DONE
 
 **Depends on:** F2.2. **Code:** `runtime/scheduler.py`, `clock.py`, `simulation/clock.py`.
 
@@ -495,3 +495,7 @@ Status: DONE. Branch: `feature/durable_database`. Add single-writer SQLite migra
 ### Delivery F2.2
 
 Status: DONE. Branch: `feature/event_journal`. Commit event cursors state and decisions atomically with evidence hashes; 20 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.2"`).
+
+### Delivery F2.3
+
+Status: DONE. Branch: `feature/causal_scheduler`. Bound per-instance queues and enforce causal clock and snapshot cutoffs; 22 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.3"`).
