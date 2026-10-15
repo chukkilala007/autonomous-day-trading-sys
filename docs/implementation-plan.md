@@ -10,11 +10,11 @@ This is the go-to document for **what exists, what comes next, how to implement 
 |---|---|
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S0: repository scaffold |
-| Current implementation work | None; this change establishes the detailed tracker |
-| Next feature | F1.1 — choose and lock the dependency/toolchain baseline |
-| Next concrete action | Inspect Python 3.12 compatibility for validation/test packages and cTrader SDK dependencies; write a short decision record, lock selected dependencies and build the test image |
+| Current implementation work | Sequential feature implementation through S4 |
+| Next feature | F1.2 |
+| Next concrete action | Implement and verify F1.2 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
-| Working branch policy | Inspect current branch and user instructions; initial scaffold was pushed to `main`; `develop` existed on remote but was not updated |
+| Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
 | External inputs | TPR source/provenance needed at F3.1; broker application/account authorization needed at F5.1; neither blocks F1.1 |
 | Known limitations | Module directories mostly contain placeholder docstrings; example strategy is not installed; no persistent runtime exists |
@@ -97,7 +97,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 ## S1 — contracts and package loading
 
-### F1.1 — Toolchain, dependencies and container test baseline — TODO
+### F1.1 — Toolchain, dependencies and container test baseline — DONE
 
 **Depends on:** F0.1. **Code:** `pyproject.toml`, lockfile, `Dockerfile`, CI, `docs/decisions/`.
 
@@ -466,4 +466,8 @@ Next eligible feature and exact first action:
 Evidence / logs / PR references (no credentials):
 ```
 
-Only F0.1 is currently DONE. No later feature is implied complete by this plan's existence.
+Feature headings and the delivery ledger record completion; stage gates require integration evidence.
+
+### Delivery F1.1
+
+Status: DONE. Branch: `feature/toolchain_baseline`. Lock Python dependencies and verify Docker core and TLS gateway imports Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.1"`).

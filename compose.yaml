@@ -15,7 +15,7 @@ services:
   tests:
     build: .
     profiles: [tools]
-    command: ["python", "-m", "unittest", "discover", "-s", "tests", "-v"]
+    command: ["python", "-m", "pytest", "-q", "-p", "no:cacheprovider"]
     network_mode: none
     read_only: true
     user: "10001:10001"
