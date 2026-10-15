@@ -9,10 +9,10 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
-| Completed stage | S0: repository scaffold |
+| Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F1.5 |
-| Next concrete action | Implement and verify F1.5 using its feature branch and acceptance criteria |
+| Next feature | F2.1 |
+| Next concrete action | Implement and verify F2.1 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -73,7 +73,7 @@ References: [architecture](autonomous-scalping-agent.md), [strategy interface](s
 | Stage | Outcome | Status | Gate |
 |---|---|---|---|
 | S0 | Repository and offline container scaffold | DONE | Existing four tests and container validation pass |
-| S1 | Contracts, configuration, registry and reproducible toolchain | TODO | Valid/invalid package and proposal fixtures behave consistently inside Docker |
+| S1 | Contracts, configuration, registry and reproducible toolchain | DONE | Valid/invalid package and proposal fixtures behave consistently inside Docker |
 | S2 | Durable event processing and isolated workers | TODO | Crash/replay preserves state without cross-instance contamination |
 | S3 | Strategy adapters and causal replay | TODO | TPR parity plus unrelated fixture proves strategy independence |
 | S4 | Portfolio risk and autonomous paper lifecycle | TODO | Two strategies share risk and recover safely from simulated failures |
@@ -129,7 +129,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** unknown/contradictory fields rejected; demo/live require matching configured environment and account binding; shadow has no submission capability; per-strategy budgets cannot exceed account policy. Tests must not require real credentials.
 
-### F1.5 — Registry and plugin protocol — TODO
+### F1.5 — Registry and plugin protocol — DONE
 
 **Depends on:** F1.4. **Code:** `registry/loader.py`, `manifest.py`, `contracts/strategy.py`.
 
@@ -483,3 +483,7 @@ Status: DONE. Branch: `feature/decision_contracts`. Add strategy-neutral entry a
 ### Delivery F1.4
 
 Status: DONE. Branch: `feature/deployment_configuration`. Validate deployment mandates and shadow no-submission semantics; 15 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.4"`).
+
+### Delivery F1.5
+
+Status: DONE. Branch: `feature/strategy_registry`. Load reviewed digest-bound plugins and enforce dependency boundaries; S1 gate 17 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.5"`).
