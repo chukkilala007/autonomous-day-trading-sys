@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F5.4 |
-| Next concrete action | Continue F5.4; preserve pending external acceptance gates |
+| Next feature | F6.1 |
+| Next concrete action | Continue F6.1; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -298,7 +298,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** no unfinished bars in closed-bar events; missing intervals inhibit relevant decisions; unchanged subscription quote cannot prove an open market; backfill does not resurrect an expired opportunity; multi-instrument snapshots use verified causal coverage.
 
-### F5.4 — Read-only account reconciliation and shadow stack — TODO
+### F5.4 — Read-only account reconciliation and shadow stack — IN_PROGRESS
 
 **Depends on:** F5.3, F4.6. **Code:** `execution/reconciliation.py`, shadow configuration and Compose override.
 
@@ -578,3 +578,7 @@ Branch: `feature/provider_normalization`. Status: IN_PROGRESS. Added exact proto
 ### Delivery F5.3 — implementation slice
 
 Branch: `feature/market_data_coverage`. Status: IN_PROGRESS. Implemented durable causal feed cache, verified-session gap handling, SDK subscription/history bridge and reconnect coverage gating. 86 tests and 4 subtests pass. Streaming provider qualification and paginated deep history remain pending; incomplete history blocks decisions. Feature commit: `git log --all --grep="F5.3:"`.
+
+### Delivery F5.4 — implementation slice
+
+Branch: `feature/readonly_shadow`. Status: IN_PROGRESS. Added demo read-only collector, account identity/ownership reconciliation, no-executor shadow evaluation path and separate credential-scoped Compose deployment. 88 tests and 4 subtests pass. Actual provider flow and full shadow deployment qualification pending. Feature commit: `git log --all --grep="F5.4:"`.
