@@ -31,7 +31,7 @@ Name = Annotated[str, Field(min_length=1, pattern=r'^\S+$')]
 
 
 class Record(BaseModel):
-    model_config = ConfigDict(extra='forbid', frozen=True, strict=True)
+    model_config = ConfigDict(extra='forbid', frozen=True, strict=True, validate_default=True)
 
 
 def canonical(value):

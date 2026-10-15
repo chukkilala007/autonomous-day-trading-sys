@@ -32,12 +32,22 @@ def validate_config(data):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
+    instance = sub.add_parser("validate-instance", help="validate versioned deployment mandate")
+    instance.add_argument("path", type=Path)
     sub.add_parser("status", help="show scaffold capabilities")
     validate = sub.add_parser("validate-config", help="validate an offline example configuration")
     validate.add_argument("path", type=Path)
     args = parser.parse_args(argv)
     if args.command == "status":
         print(json.dumps({"stage": "scaffold", "trading_enabled": False}))
+        return 0
+    if args.command == "validate-instance":
+        from .contracts.config import Instance
+        try:
+            item = Instance.model_validate_json(args.path.read_text())
+        except (OSError, ValueError) as exc:
+            parser.error(str(exc))
+        print(json.dumps({"valid": True, "config_hash": item.hash, "mode": item.mode, "runtime_implemented": False}))
         return 0
     try:
         result = validate_config(json.loads(args.path.read_text()))

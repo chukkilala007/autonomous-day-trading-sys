@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S0: repository scaffold |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F1.4 |
-| Next concrete action | Implement and verify F1.4 using its feature branch and acceptance criteria |
+| Next feature | F1.5 |
+| Next concrete action | Implement and verify F1.5 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -121,7 +121,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** market entry without TP1 is representable under an appropriate profile; incomplete executable proposals fail; one strategy cannot name an unowned management target; do not impose 2R or TPR states globally. Cover stale deadlines and invalid amendment revisions.
 
-### F1.4 — Configuration and deployment mandate validation — TODO
+### F1.4 — Configuration and deployment mandate validation — DONE
 
 **Depends on:** F1.3. **Code:** `contracts/config.py`, `config/`, `cli.py`.
 
@@ -479,3 +479,7 @@ Status: DONE. Branch: `feature/value_event_contracts`. Validate immutable exact 
 ### Delivery F1.3
 
 Status: DONE. Branch: `feature/decision_contracts`. Add strategy-neutral entry and owned management decisions; 13 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.3"`).
+
+### Delivery F1.4
+
+Status: DONE. Branch: `feature/deployment_configuration`. Validate deployment mandates and shadow no-submission semantics; 15 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.4"`).
