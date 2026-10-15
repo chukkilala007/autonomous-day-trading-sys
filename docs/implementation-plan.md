@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F6.4 |
-| Next concrete action | Continue F6.4; preserve pending external acceptance gates |
+| Next feature | F7.1 |
+| Next concrete action | Continue F7.1; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -334,7 +334,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** accepted-but-unacknowledged command is found without duplicate submission; inconclusive matching remains halted; failed protection repair triggers policy; inability to close while disconnected is recorded rather than reported as successful. No unowned position mutation.
 
-### F6.4 — Demo qualification suite and report — TODO
+### F6.4 — Demo qualification suite and report — BLOCKED
 
 **Depends on:** F6.3. **Code:** `tests/broker/`, integration harness, evidence reports.
 
@@ -594,3 +594,7 @@ Branch: `feature/broker_execution_lifecycle`. Status: IN_PROGRESS. Added durable
 ### Delivery F6.3 — implementation slice
 
 Branch: `feature/demo_uncertainty_recovery`. Status: IN_PROGRESS. Added conservative unique history matching, durable unresolved halts and explicit protection-repair/owned-close policy outcomes. 93 tests and 4 subtests pass. Disconnection never reports successful closure; actual demo recovery remains unqualified. Feature commit: `git log --all --grep="F6.3:"`.
+
+### Delivery F6.4 — implementation slice
+
+Branch: `feature/demo_qualification`. Status: BLOCKED. Added immutable qualification reporting that distinguishes actual demo evidence from deterministic faults and refuses incomplete qualification. 94 tests and 4 subtests pass. Actual demo suite BLOCKED on credentials and explicit order-test authorization. Feature commit: `git log --all --grep="F6.4:"`.
