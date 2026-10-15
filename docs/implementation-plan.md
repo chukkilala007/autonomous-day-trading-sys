@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F2.1 |
-| Next concrete action | Implement and verify F2.1 using its feature branch and acceptance criteria |
+| Next feature | F2.2 |
+| Next concrete action | Implement and verify F2.2 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -141,7 +141,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 ## S2 — durable runtime and worker isolation
 
-### F2.1 — Database schema and migration boundary — TODO
+### F2.1 — Database schema and migration boundary — DONE
 
 **Depends on:** F1.3. **Code:** `persistence/database.py`, `migrations/`, `repositories.py`.
 
@@ -487,3 +487,7 @@ Status: DONE. Branch: `feature/deployment_configuration`. Validate deployment ma
 ### Delivery F1.5
 
 Status: DONE. Branch: `feature/strategy_registry`. Load reviewed digest-bound plugins and enforce dependency boundaries; S1 gate 17 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.5"`).
+
+### Delivery F2.1
+
+Status: DONE. Branch: `feature/durable_database`. Add single-writer SQLite migrations rollback and consistent backups; 19 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.1"`).
