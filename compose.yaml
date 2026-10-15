@@ -1,5 +1,5 @@
 x-app: &app
-  build: .
+  build: {context: ., target: runtime}
   image: autonomous-trading-paper:local
   user: "10001:10001"
   init: true
@@ -11,6 +11,9 @@ x-app: &app
   mem_limit: 512m
   cpus: 1
   stop_grace_period: 5s
+  logging:
+    driver: json-file
+    options: {max-size: 10m, max-file: "3"}
   restart: unless-stopped
 services:
   volume-init:
@@ -58,6 +61,11 @@ services:
   core:
     <<: *app
     command: [trading-platform, run-paper, --deployment, /app/config/paper-deployment.json, --input, /app/tests/fixtures/paper.json, --state, /state/core.db]
+    healthcheck:
+      test: [CMD, python, -c, "from urllib.request import urlopen; urlopen('http://localhost:9010/health',timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
     networks: [workers, brokers, control]
     secrets: [tpr_token, timer_token, broker_token, reader_token, operator_token]
     volumes: ["core-state:/state"]
@@ -81,6 +89,8 @@ services:
     restart: "no"
   tests:
     <<: *app
+    build: {context: ., target: base}
+    image: autonomous-trading-tests:local
     profiles: [tools]
     network_mode: none
     environment: {HYPOTHESIS_STORAGE_DIRECTORY: /tmp/hypothesis}

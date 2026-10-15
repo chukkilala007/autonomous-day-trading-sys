@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F7.3 |
-| Next concrete action | Continue F7.3; preserve pending external acceptance gates |
+| Next feature | F7.4 |
+| Next concrete action | Continue F7.4; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -362,7 +362,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** pause differs from flatten; repeated controls do not duplicate close commands; resume cannot bypass unresolved state or loss limit; external trades untouched; secrets absent from notifications; alert recovery is distinguished from repeated failure.
 
-### F7.3 — Production container and host deployment — TODO
+### F7.3 — Production container and host deployment — IN_PROGRESS
 
 **Depends on:** F6.4, F7.2. **Code:** Docker targets, demo/live Compose overrides, `deploy/` runbooks, CI.
 
@@ -606,3 +606,7 @@ Branch: `feature/status_dashboard`. Status: IN_PROGRESS. Added authenticated sta
 ### Delivery F7.2 — implementation slice
 
 Branch: `feature/operator_controls`. Status: DONE. Implemented authenticated idempotent control API/CLI, immediate entry pause, checked resume, owned paper flatten-and-halt and persistent transition alerts. 97 tests and 4 subtests pass. Actual demo integration remains gated; stale/disconnected flatten stays pending. Feature commit: `git log --all --grep="F7.2:"`.
+
+### Delivery F7.3 — implementation slice
+
+Branch: `feature/hardened_deployment`. Status: IN_PROGRESS. Separated slim runtime and gateway/test targets, added log/resource and mount/network audits, immutable-image overrides, readiness and host runbook plus native architecture CI. Installed tests: 93 passed with 4 SDK skips; gateway 98 passed; 4 subtests each. Docker restart drill and isolation audit pass. Remote clean-host and architecture CI qualification pending. Feature commit: `git log --all --grep="F7.3:"`.
