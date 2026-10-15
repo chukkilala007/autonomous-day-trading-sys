@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F3.4 |
-| Next concrete action | Implement and verify F3.4 using its feature branch and acceptance criteria |
+| Next feature | F4.1 |
+| Next concrete action | Implement and verify F4.1 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -75,7 +75,7 @@ References: [architecture](autonomous-scalping-agent.md), [strategy interface](s
 | S0 | Repository and offline container scaffold | DONE | Existing four tests and container validation pass |
 | S1 | Contracts, configuration, registry and reproducible toolchain | DONE | Valid/invalid package and proposal fixtures behave consistently inside Docker |
 | S2 | Durable event processing and isolated workers | TODO | Crash/replay preserves state without cross-instance contamination |
-| S3 | Strategy adapters and causal replay | TODO | TPR parity plus unrelated fixture proves strategy independence |
+| S3 | Strategy adapters and causal replay | DONE | TPR parity plus unrelated fixture proves strategy independence |
 | S4 | Portfolio risk and autonomous paper lifecycle | TODO | Two strategies share risk and recover safely from simulated failures |
 | S5 | Verified broker data and read-only shadow runtime | TODO | Provider contract evidenced; no execution path enabled |
 | S6 | Autonomous demo order lifecycle | TODO | End-to-end demo and fault suite pass with reconciled exposure |
@@ -209,7 +209,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** no M1/TP1/2R requirement; package loads without touching core; separate instance state; management proposals use owned broker-view fixtures. Tests fail if TPR assumptions leak into shared code.
 
-### F3.4 — Replay CLI and evidence reports — TODO
+### F3.4 — Replay CLI and evidence reports — DONE
 
 **Depends on:** F3.2, F3.3, F2.5. **Code:** `simulation/replay.py`, `market_data/history.py`, `cli.py`.
 
@@ -519,3 +519,7 @@ Status: DONE. Branch: `feature/tpr_strategy_adapter`. Adapt TPR with baseline pa
 ### Delivery F3.3
 
 Status: DONE. Branch: `feature/timer_strategy`. Add independent timer strategy with protected market entry and timed exit; 57 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F3.3"`).
+
+### Delivery F3.4
+
+Status: DONE. Branch: `feature/causal_replay`. Replay both reviewed strategies with causal history and immutable reports; 59 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F3.4"`).

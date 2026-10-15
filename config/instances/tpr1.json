@@ -1,0 +1,14 @@
+{
+  "instance_id": "tpr1",
+  "strategy": "tpr1@1",
+  "package_digest": "1f356320c98c9fa400b543a28e1eb85b360dd901a173865c03a2a5031995d9ab",
+  "mode": "paper",
+  "universe": [
+    "XAUUSD"
+  ],
+  "account": {
+    "alias": "paper",
+    "environment": "paper"
+  },
+  "allocation": "0.005"
+}

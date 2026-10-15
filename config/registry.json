@@ -1,0 +1,20 @@
+[
+  {
+    "package": "tpr1@1",
+    "digest": "1f356320c98c9fa400b543a28e1eb85b360dd901a173865c03a2a5031995d9ab",
+    "entrypoint": "trading_platform.strategies.tpr1.adapter:TPR",
+    "subscriptions": [
+      "bar",
+      "timer"
+    ]
+  },
+  {
+    "package": "timer_fixture@1",
+    "digest": "edca669866f390df853a8bc9af52badf1b3d27ab37cfaa4af337ee09ffd3c1ef",
+    "entrypoint": "trading_platform.strategies.timer_fixture.adapter:Timer",
+    "subscriptions": [
+      "bar",
+      "timer"
+    ]
+  }
+]
