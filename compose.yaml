@@ -58,14 +58,21 @@ services:
   core:
     <<: *app
     command: [trading-platform, run-paper, --deployment, /app/config/paper-deployment.json, --input, /app/tests/fixtures/paper.json, --state, /state/core.db]
-    networks: [workers, brokers]
-    secrets: [tpr_token, timer_token, broker_token]
+    networks: [workers, brokers, control]
+    secrets: [tpr_token, timer_token, broker_token, reader_token]
     volumes: ["core-state:/state"]
     depends_on:
       worker-tpr: {condition: service_healthy}
       worker-timer: {condition: service_healthy}
       simulator: {condition: service_healthy}
       volume-init: {condition: service_completed_successfully}
+  dashboard:
+    <<: *app
+    profiles: [ui]
+    command: [python, -m, trading_platform.api.dashboard]
+    networks: [control]
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on: [core]
   validate:
     <<: *app
     profiles: [tools]
@@ -80,12 +87,14 @@ services:
     command: [python, -m, pytest, -q, -p, no:cacheprovider]
     restart: "no"
 networks:
+  control: {internal: true}
   workers: {internal: true}
   brokers: {internal: true}
 volumes:
   core-state:
   broker-state:
 secrets:
+  reader_token: {file: tests/smoke/reader-token.txt}
   tpr_token: {file: tests/smoke/tpr-token.txt}
   timer_token: {file: tests/smoke/timer-token.txt}
   broker_token: {file: tests/smoke/broker-token.txt}

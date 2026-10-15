@@ -9,6 +9,8 @@ from trading_platform.persistence.database import Database
 from trading_platform.simulation.replay import load_registry,records
 from trading_platform.simulation.server import RemoteBroker
 from trading_platform.runtime.paper import PaperRuntime
+from trading_platform.api.server import serving
+from trading_platform.contracts.values import canonical
 
 
 def run(args):
@@ -22,7 +24,9 @@ def run(args):
         nonlocal stopping
         stopping=True
     signal.signal(signal.SIGTERM,stop);signal.signal(signal.SIGINT,stop)
-    with Database(args.state) as db:
+    with Database(args.state) as db, serving(db,settings.get("api")):
+        with db.transaction() as c:
+            c.execute("INSERT OR REPLACE INTO checkpoints VALUES (?,?)",("operations:identity",canonical({"mode":"paper","account_alias":instances[0].account.alias,"config_hashes":{i.instance_id:i.hash for i in instances}})))
         runtime=PaperRuntime(db,load_registry(settings['registry']),instances,broker,workers,settings.get('factors'))
         while not stopping:
             normalized=records(args.input)
