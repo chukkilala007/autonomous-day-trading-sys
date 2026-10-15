@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F6.2 |
-| Next concrete action | Continue F6.2; preserve pending external acceptance gates |
+| Next feature | F6.3 |
+| Next concrete action | Continue F6.3; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -318,7 +318,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** stale core session rejected; missing metadata or expiry prevents submission; actual order type/units match approved intent; order correlation IDs are not assumed to be broker idempotency guarantees. Live endpoints remain disabled.
 
-### F6.2 — Fill/protection/cancellation lifecycle — TODO
+### F6.2 — Fill/protection/cancellation lifecycle — IN_PROGRESS
 
 **Depends on:** F6.1. **Code:** gateway execution events, `execution/protection.py`, `management.py`.
 
@@ -586,3 +586,7 @@ Branch: `feature/readonly_shadow`. Status: IN_PROGRESS. Added demo read-only col
 ### Delivery F6.1 — implementation slice
 
 Branch: `feature/fenced_demo_transport`. Status: IN_PROGRESS. Implemented persistent core fencing, demo-only opt-in, fresh account/quote and capability checks, exact volume mapping and write-ahead uncertainty with no blind resend. 90 tests and 4 subtests pass. Tested with fake transport; S5 provider gate prevents actual demo activation. Feature commit: `git log --all --grep="F6.1:"`.
+
+### Delivery F6.2 — implementation slice
+
+Branch: `feature/broker_execution_lifecycle`. Status: IN_PROGRESS. Added durable broker-event ledger, partial-fill ownership, revision checks, protection halts and owned close/reduce/protect request mapping. 92 tests and 4 subtests pass. Actual demo entry-to-exit, trigger sides, cancellation and cost qualification remain pending. Feature commit: `git log --all --grep="F6.2:"`.
