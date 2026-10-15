@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F4.2 |
-| Next concrete action | Implement and verify F4.2 using its feature branch and acceptance criteria |
+| Next feature | F4.3 |
+| Next concrete action | Implement and verify F4.3 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -229,7 +229,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** simultaneous conflicting intents have deterministic outcomes; one strategy cannot cancel another's trade; unknown external exposure blocks entries; opposite signals are not silently netted; budgets are subdivisions of the account ceiling.
 
-### F4.2 — Risk model interface and stop-based sizing — TODO
+### F4.2 — Risk model interface and stop-based sizing — DONE
 
 **Depends on:** F4.1. **Code:** `risk/models.py`, `sizing.py`, `valuation.py`.
 
@@ -527,3 +527,7 @@ Status: DONE. Branch: `feature/causal_replay`. Replay both reviewed strategies w
 ### Delivery F4.1
 
 Status: DONE. Branch: `feature/portfolio_ownership`. Enforce owned positions exclusive symbols and deterministic arbitration; 61 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F4.1"`).
+
+### Delivery F4.2
+
+Status: DONE. Branch: `feature/risk_sizing`. Size linear contracts with verified costs conversion and round-down grids; 63 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F4.2"`).
