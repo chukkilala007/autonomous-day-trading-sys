@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F4.4 |
-| Next concrete action | Implement and verify F4.4 using its feature branch and acceptance criteria |
+| Next feature | F4.5 |
+| Next concrete action | Implement and verify F4.5 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -245,7 +245,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** concurrent attempts cannot oversubscribe; unknown submissions keep reservations; confirmed terminal events release once; restarts/DST/deposits cannot reset or distort limits; close/reduce actions remain possible when entry budget is exhausted.
 
-### F4.4 — Order planner, lifecycle and durable outbox — TODO
+### F4.4 — Order planner, lifecycle and durable outbox — DONE
 
 **Depends on:** F4.3. **Code:** `execution/planner.py`, `state_machine.py`, `outbox.py`.
 
@@ -535,3 +535,7 @@ Status: DONE. Branch: `feature/risk_sizing`. Size linear contracts with verified
 ### Delivery F4.3
 
 Status: DONE. Branch: `feature/risk_reservations`. Reserve account risk atomically and persist cashflow-adjusted loss limits; 64 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F4.3"`).
+
+### Delivery F4.4
+
+Status: DONE. Branch: `feature/order_lifecycle`. Persist order attempts and reconcile partial or unknown outcomes without blind retries; 66 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F4.4"`).
