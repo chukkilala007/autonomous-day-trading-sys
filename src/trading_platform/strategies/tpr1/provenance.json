@@ -1,0 +1,21 @@
+{
+  "baseline": "TPR-1",
+  "source_owner": "User-provided project skill; copied under explicit implementation instruction",
+  "review": "No third-party copyright/license notice in supplied helper. Repository LICENSE applies to this project; no private account snapshots copied.",
+  "files": [
+    {
+      "source": "scalping-skill/scripts/tpr.py",
+      "source_sha256": "9963c9b7f79c1422e29ff086def47635b5aca6ba477f69a6062962f85201605a",
+      "packaged": "baseline.py",
+      "packaged_sha256": "9963c9b7f79c1422e29ff086def47635b5aca6ba477f69a6062962f85201605a",
+      "changes": "none"
+    },
+    {
+      "source": "scalping-skill/scripts/replay.py",
+      "source_sha256": "c4b7c0b016f91c26732051ab613d15f36a034da885b6da5625cfaf836ad2f9a2",
+      "packaged": "baseline_replay.py",
+      "packaged_sha256": "84f0e71875b2f51d1924334eadf8864b753b8e6a1ede228f330e20135b24dbd9",
+      "changes": "relative import only"
+    }
+  ]
+}
