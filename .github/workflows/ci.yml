@@ -20,6 +20,10 @@ jobs:
           docker compose --profile tools run --rm tests
       - name: Gateway protocol and offline fault tests
         run: docker run --rm --network none --tmpfs /tmp -e HYPOTHESIS_STORAGE_DIRECTORY=/tmp/hypothesis trading-gateway-check
+      - name: Isolated backup restore and measured paper soak
+        run: |
+          docker run --rm --network none --tmpfs /tmp trading-gateway-check python scripts/recovery_drill.py
+          docker run --rm --network none --tmpfs /tmp trading-gateway-check python scripts/soak.py
       - name: Restart paper stack with open exposure
         run: python3 scripts/paper_smoke.py
 

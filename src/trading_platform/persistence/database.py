@@ -55,7 +55,7 @@ class Database:
                 self.connection.execute('ROLLBACK');raise
 
     def backup(self,path):
-        with sqlite3.connect(path) as target: self.connection.backup(target)
+        with self.mutex, sqlite3.connect(path) as target: self.connection.backup(target)
 
     def close(self):
         self.connection.close();self.lock.close()
