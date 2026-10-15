@@ -1,5 +1,6 @@
 """Secret-file storage and exact demo-account binding. No secret logging."""
 import json
+import math
 import os
 import tempfile
 from pathlib import Path
@@ -18,7 +19,7 @@ class TokenStore:
             if field not in value: raise ValueError('incomplete credential file')
         if any(not isinstance(value[k], str) or not value[k] for k in ('client_id','client_secret','access_token','refresh_token')):
             raise ValueError('invalid credentials')
-        if type(value['expires_at']) not in (int, float): raise ValueError('invalid token expiry')
+        if type(value['expires_at']) not in (int, float) or not math.isfinite(value['expires_at']): raise ValueError('invalid token expiry')
         return value
 
     def rotate(self, original, response, now):

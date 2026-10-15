@@ -2,6 +2,7 @@
 from datetime import timedelta
 from twisted.internet import defer
 from .normalization import spot,trendbar
+from .history import complete_range
 
 PERIODS={1:1,5:5,15:7,30:8,60:9,240:10,1440:12}
 
@@ -25,14 +26,13 @@ class Stream:
             yield self.session.read('ProtoOASubscribeSpotsReq',symbolId=list(self.symbols.values()),subscribeToSpotTimestamp=True)
             at=self.now()
             for symbol,basis,minutes,count in self.requirements:
-                response=yield self.session.read('ProtoOAGetTrendbarsReq',symbolId=self.symbols[symbol],period=PERIODS[minutes],
-                    fromTimestamp=int((at-timedelta(minutes=minutes*(count+2))).timestamp()*1000),toTimestamp=int(at.timestamp()*1000),count=count+1)
-                if response.get('hasMore'): raise ValueError('incomplete history requires pagination')
-                for raw in response.get('trendbar',[]):
+                rows=yield complete_range(self.session,'ProtoOAGetTrendbarsReq','trendbar',int((at-timedelta(minutes=minutes*(count+2))).timestamp()*1000),int(at.timestamp()*1000),symbolId=self.symbols[symbol],period=PERIODS[minutes])
+                received=self.now()
+                for raw in rows:
                     # Current unfinished bar is not a closed-bar event.
                     start=int(raw['utcTimestampInMinutes'])*60
                     if start+minutes*60>at.timestamp(): continue
-                    self.feed.ingest_bar(trendbar(symbol,raw,minutes,at,basis=basis))
+                    self.feed.ingest_bar(trendbar(symbol,raw,minutes,received,basis=basis))
             if generation!=self.session.generation or not self.session.ready: raise ValueError('disconnected during repair')
             for symbol in self.symbols: self.feed.repaired(symbol,at)
             self.failures={}

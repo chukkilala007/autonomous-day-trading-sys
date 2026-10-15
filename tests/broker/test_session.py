@@ -41,3 +41,13 @@ def test_sdk_uses_verified_demo_tls_and_private_queues(monkeypatch):
     VerifiedClient()
     assert captured[0][:2]==(HOST,5035)
     assert captured[0][2]._hostnameASCII==HOST
+
+
+def test_failed_refresh_stops_client_and_exposes_terminal_state():
+    from twisted.internet.defer import fail
+    client=Client();session=Session(client,Tokens(),12,now=lambda:1000)
+    session.ready=True
+    session.authenticate=lambda generation:fail(ValueError('sensitive broker detail'))
+    errors=[];session.refresh_if_due().addErrback(lambda error:errors.append(error))
+    assert errors and str(errors[0].value)=='authentication refresh failed'
+    assert not session.ready and session.error=='AUTHENTICATION_FAILED' and client.stopped
