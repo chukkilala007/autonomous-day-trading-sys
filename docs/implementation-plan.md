@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F2.4 |
-| Next concrete action | Implement and verify F2.4 using its feature branch and acceptance criteria |
+| Next feature | F2.5 |
+| Next concrete action | Implement and verify F2.5 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -165,7 +165,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** no future bar or unpublished feature reaches an evaluation; deterministic event ordering; queue overflow blocks rather than silently loses required data; stopped/closed sessions do not fabricate bars. One blocked instance does not starve unrelated instances.
 
-### F2.4 — Authenticated container worker transport — TODO
+### F2.4 — Authenticated container worker transport — DONE
 
 **Depends on:** F2.3. **Code:** `runtime/worker.py`, `transport.py`, Docker targets and Compose networks.
 
@@ -499,3 +499,7 @@ Status: DONE. Branch: `feature/event_journal`. Commit event cursors state and de
 ### Delivery F2.3
 
 Status: DONE. Branch: `feature/causal_scheduler`. Bound per-instance queues and enforce causal clock and snapshot cutoffs; 22 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.3"`).
+
+### Delivery F2.4
+
+Status: DONE. Branch: `feature/worker_transport`. Authenticate bounded worker RPC and verify Docker network and secret isolation; 24 tests plus container smoke pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.4"`).
