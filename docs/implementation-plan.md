@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | demo_pending_order_lifecycle |
-| Next concrete action | Continue demo_pending_order_lifecycle; preserve pending external acceptance gates |
+| Next feature | demo_protection_supervisor |
+| Next concrete action | Continue demo_protection_supervisor; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -618,3 +618,7 @@ Branch: `feature/backup_restore_soak`. Status: IN_PROGRESS. Implemented dual-wri
 ### Delivery F5.4 — implementation slice
 
 Branch: `feature/shadow_integration`. Status: IN_PROGRESS. Completed separate authenticated snapshot gateway/core/worker wiring and bounded history pagination; failed token refresh now terminates safely. 104 tests and 4 subtests pass; shadow Compose validates. Actual provider qualification and incremental feed optimization remain open. Feature commit: `git log --all --grep="F5.4:"`.
+
+### Delivery F6.2 — implementation slice
+
+Branch: `feature/demo_pending_order_lifecycle`. Status: IN_PROGRESS. Added durable pending-order revisions and owned cancellation; delayed fills retain position exposure after remainder cancellation. 105 tests and 4 subtests pass. Actual broker lifecycle and core demo adapter remain unqualified. Feature commit: `git log --all --grep="F6.2:"`.

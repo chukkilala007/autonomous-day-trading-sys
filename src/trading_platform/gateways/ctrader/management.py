@@ -6,8 +6,10 @@ from .normalization import wire_volume
 
 
 def prepare(ledger,instance,management,now):
-    target=ledger.owned(management.target_id,instance)
+    target=(ledger.owned_order if management.action=='cancel' else ledger.owned)(management.target_id,instance)
     management.authorize(instance,target['owner'],target['updated'],now)
+    if management.action=='cancel':
+        return 'ProtoOACancelOrderReq',dict(orderId=int(management.target_id))
     if management.action=='close':
         return 'ProtoOAClosePositionReq',dict(positionId=int(management.target_id),volume=wire_volume(D(target['quantity'])))
     if management.action=='reduce':
@@ -18,7 +20,7 @@ def prepare(ledger,instance,management,now):
         if side not in ('BUY','SELL'): raise ValueError('unknown protection side')
         if existing is not None and ((side=='BUY' and management.stop<D(str(existing))) or (side=='SELL' and management.stop>D(str(existing)))): raise ValueError('stop widening')
         return 'ProtoOAAmendPositionSLTPReq',dict(positionId=int(management.target_id),stopLoss=float(management.stop))
-    raise ValueError('position action unsupported; pending order cancellation requires order binding')
+    raise ValueError('unsupported management action')
 
 
 def send_owned(gateway,ledger,command_id,instance,management,core,epoch,now):

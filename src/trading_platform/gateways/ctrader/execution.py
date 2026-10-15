@@ -39,6 +39,20 @@ class ExecutionLedger:
             if c.execute('SELECT 1 FROM checkpoints WHERE id=?',(key,)).fetchone(): return False
             c.execute('INSERT INTO checkpoints VALUES (?,?)',(key,canonical(event)))
             owner=sends[0][1]['instance'] if sends else None
+            if order:
+                order_key='broker-order:'+str(order['orderId'])
+                old=c.execute('SELECT body FROM checkpoints WHERE id=?',(order_key,)).fetchone()
+                prior_order=json.loads(old['body']) if old else None
+                owner=owner or (prior_order or {}).get('owner')
+                timestamp=integer(order.get('utcLastUpdateTimestamp',0))
+                if timestamp>0 and (not prior_order or timestamp>prior_order['updated']):
+                    total=integer(order.get('tradeData',{}).get('volume',0))
+                    filled=integer(order.get('executedVolume',0))
+                    if not 0<=filled<=total: raise ValueError('invalid executed order volume')
+                    terminal=order.get('orderStatus') in ('ORDER_STATUS_FILLED','ORDER_STATUS_REJECTED','ORDER_STATUS_EXPIRED','ORDER_STATUS_CANCELLED')
+                    # A cancelled remainder says nothing about the filled position.
+                    body=dict(owner=owner,updated=timestamp,remaining=str(D(total-filled)/100),terminal=terminal,record=order)
+                    c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',(order_key,canonical(body)))
             if position:
                 pid=str(position['positionId']);state_key='broker-position:'+pid
                 old=c.execute('SELECT body FROM checkpoints WHERE id=?',(state_key,)).fetchone()
@@ -74,4 +88,12 @@ class ExecutionLedger:
         if not row: raise ValueError('unknown position')
         body=json.loads(row['body'])
         if body['owner']!=instance or body['closed']: raise ValueError('position not owned/open')
+        return body
+
+    def owned_order(self,order_id,instance):
+        row=self.db.connection.execute('SELECT body FROM checkpoints WHERE id=?',('broker-order:'+str(order_id),)).fetchone()
+        if not row: raise ValueError('unknown order')
+        body=json.loads(row['body'])
+        if body['owner']!=instance or body['terminal'] or D(body['remaining'])<=0 or body['record'].get('orderStatus')!='ORDER_STATUS_ACCEPTED':
+            raise ValueError('order not owned/pending')
         return body
