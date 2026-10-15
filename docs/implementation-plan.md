@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S0: repository scaffold |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F1.3 |
-| Next concrete action | Implement and verify F1.3 using its feature branch and acceptance criteria |
+| Next feature | F1.4 |
+| Next concrete action | Implement and verify F1.4 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -113,7 +113,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** reject nonfinite values, naive timestamps, malformed OHLC and unit/basis omissions; source time cannot be replaced by receipt time; serialization round trips without float loss; identical canonical input produces identical identity. Test publication-time causality for non-price inputs.
 
-### F1.3 — Decision, proposal and management contracts — TODO
+### F1.3 — Decision, proposal and management contracts — DONE
 
 **Depends on:** F1.2. **Code:** `contracts/decisions.py`, `orders.py`, `capabilities.py`.
 
@@ -475,3 +475,7 @@ Status: DONE. Branch: `feature/toolchain_baseline`. Lock Python dependencies and
 ### Delivery F1.2
 
 Status: DONE. Branch: `feature/value_event_contracts`. Validate immutable exact values and causal event snapshots; 11 container tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.2"`).
+
+### Delivery F1.3
+
+Status: DONE. Branch: `feature/decision_contracts`. Add strategy-neutral entry and owned management decisions; 13 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.3"`).
