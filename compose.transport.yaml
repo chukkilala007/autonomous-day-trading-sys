@@ -1,0 +1,30 @@
+services:
+  worker:
+    build: .
+    command: [python, -m, trading_platform.runtime.worker, --instance, test, --token-file, /run/secrets/worker_token]
+    networks: [workers]
+    secrets: [worker_token]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+  gateway:
+    build: .
+    command: [python, -m, trading_platform.runtime.worker, --instance, broker, --token-file, /run/secrets/worker_token]
+    networks: [brokers]
+    secrets: [worker_token]
+    read_only: true
+  probe:
+    build: .
+    command: [python, tests/smoke/transport.py]
+    networks: [workers]
+    secrets: [worker_token]
+    depends_on: [worker, gateway]
+    read_only: true
+networks:
+  workers:
+    internal: true
+  brokers:
+    internal: true
+secrets:
+  worker_token:
+    file: tests/smoke/worker-token.txt
