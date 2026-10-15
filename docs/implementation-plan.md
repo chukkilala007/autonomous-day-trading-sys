@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F4.5 |
-| Next concrete action | Implement and verify F4.5 using its feature branch and acceptance criteria |
+| Next feature | F4.6 |
+| Next concrete action | Implement and verify F4.6 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -253,7 +253,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** unsupported order semantics fail; duplicate/out-of-order acknowledgements do not regress state; timeout after send creates UNKNOWN, not an automatic retry; no blind release on cancel request; a stale amendment cannot overwrite a fill.
 
-### F4.5 — Paper broker and fault scenarios — TODO
+### F4.5 — Paper broker and fault scenarios — DONE
 
 **Depends on:** F4.4, F3.4. **Code:** `simulation/broker.py`, `fills.py`, `faults.py`.
 
@@ -539,3 +539,7 @@ Status: DONE. Branch: `feature/risk_reservations`. Reserve account risk atomical
 ### Delivery F4.4
 
 Status: DONE. Branch: `feature/order_lifecycle`. Persist order attempts and reconcile partial or unknown outcomes without blind retries; 66 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F4.4"`).
+
+### Delivery F4.5
+
+Status: DONE. Branch: `feature/paper_broker`. Simulate durable bid-ask fills expiry partial cancellations and lost acknowledgements; 70 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F4.5"`).

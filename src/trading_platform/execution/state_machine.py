@@ -7,13 +7,14 @@ class BrokerEvent(Record):
     id: Name
     command: Name
     revision: int = Field(ge=0)
-    kind: Literal['ACCEPTED','PART_FILLED','FILLED','CANCELLED','EXPIRED','REJECTED','CLOSED','PROTECTED']
+    kind: Literal['ACCEPTED','PART_FILLED','FILLED','CANCELLED','EXPIRED','REJECTED','CLOSED','PROTECTED','REDUCED']
     at: Time
     filled: Number = Field(default='0',ge=0)
     average_price: Positive | None = None
     protected: bool = True
     net: Number | None = None
     stop: Positive | None = None
+    open_quantity: Number | None = Field(default=None,ge=0)
 
     @model_validator(mode='after')
     def valid(self):

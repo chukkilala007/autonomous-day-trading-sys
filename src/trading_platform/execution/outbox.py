@@ -104,7 +104,7 @@ class Executor:
             if event.stop is not None: entry=entry.model_copy(update={'stop':event.stop});body['decision']['proposal']=json.loads(entry.model_dump_json())
             c.execute('UPDATE commands SET body=?,status=?,revision=? WHERE id=?',(canonical(body),event.kind,event.revision,event.command))
             if event.filled>0 and event.kind!='CLOSED':
-                position=dict(id=event.command,instance=row['instance'],instrument=row['instrument'],side=entry.side,quantity=str(event.filled),entry_price=str(event.average_price),stop=str(entry.stop),target=None if entry.target is None else str(entry.target),exit_at=None if entry.exit_at is None else entry.exit_at.isoformat(),revision=event.revision,protected=event.protected)
+                position=dict(id=event.command,instance=row['instance'],instrument=row['instrument'],side=entry.side,quantity=str(event.open_quantity if event.open_quantity is not None else event.filled),entry_price=str(event.average_price),stop=str(entry.stop),target=None if entry.target is None else str(entry.target),exit_at=None if entry.exit_at is None else entry.exit_at.isoformat(),revision=event.revision,protected=event.protected)
                 c.execute('INSERT OR REPLACE INTO positions VALUES (?,?,?,?)',(event.command,row['instance'],row['instrument'],canonical(position)))
                 c.execute("UPDATE reservations SET status='OPEN' WHERE id=?",(event.command,))
                 if not event.protected or prior_status in ('CANCELLED','EXPIRED','REJECTED','CLOSED'):
