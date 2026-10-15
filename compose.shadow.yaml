@@ -2,7 +2,7 @@ services:
   shadow-gateway:
     build:
       context: .
-      target: gateway-check
+      target: gateway
     image: autonomous-trading-gateway:local
     user: "10001:10001"
     init: true
