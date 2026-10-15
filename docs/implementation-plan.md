@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F2.5 |
-| Next concrete action | Implement and verify F2.5 using its feature branch and acceptance criteria |
+| Next feature | F3.1 |
+| Next concrete action | Implement and verify F3.1 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -173,7 +173,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** oversized/malformed/unauthenticated messages rejected; stale response cannot update current state; worker timeout/crash inhibits its entries; worker cannot directly reach broker control; denied-network and secret-mount checks pass. Do not claim arbitrary hostile Python is fully sandboxed.
 
-### F2.5 — Recovery state and instance replacement — TODO
+### F2.5 — Recovery state and instance replacement — DONE
 
 **Depends on:** F2.4. **Code:** `runtime/recovery.py`, `registry/lifecycle.py`.
 
@@ -503,3 +503,7 @@ Status: DONE. Branch: `feature/causal_scheduler`. Bound per-instance queues and 
 ### Delivery F2.4
 
 Status: DONE. Branch: `feature/worker_transport`. Authenticate bounded worker RPC and verify Docker network and secret isolation; 24 tests plus container smoke pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.4"`).
+
+### Delivery F2.5
+
+Status: DONE. Branch: `feature/instance_recovery`. Persist halts and retain old strategy ownership during replacement; 25 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.5"`).
