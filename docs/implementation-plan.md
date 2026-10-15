@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F2.2 |
-| Next concrete action | Implement and verify F2.2 using its feature branch and acceptance criteria |
+| Next feature | F2.3 |
+| Next concrete action | Implement and verify F2.3 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -149,7 +149,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** migrations work on empty and prior-version fixtures; conflicting writer startup fails; restart retains state; rollback after an injected transaction failure leaves no half-written decision. Backups use SQLite APIs, not a live-file copy.
 
-### F2.2 — Event journal and atomic evaluation commits — TODO
+### F2.2 — Event journal and atomic evaluation commits — DONE
 
 **Depends on:** F2.1, F1.5. **Code:** `runtime/journal.py`, `persistence/events.py`, `snapshots.py`.
 
@@ -491,3 +491,7 @@ Status: DONE. Branch: `feature/strategy_registry`. Load reviewed digest-bound pl
 ### Delivery F2.1
 
 Status: DONE. Branch: `feature/durable_database`. Add single-writer SQLite migrations rollback and consistent backups; 19 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.1"`).
+
+### Delivery F2.2
+
+Status: DONE. Branch: `feature/event_journal`. Commit event cursors state and decisions atomically with evidence hashes; 20 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F2.2"`).
