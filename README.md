@@ -45,11 +45,16 @@ docs/                    Architecture, contracts and build plan
 
 Module directories are explicit implementation boundaries, not completed services. The scaffold has no third-party runtime dependencies. The Python base image and build-tool versions must be locked after the broker compatibility spike; the current Docker tag is not a reproducible digest pin.
 
+## Implementation tracking
+
+Start with the [implementation tracker and session handoff](docs/implementation-plan.md). It records the verified baseline, feature status, dependencies, acceptance checks and the next concrete action. Update it alongside each implementation change; see [repository working instructions](AGENTS.md). Only the scaffold is complete today.
+
 ## Design documents
 
 * [Architecture](docs/autonomous-scalping-agent.md)
 * [Strategy API v1](docs/strategy-contract.md)
-* [Implementation plan](docs/implementation-plan.md)
+* [Implementation tracker](docs/implementation-plan.md)
+* [Technical implementation notes](docs/implementation-notes.md)
 * [Docker deployment](docs/container-deployment.md)
 * [Initial artifact migration record](artifact-migration.json)
 
