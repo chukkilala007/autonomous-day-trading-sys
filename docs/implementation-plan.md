@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F4.1 |
-| Next concrete action | Implement and verify F4.1 using its feature branch and acceptance criteria |
+| Next feature | F4.2 |
+| Next concrete action | Implement and verify F4.2 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -221,7 +221,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 ## S4 — shared risk and autonomous paper trading
 
-### F4.1 — Portfolio ownership and account arbitration — TODO
+### F4.1 — Portfolio ownership and account arbitration — DONE
 
 **Depends on:** F2.1, F1.4. **Code:** `portfolio/ownership.py`, `allocation.py`, `arbiter.py`.
 
@@ -523,3 +523,7 @@ Status: DONE. Branch: `feature/timer_strategy`. Add independent timer strategy w
 ### Delivery F3.4
 
 Status: DONE. Branch: `feature/causal_replay`. Replay both reviewed strategies with causal history and immutable reports; 59 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F3.4"`).
+
+### Delivery F4.1
+
+Status: DONE. Branch: `feature/portfolio_ownership`. Enforce owned positions exclusive symbols and deterministic arbitration; 61 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F4.1"`).
