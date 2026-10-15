@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | demo_protection_supervisor |
-| Next concrete action | Continue demo_protection_supervisor; preserve pending external acceptance gates |
+| Next feature | release_integration_review |
+| Next concrete action | Continue release_integration_review; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -622,3 +622,7 @@ Branch: `feature/shadow_integration`. Status: IN_PROGRESS. Completed separate au
 ### Delivery F6.2 — implementation slice
 
 Branch: `feature/demo_pending_order_lifecycle`. Status: IN_PROGRESS. Added durable pending-order revisions and owned cancellation; delayed fills retain position exposure after remainder cancellation. 105 tests and 4 subtests pass. Actual broker lifecycle and core demo adapter remain unqualified. Feature commit: `git log --all --grep="F6.2:"`.
+
+### Delivery F6.3 — implementation slice
+
+Branch: `feature/demo_protection_supervisor`. Status: IN_PROGRESS. Added opt-in demo protection supervisor with durable one-shot repair then owned-close requests, freshness and ownership gates, restart deduplication and no assumed closure. 106 tests and 4 subtests pass. Service activation and actual demo recovery await S5 qualification. Feature commit: `git log --all --grep="F6.3:"`.
