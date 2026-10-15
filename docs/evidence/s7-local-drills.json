@@ -1,0 +1,38 @@
+{
+  "scope": "local Linux containers on Docker Desktop; no actual demo or remote host qualification",
+  "soak": {
+    "passed": true,
+    "limits": {
+      "version": 1,
+      "duration_seconds": 60,
+      "events_per_second": 5,
+      "minimum_events": 250,
+      "maximum_p95_seconds": 0.5,
+      "maximum_rss_mib": 256,
+      "maximum_unexplained_positions": 0,
+      "expected_entry_commands": 2,
+      "scope": "single-host two-strategy synthetic paper tick workload; not production throughput qualification"
+    },
+    "events": 300,
+    "elapsed_seconds": 60.00735202699434,
+    "p95_seconds": 0.029191541951149702,
+    "rss_mib": 39.04296875,
+    "orders": 2,
+    "positions": 0,
+    "active_risk": 0
+  },
+  "recovery": {
+    "passed": true,
+    "rpo_events": 0,
+    "recovery_seconds": 0.02792191691696644,
+    "maximum_recovery_seconds": 10,
+    "orders": 2,
+    "remaining_positions": 0,
+    "restore_halt_preserved": true,
+    "scope": "isolated local paper restore"
+  },
+  "suite": {
+    "passed": 100,
+    "subtests_passed": 4
+  }
+}

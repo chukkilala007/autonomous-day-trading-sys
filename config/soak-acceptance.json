@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "duration_seconds": 60,
+  "events_per_second": 5,
+  "minimum_events": 250,
+  "maximum_p95_seconds": 0.5,
+  "maximum_rss_mib": 256,
+  "maximum_unexplained_positions": 0,
+  "expected_entry_commands": 2,
+  "scope": "single-host two-strategy synthetic paper tick workload; not production throughput qualification"
+}

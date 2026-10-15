@@ -29,3 +29,25 @@ Images have pinned bases and hashed package locks. Runtime images exclude test d
 Before upgrading: pause entries, drain/cancel pending exposure, reconcile, record image/config/package hashes, perform a consistent backup, stop the old core, and start one replacement. Retain old strategy code until its positions are drained. A future schema migration needs an explicit compatible rollback plan; refuse a database newer than the supported schema. Stop services gracefully; shutdown flushes core state and preserves broker-held paper protection, but does not imply flattening.
 
 Runtime containers use UID10001, read-only root, dropped capabilities, tmpfs, resource/PID limits and bounded logs. Only the no-network volume initializer has limited filesystem privileges. Private token rotation requires its own writable path; credentials must not be baked into build context or image layers. The CI matrix builds/tests AMD64 and ARM64 on native runners; inspect actual results before claiming support. Local verification alone is not a clean remote Linux-host deployment qualification.
+
+## Backup and isolated restore
+
+Pause entries and stop core and simulator before a paired paper backup. The archive tool acquires both writer locks; it refuses an active writer. Mount the existing core/simulator volumes into a one-shot runtime container with networking disabled, plus a private backup directory, and invoke:
+
+```sh
+python -m trading_platform.persistence.archive backup --database /state/core.db --broker /broker-state/paper.json --destination /backup/NEW_ARCHIVE
+python -m trading_platform.persistence.archive verify --archive /backup/NEW_ARCHIVE
+python -m trading_platform.persistence.archive restore --archive /backup/NEW_ARCHIVE --destination /restore/NEW_DIRECTORY
+```
+
+Archives contain SQLite (including transactional evidence), simulator state and checksums, with restrictive file permissions. Existing archive/restore destinations are never overwritten. Incomplete artifacts are explicitly marked. Restore verifies checksums, database integrity and schema compatibility, and adds an entry halt plus pause. Restore first to a unique isolated paper project with no broker egress. Reconcile the copied broker events and ownership; preserve all prior risk halts. Do not clear a halt through direct SQL or treat restored state as authorization to trade.
+
+This paired archive is for paper mode. Real-account restore must reconcile against current broker state, not restore an old simulated broker file. Application/refresh-token recovery is a separate encrypted secret backup managed by the operator; tokens are deliberately excluded from the paper archive. Copy archives and protected secrets to an approved encrypted off-host destination and perform a restore there before release. No off-host destination or token backup was configured during local implementation.
+
+Schema 1 is the current supported version. A future schema is rejected. Roll back only to an image compatible with the saved schema; otherwise restore the pre-upgrade archive into isolation and reconcile. Never overwrite a newer operational DB with an older copy while an executor is connected.
+
+## Declared local drill limits
+
+`config/soak-acceptance.json` fixes the limits before measurement: 60 seconds, 5 synthetic events/second, at least 250 processed events, p95 processing below 500ms, maximum process RSS 256MiB, exactly two original entry commands and zero residual positions/reservations. This is a modest paper tick workload, not a production trading-load claim. `scripts/soak.py` reports the actual metrics and fails if any limit is missed.
+
+`scripts/recovery_drill.py` starts with two owned commands and open risk, backs up quiesced state, restores to a new isolated directory and reconciles through protected exits. Acceptance: zero lost committed events, identical order IDs, no duplicate submissions, retained restore halt and recovery below 10 seconds. Run these scripts in the test/gateway-check image. Production soak duration, operational RPO/RTO and actual host outage tests must be agreed and measured on the intended host before release.

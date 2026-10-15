@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F7.4 |
-| Next concrete action | Continue F7.4; preserve pending external acceptance gates |
+| Next feature | integration-review |
+| Next concrete action | Continue integration-review; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -370,7 +370,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** clean Linux host deployment follows runbook; tests verify mount/port/role restrictions; unhealthy state inhibits trades without assuming Docker healthcheck restarts; Docker Desktop host sleep limitation documented; credentials never enter image layers. No second active writer during upgrades.
 
-### F7.4 — Backup, restore, upgrade and soak drills — TODO
+### F7.4 — Backup, restore, upgrade and soak drills — IN_PROGRESS
 
 **Depends on:** F7.3. **Code:** persistence backup/export tooling, deployment/recovery runbooks, drill harness.
 
@@ -610,3 +610,7 @@ Branch: `feature/operator_controls`. Status: DONE. Implemented authenticated ide
 ### Delivery F7.3 — implementation slice
 
 Branch: `feature/hardened_deployment`. Status: IN_PROGRESS. Separated slim runtime and gateway/test targets, added log/resource and mount/network audits, immutable-image overrides, readiness and host runbook plus native architecture CI. Installed tests: 93 passed with 4 SDK skips; gateway 98 passed; 4 subtests each. Docker restart drill and isolation audit pass. Remote clean-host and architecture CI qualification pending. Feature commit: `git log --all --grep="F7.3:"`.
+
+### Delivery F7.4 — implementation slice
+
+Branch: `feature/backup_restore_soak`. Status: IN_PROGRESS. Implemented dual-writer-lock quiesced archives, checksum/schema verification and isolated halted restore. 100 tests and 4 subtests pass; 300-event 60-second soak p95 29ms RSS39MiB; restore 28ms with zero committed-event loss and preserved exposure/halt. Off-host secret backup and intended-host qualification pending. Feature commit: `git log --all --grep="F7.4:"`.

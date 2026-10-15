@@ -1,5 +1,5 @@
 """Private-network simulator process; never connects to a real broker."""
-import argparse,json,socketserver
+import argparse,json,socketserver,fcntl
 from pathlib import Path
 from trading_platform.runtime.transport import receive,send,authorize,request
 from trading_platform.contracts.events import Quote
@@ -50,7 +50,9 @@ class RemoteBroker:
 def main():
     p=argparse.ArgumentParser();p.add_argument('--state',required=True);p.add_argument('--token-file',required=True);p.add_argument('--port',type=int,default=9000);args=p.parse_args()
     socketserver.TCPServer.allow_reuse_address=True
-    with socketserver.TCPServer(('0.0.0.0',args.port),Handler) as server:
+    Path(args.state).parent.mkdir(parents=True,exist_ok=True)
+    with open(args.state+'.lock','a+') as lock, socketserver.TCPServer(('0.0.0.0',args.port),Handler) as server:
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         server.token=Path(args.token_file).read_text().strip();server.broker=PaperBroker(args.state)
         server.serve_forever()
 
