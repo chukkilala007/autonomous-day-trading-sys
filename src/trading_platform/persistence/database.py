@@ -1,6 +1,7 @@
 """Single-host single-writer SQLite with transactional migration and backup."""
 import fcntl
 import sqlite3
+import threading
 from pathlib import Path
 from contextlib import contextmanager
 
@@ -27,7 +28,8 @@ class Database:
         try: fcntl.flock(self.lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:
             self.lock.close();raise ValueError('another database writer is active')
-        self.connection=sqlite3.connect(path,isolation_level=None)
+        self.mutex=threading.RLock()
+        self.connection=sqlite3.connect(path,isolation_level=None,check_same_thread=False)
         self.connection.row_factory=sqlite3.Row
         self.connection.execute('PRAGMA journal_mode=WAL')
         self.connection.execute('PRAGMA synchronous=FULL')
@@ -44,12 +46,13 @@ class Database:
 
     @contextmanager
     def transaction(self):
-        self.connection.execute('BEGIN IMMEDIATE')
-        try:
-            yield self.connection
-            self.connection.execute('COMMIT')
-        except BaseException:
-            self.connection.execute('ROLLBACK');raise
+        with self.mutex:
+            self.connection.execute('BEGIN IMMEDIATE')
+            try:
+                yield self.connection
+                self.connection.execute('COMMIT')
+            except BaseException:
+                self.connection.execute('ROLLBACK');raise
 
     def backup(self,path):
         with sqlite3.connect(path) as target: self.connection.backup(target)
