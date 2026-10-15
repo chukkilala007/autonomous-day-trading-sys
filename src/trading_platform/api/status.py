@@ -21,6 +21,8 @@ def status(db,now=None):
             instances=[dict(r) for r in c.execute('SELECT id,package,cursor,status,halt FROM instances')],
             orders=[dict(r) for r in c.execute('SELECT id,instance,instrument,status,revision FROM commands')],
             positions=[json.loads(r['body']) for r in c.execute('SELECT body FROM positions')],risk=risk,
+            controls=[json.loads(r['body']) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'control:%'")],
+            alerts=[json.loads(r['body']) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'alert:%' ORDER BY rowid DESC LIMIT 100")],
             limits=[json.loads(r['body']) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'risk:%'")],
             halts=[dict(r) for r in c.execute('SELECT * FROM halts')],decisions=decisions,
             executions=[json.loads(r['body']) for r in c.execute('SELECT body FROM broker_events ORDER BY rowid DESC LIMIT 100')])

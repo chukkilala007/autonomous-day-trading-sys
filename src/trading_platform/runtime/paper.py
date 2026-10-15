@@ -14,11 +14,13 @@ from trading_platform.portfolio.ownership import Portfolio
 from trading_platform.portfolio.arbiter import arbitrate
 from trading_platform.execution.outbox import Executor
 from trading_platform.risk.sizing import Contract
+from trading_platform.runtime.controls import Controls
 
 
 class PaperRuntime:
     def __init__(self,db,registry,instances,broker,workers=None,factors=None):
         self.db=db;self.registry=registry;self.instances=instances;self.broker=broker;self.workers=workers or {};self.factors=factors or {}
+        self.controls=Controls(db);self.last_snapshot=None
         self.journal=Journal(db);self.recovery=Recovery(db);self.portfolio=Portfolio(db)
         if any(i.mode!='paper' for i in instances): raise ValueError('paper runtime only')
         if len({i.account.model_dump_json() for i in instances})!=1: raise ValueError('shared account policy required')
@@ -30,6 +32,7 @@ class PaperRuntime:
         self.reconciled=self.executor.reconcile(broker)
 
     def process(self,event,snapshot,contracts):
+        self.last_snapshot=snapshot
         seq=self.journal.append(event);h=self.journal.snapshot(snapshot)
         # Broker state is authoritative, including fills that raced with a core restart.
         self.reconciled=self.executor.reconcile(self.broker)
@@ -70,6 +73,7 @@ class PaperRuntime:
                 if not self.reconciled: raise ValueError('UNKNOWN_BROKER_OUTCOME')
                 if self.recovery.status(i.instance_id)['halt']: raise ValueError('INSTANCE_HALTED')
                 if d.outcome=='ENTRY':
+                    if self.controls.state()['paused']: raise ValueError('OPERATOR_PAUSED')
                     q=next(q for q in snapshot.quotes if q.instrument==d.proposal.instrument)
                     contract=contracts[d.proposal.instrument]
                     bucket=self.factors.get(d.proposal.instrument,{}).get(d.proposal.side,d.proposal.instrument)

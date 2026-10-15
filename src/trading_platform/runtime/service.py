@@ -1,5 +1,6 @@
 """Container paper service consuming a versioned synthetic/recorded input file."""
 import json,signal,time
+from datetime import datetime,timezone
 from pathlib import Path
 from trading_platform.contracts.config import Instance
 from trading_platform.contracts.events import Event
@@ -10,6 +11,7 @@ from trading_platform.simulation.replay import load_registry,records
 from trading_platform.simulation.server import RemoteBroker
 from trading_platform.runtime.paper import PaperRuntime
 from trading_platform.api.server import serving
+from trading_platform.observability.alerts import Alerts
 from trading_platform.contracts.values import canonical
 
 
@@ -46,6 +48,10 @@ def run(args):
                 status=runtime.status();print(json.dumps(status),flush=True)
                 return 1 if any(i['halt'] for i in status['instances']) else 0
             runtime.executor.reconcile(broker)
+            current=datetime.now(timezone.utc)
+            runtime.controls.pump(runtime,current,runtime.last_snapshot)
+            stale=runtime.last_snapshot is None or (current-runtime.last_snapshot.cutoff).total_seconds()>30
+            Alerts(db).transition('market-data',stale,'DATA_STALE',current)
             time.sleep(.5)
         # Persistence and broker-held paper protections survive process shutdown.
         print(json.dumps({'stopped':True,'status':runtime.status()}),flush=True)

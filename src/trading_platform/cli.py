@@ -32,6 +32,9 @@ def validate_config(data):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
+    control = sub.add_parser('control',help='submit an audited operator request')
+    control.add_argument('action',choices=['pause','resume','flatten'])
+    for flag in ('url','token-file','id'): control.add_argument('--'+flag,required=True)
     replay = sub.add_parser("replay", help="offline causal decision replay")
     for flag in ("config", "registry", "input", "output"):
         replay.add_argument("--"+flag, required=True)
@@ -48,6 +51,10 @@ def main(argv=None):
     validate = sub.add_parser("validate-config", help="validate an offline example configuration")
     validate.add_argument("path", type=Path)
     args = parser.parse_args(argv)
+    if args.command == 'control':
+        from .api.control_cli import control
+        print(json.dumps(control(args.url,args.token_file,args.id,args.action)))
+        return 0
     if args.command == "run-paper":
         from .runtime.service import run
         return run(args)

@@ -34,6 +34,20 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('X-Content-Type-Options','nosniff');self.send_header('Content-Length',str(len(data)))
         self.end_headers();self.wfile.write(data)
 
+    def do_POST(self):
+        if self.role()!='operator': return self.reply(403,{'error':'operator role required'})
+        if self.path!='/controls': return self.reply(404,{'error':'not found'})
+        try:
+            size=int(self.headers.get('Content-Length','0'))
+            if not 0<size<=4096: raise ValueError('request size')
+            body=json.loads(self.rfile.read(size))
+            if set(body)!= {'id','action'}: raise ValueError('control fields')
+            from datetime import datetime,timezone
+            from trading_platform.runtime.controls import Controls
+            result=Controls(self.server.db).submit(body['id'],body['action'],datetime.now(timezone.utc),role='operator')
+            return self.reply(202,result)
+        except (ValueError,TypeError): return self.reply(400,{'error':'invalid control request'})
+
     def do_GET(self):
         if self.path=='/health': return self.reply(200,{'alive':True})
         if not self.role(): return self.reply(401,{'error':'authentication required'})
