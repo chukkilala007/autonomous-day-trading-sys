@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F3.3 |
-| Next concrete action | Implement and verify F3.3 using its feature branch and acceptance criteria |
+| Next feature | F3.4 |
+| Next concrete action | Implement and verify F3.4 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -201,7 +201,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** original baseline and adapter agree on candidate IDs, anchors, timing, reasons and geometry; causal pivots, target retirement, missing context and pending expiry tests pass; future bars do not alter earlier decisions. No unexplained parity differences accepted.
 
-### F3.3 — Independent timer/H1 fixture strategy — TODO
+### F3.3 — Independent timer/H1 fixture strategy — DONE
 
 **Depends on:** F1.5, F2.3. **Code:** `strategies/timer_fixture/`, fixture configuration/tests.
 
@@ -515,3 +515,7 @@ Status: DONE. Branch: `feature/tpr_baseline`. Package provenance-pinned TPR help
 ### Delivery F3.2
 
 Status: DONE. Branch: `feature/tpr_strategy_adapter`. Adapt TPR with baseline parity and explicit paper bid-ask conversion; 56 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F3.2"`).
+
+### Delivery F3.3
+
+Status: DONE. Branch: `feature/timer_strategy`. Add independent timer strategy with protected market entry and timed exit; 57 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F3.3"`).
