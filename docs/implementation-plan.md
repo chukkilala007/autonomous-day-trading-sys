@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S1: locked toolchain, contracts and registry (container suite) |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F3.2 |
-| Next concrete action | Implement and verify F3.2 using its feature branch and acceptance criteria |
+| Next feature | F3.3 |
+| Next concrete action | Implement and verify F3.3 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -193,7 +193,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** baseline imports in a clean container; provenance identifies exact source; fixtures contain no secrets/account identifiers; old monitor state is never migrated into execution state. If source is unavailable, mark this feature BLOCKED while the unrelated fixture proceeds.
 
-### F3.2 — TPR strategy adapter and parity suite — TODO
+### F3.2 — TPR strategy adapter and parity suite — DONE
 
 **Depends on:** F3.1, F2.3. **Code:** `strategies/tpr1/adapter.py`, `manifest.*`, `tests/replay/test_tpr_parity.py`.
 
@@ -511,3 +511,7 @@ Status: DONE. Branch: `feature/instance_recovery`. Persist halts and retain old 
 ### Delivery F3.1
 
 Status: DONE. Branch: `feature/tpr_baseline`. Package provenance-pinned TPR helper and original synthetic tests; 54 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F3.1"`).
+
+### Delivery F3.2
+
+Status: DONE. Branch: `feature/tpr_strategy_adapter`. Adapt TPR with baseline parity and explicit paper bid-ask conversion; 56 tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F3.2"`).
