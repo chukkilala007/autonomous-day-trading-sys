@@ -46,6 +46,7 @@ class DemoTransport:
         if blockers: raise ValueError('provider capability blockers: '+','.join(blockers))
         check_entry(entry,quote,now)
         values={e.field:e.value for e in report.evidence}
+        if values['account_type']!='HEDGED': raise ValueError('netted ownership requires a separate allocation adapter')
         tick=Decimal(values['tick_grid'])
         if not tick.is_finite() or tick<=0: raise ValueError('invalid tick grid')
         for price in (entry.entry,entry.stop,entry.target):

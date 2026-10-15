@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-15. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-16. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -8,20 +8,37 @@ This is the go-to document for **what exists, what comes next, how to implement 
 
 | Item | Current value |
 |---|---|
-| Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
+| Verified implementation baseline | S1–S4 complete; S5–S7 implementation slices merged locally; see delivery ledger and remaining-work matrix below |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
-| Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | release_integration_review |
-| Next concrete action | Continue release_integration_review; preserve pending external acceptance gates |
+| Current implementation work | Release integration verification; S5–S7 remain IN_PROGRESS pending their acceptance gates |
+| Next feature | F5.1/F5.2 actual read-only provider qualification |
+| Next concrete action | Mount authorized Open API credential/config files, select a demo account, run the separate shadow stack and record provider evidence; do not activate order components |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
-| Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
-| External inputs | F5.1 needs cTrader application/account authorization; TPR source is already ported with pinned provenance |
-| Known limitations | Finite file-driven synthetic scenario, GBP linear-contract simulator, single-host topology. No real feed/gateway, UI, emergency account-wide flatten or production qualification |
-| Verification evidence | 76 tests and 4 subtests passed in the installed Docker image; crash-during-evaluation replay matches clean decisions. Docker open-exposure restart drill recorded below. GitHub CI not yet inspected |
-| Uncommitted implementation | None intended after the F4.6 commit; always inspect git status when resuming |
+| Trading state | Default paper stack; separate demo read-only collector available. No real broker order placed; no enabled demo/live executor service |
+| External inputs | Private Open API credentials and selected demo account; later explicit demo-order test authorization, intended Linux host and encrypted off-host backup destination |
+| Known limitations | Demo core/outbox adapter and supervised service wiring deferred until S5 contract qualification; incremental feed optimization open; browser visual check and intended-host release drills unverified |
+| Verification evidence | Latest source gateway suite: 107 tests and 4 subtests; final installed-image/restart results recorded in the release-review ledger |
+| Uncommitted implementation | None intended after release_integration_review merge; verify git status on resume |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
+
+## Remaining work and acceptance boundaries (2026-10-16)
+
+| Feature | Implemented and tested locally | Required before parent can be DONE |
+|---|---|---|
+| F5.1 | Verified TLS, demo binding, rotated private tokens, terminal refresh failure | Actual authorized connect/refresh/reconnect evidence |
+| F5.2 | Exact unit normalization, expiring account-bound evidence, hedged-account gate | Broker-specific tick/basis/session/fees/conversion/margin/protection and account-type audit |
+| F5.3 | Durable causal feed, gap/revision checks, bounded history pagination | Incremental history/subscription optimization and actual streaming/backfill checks |
+| F5.4 | Separate gateway/core/workers, authenticated read-only snapshot RPC, zero order path | Actual shadow run with complete required history and evidence/lag checks |
+| F6.1–F6.3 | Fencing, uncertain-send persistence, order/position ledger, owned cancel/close/protect, recovery supervisor | After S5 passes: implement the demo core/outbox adapter and service wiring using verified capabilities; reconcile risk/costs/events end to end. Current components alone are not an autonomous demo service |
+| F6.4 | Fail-closed qualification report and deterministic faults | Explicit demo-test authorization plus actual lifecycle, cancellation-race, protection and reconnect evidence |
+| F7.1 | Authenticated API, dashboard proxy, stale labels, evidence links | Browser visual acceptance (available browser tools failed) and actual broker panel attribution |
+| F7.2 | Tested paper pause/resume/owned flatten, deduplicated local alerts | DONE for delivered paper controls; demo wiring belongs to pending F6 service integration |
+| F7.3 | Slim Docker targets, isolation audit, resource/log limits, immutable release helper, native-architecture CI | Observe CI, publish verified immutable images, clean intended Linux-host deployment after F6 qualification |
+| F7.4 | Quiesced paired paper archive, isolated halted restore, measured local soak/recovery | Encrypted off-host secret/archive recovery, representative intended-host soak and real-account restore reconciliation |
+
+The remaining demo adapter is an explicit implementation dependency, not merely a credential switch. Do not reuse paper fill/economics semantics for actual broker events. Keep its branch separate after provider qualification; require protocol-to-core event/risk reconciliation and restart fault tests before enabling any demo service. A netted account requires a separately reviewed allocation adapter; the initial demo profile rejects it.
 
 ## Resume procedure
 
@@ -44,7 +61,7 @@ docker compose --profile tools run --rm tests
 python3 scripts/paper_smoke.py
 ```
 
-The default stack runs the two-strategy synthetic paper scenario and remains waiting for input. The tools-profile `validate` service checks an instance mandate; `tests` runs the full suite. Future S5–S8 commands remain proposed until implemented.
+The default stack runs the two-strategy synthetic paper scenario and remains waiting for input. The tools-profile `validate` service checks an instance mandate; `tests` runs the full suite. Use the separate provider and operations runbooks for delivered S5–S7 commands. S8 remains unimplemented.
 
 ## Status and completion rules
 
@@ -78,9 +95,9 @@ References: [architecture](autonomous-scalping-agent.md), [strategy interface](s
 | S2 | Durable event processing and isolated workers | DONE | Crash/replay preserves state without cross-instance contamination |
 | S3 | Strategy adapters and causal replay | DONE | TPR parity plus unrelated fixture proves strategy independence |
 | S4 | Portfolio risk and autonomous paper lifecycle | DONE | Two strategies share risk and recover safely from simulated failures |
-| S5 | Verified broker data and read-only shadow runtime | TODO | Provider contract evidenced; no execution path enabled |
-| S6 | Autonomous demo order lifecycle | TODO | End-to-end demo and fault suite pass with reconciled exposure |
-| S7 | Operable release: controls, deployment and recovery | TODO | Restore/restart/upgrade drills and dashboard evidence complete |
+| S5 | Verified broker data and read-only shadow runtime | IN_PROGRESS | Provider contract evidenced; no execution path enabled |
+| S6 | Autonomous demo order lifecycle | IN_PROGRESS | End-to-end demo and fault suite pass with reconciled exposure |
+| S7 | Operable release: controls, deployment and recovery | IN_PROGRESS | Restore/restart/upgrade drills and dashboard evidence complete |
 | S8 | Evaluation and controlled live release | TODO | Evidence and explicit deployment mandate recorded |
 | S9 | Optional model-backed strategy support | DEFERRED | Added only after deterministic runtime is established |
 
@@ -626,3 +643,18 @@ Branch: `feature/demo_pending_order_lifecycle`. Status: IN_PROGRESS. Added durab
 ### Delivery F6.3 — implementation slice
 
 Branch: `feature/demo_protection_supervisor`. Status: IN_PROGRESS. Added opt-in demo protection supervisor with durable one-shot repair then owned-close requests, freshness and ownership gates, restart deduplication and no assumed closure. 106 tests and 4 subtests pass. Service activation and actual demo recovery await S5 qualification. Feature commit: `git log --all --grep="F6.3:"`.
+
+### Delivery S5–S7 — release integration review (2026-10-16)
+
+Branch: `feature/release_integration_review`. Added explicit verified hedged-account capability gating; netted accounts need a separate ownership adapter. Updated README and the handoff/remaining-work matrix to distinguish implemented components from incomplete stage acceptance.
+
+Observed final local checks:
+
+- Runtime, test, gateway-check and gateway Docker targets built successfully on local ARM64 Linux containers.
+- Installed gateway-check image: **107 passed, 4 subtests passed**.
+- Installed base/test image: **98 passed, 7 SDK-dependent skips, 4 subtests passed**. The gateway image exercises those SDK paths.
+- Resolved paper Compose isolation audit: **PASS**, five services. Shadow analysis Compose configuration validation: **PASS** using placeholder paths/account, without opening a broker session.
+- Docker restart drill: **PASS**; core killed with open exposure, workers and simulator restarted, same two command IDs closed, both instances READY at cursor 4, zero positions/reservations/rejections. Only the generated test project's volumes were removed.
+- Earlier measured backup/restore and 60-second soak evidence remains in `docs/evidence/s7-local-drills.json`; not rerun without relevant changes. Browser visual acceptance and remote-host qualification remain unverified.
+
+No actual broker session or trade was run. S5/S6/S7 remain IN_PROGRESS; F6.4 remains BLOCKED. The next required gate is read-only provider qualification with local credential files and an explicit demo account. The integrated demo service must subsequently be implemented against those verified contracts, then tested under explicit demo-order authorization. Do not mark these stages complete or enable real orders based on synthetic tests. Publication/CI results are recorded separately after observing them.

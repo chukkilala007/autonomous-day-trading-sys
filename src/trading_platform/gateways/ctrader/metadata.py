@@ -3,7 +3,7 @@ from typing import Literal
 from trading_platform.contracts.values import Record, Name, Time, canonical, digest
 from pydantic import Field, model_validator
 
-REQUIRED=frozenset(('symbol_id','tick_grid','volume_grid','candle_basis','session_state',
+REQUIRED=frozenset(('account_type','symbol_id','tick_grid','volume_grid','candle_basis','session_state',
     'contract_value','commission','currency_conversion','margin','protection_sides','order_types','expiry'))
 
 

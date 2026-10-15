@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-16",
+  "scope": "local ARM64 Docker Desktop Linux containers; no actual broker qualification",
+  "installed_gateway_suite": {
+    "passed": 107,
+    "subtests_passed": 4
+  },
+  "installed_base_suite": {
+    "passed": 98,
+    "skipped": 7,
+    "subtests_passed": 4
+  },
+  "paper_isolation": "PASS",
+  "shadow_compose_validation": "PASS",
+  "restart": {
+    "result": "PASS",
+    "drill": "core SIGKILL with open exposure; worker and simulator restart",
+    "status": {
+      "instances": [
+        {
+          "id": "tpr1",
+          "cursor": 4,
+          "status": "READY",
+          "halt": null
+        },
+        {
+          "id": "timer_fixture",
+          "cursor": 4,
+          "status": "READY",
+          "halt": null
+        }
+      ],
+      "orders": [
+        {
+          "id": "741f5c7f1b76f11fdf434199aa6129420515bc92a163223b8df33330999beac2",
+          "instance": "tpr1",
+          "status": "CLOSED"
+        },
+        {
+          "id": "c4ab9f2dc0879b0112ea7cb1e491fcc5e6323350e0d21e4016734bfa7d287ef2",
+          "instance": "timer_fixture",
+          "status": "CLOSED"
+        }
+      ],
+      "positions": [],
+      "active_risk": [],
+      "rejections": []
+    }
+  }
+}

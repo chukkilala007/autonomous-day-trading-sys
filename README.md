@@ -29,7 +29,9 @@ The default stack has no external network, published ports, real broker endpoint
 
 The [implementation tracker](docs/implementation-plan.md) records feature status, test evidence, limitations and the next concrete action. Each implemented feature has its own `feature/<name>` branch merged into `develop` after passing tests. See [repository working instructions](AGENTS.md).
 
-S5 is next: cTrader authentication, provider capability verification, market data and read-only account reconciliation. Real broker execution, an operator dashboard and production qualification remain future stages.
+S5–S7 implementation slices add a demo read-only gateway and isolated shadow workers, capability-gated demo transport and recovery components, authenticated dashboard/controls, hardened images, and paper backup/restore tooling. **S5–S7 are not qualified for autonomous broker trading.** Actual provider evidence, the integrated demo core adapter, authorized demo lifecycle tests and intended-host release checks remain open in the tracker.
+
+See [provider setup](docs/evidence/provider-contract.md) for the separate read-only shadow Compose project, and [operations](deploy/operations.md) for the optional dashboard (`docker compose --profile ui up --build -d`), controls, backup and recovery. The demo order components are tested with fake transport; no enabled demo or live trading service is shipped.
 
 ## Layout
 
@@ -47,7 +49,7 @@ S5 is next: cTrader authentication, provider capability verification, market dat
 | `tests/` | Contracts, causality, risk, execution and crash recovery |
 | `docs/` | Design, implementation tracker and decisions |
 
-The gateway and observability directories are future implementation boundaries. The gateway dependency spike verifies imports, not an authenticated broker integration.
+The gateway contains TLS/authentication, normalized history/stream data, read-only snapshot RPC and opt-in demo execution components. Observability includes durable alerts; `api/` provides authenticated status and controls. Tests distinguish synthetic transport evidence from actual broker qualification.
 
 ## Design and extension
 
