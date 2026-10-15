@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 feature commits on develop; locate F1.1–F4.6 with git log --all --grep |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | F7.1 |
-| Next concrete action | Continue F7.1; preserve pending external acceptance gates |
+| Next feature | F7.2 |
+| Next concrete action | Continue F7.2; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation only; two strategies, shared risk, protected entries/exits and reconciliation. No real broker orders or credentials |
@@ -346,7 +346,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 ## S7 — operations, user controls and release readiness
 
-### F7.1 — Status API and read-only dashboard — TODO
+### F7.1 — Status API and read-only dashboard — IN_PROGRESS
 
 **Depends on:** F4.6; real-broker panels also depend on F5.4. **Code:** new `api/` and dashboard boundary, `observability/`.
 
@@ -598,3 +598,7 @@ Branch: `feature/demo_uncertainty_recovery`. Status: IN_PROGRESS. Added conserva
 ### Delivery F6.4 — implementation slice
 
 Branch: `feature/demo_qualification`. Status: BLOCKED. Added immutable qualification reporting that distinguishes actual demo evidence from deterministic faults and refuses incomplete qualification. 94 tests and 4 subtests pass. Actual demo suite BLOCKED on credentials and explicit order-test authorization. Feature commit: `git log --all --grep="F6.4:"`.
+
+### Delivery F7.1 — implementation slice
+
+Branch: `feature/status_dashboard`. Status: IN_PROGRESS. Added authenticated status/evidence API, separate no-database dashboard and loopback UI profile. 95 tests and 4 subtests pass; installed API verified two closed orders and stale-data label. Browser visual acceptance pending: both available browser runtimes failed to attach. Feature commit: `git log --all --grep="F7.1:"`.
