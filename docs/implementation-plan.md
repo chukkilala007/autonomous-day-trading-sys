@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | `578b26a145db099bc11252169ebad3fb0e6c8896` — scaffold, Docker validation and CI definition |
 | Completed stage | S0: repository scaffold |
 | Current implementation work | Sequential feature implementation through S4 |
-| Next feature | F1.2 |
-| Next concrete action | Implement and verify F1.2 using its feature branch and acceptance criteria |
+| Next feature | F1.3 |
+| Next concrete action | Implement and verify F1.3 using its feature branch and acceptance criteria |
 | Next milestone | S1 gate: tested typed contracts, configuration and package registry |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | No broker integration, credentials, open-trade management or live execution in this implementation |
@@ -105,7 +105,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** clean image build resolves the lock without drift; package CLI works from its installed entry point; tests run with no broker secrets; CI exercises the same image path. Record which CPU architectures were actually tested. Provider account access is not required for dependency import checks.
 
-### F1.2 — Shared value and event contracts — TODO
+### F1.2 — Shared value and event contracts — DONE
 
 **Depends on:** F1.1. **Code:** `contracts/values.py`, `events.py`, `snapshots.py`; `tests/contract/`.
 
@@ -471,3 +471,7 @@ Feature headings and the delivery ledger record completion; stage gates require 
 ### Delivery F1.1
 
 Status: DONE. Branch: `feature/toolchain_baseline`. Lock Python dependencies and verify Docker core and TLS gateway imports Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.1"`).
+
+### Delivery F1.2
+
+Status: DONE. Branch: `feature/value_event_contracts`. Validate immutable exact values and causal event snapshots; 11 container tests pass Tests passed before this commit. Commit reference: this feature commit (locate with `git log --all --grep="F1.2"`).
