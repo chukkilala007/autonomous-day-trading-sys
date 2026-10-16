@@ -70,7 +70,9 @@ class DemoAPI:
         if op=='recover':
             from .supervisor import ProtectionSupervisor
             supervisor=ProtectionSupervisor(self.gateway,self.ledger)
-            observed=utc(self.valuation()['observed_at']);actions={}
+            view=self.view()
+            if any(b in view['blockers'] for b in ('UNVERIFIED_VALUATION','INCOMPLETE_HISTORY')): raise ValueError('verified reconciliation required')
+            observed=utc(view['observed_at']);actions={}
             for row in self.gateway.db.connection.execute("SELECT id FROM checkpoints WHERE id LIKE 'broker-position:%'").fetchall():
                 pid=row['id'].split(':',1)[1]
                 actions[pid]=supervisor.step(pid,body['core_id'],body['epoch'],self.now(),observed)
@@ -90,6 +92,8 @@ class DemoAPI:
             quote=Quote.model_validate_json(json.dumps(raw))
             result=yield self.gateway.send(command,body['core_id'],body['epoch'],self.reports[symbol],quote,now,utc(view['observed_at']))
         else:
+            view=self.view()
+            if any(b in view['blockers'] for b in ('DISCONNECTED','UNVERIFIED_VALUATION','INCOMPLETE_HISTORY')): raise ValueError('fresh verified reconciliation required')
             original=Management.model_validate_json(json.dumps(command['body']['decision']['proposal']))
             projected=self.projection.read('projection:'+original.target_id)
             send=self.projection.read('gateway-send:'+original.target_id)
