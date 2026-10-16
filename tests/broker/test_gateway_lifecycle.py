@@ -103,3 +103,36 @@ def test_rpc_lifecycle_start_stop_drains_threads(tmp_path):
     ''')
     completed=subprocess.run([sys.executable,'-c',code],capture_output=True,text=True,timeout=15)
     assert completed.returncode==0,completed.stderr
+
+
+def test_stopping_inflight_poll_drains_without_publishing(tmp_path):
+    with Database(tmp_path/'db') as db:
+        service,bundle,calls=setup(db);pending=Deferred()
+        service.provider.reconcile=lambda **_:pending
+        running=service.poll();drained=[]
+        service.drained.addCallback(lambda _:drained.append(True))
+        service.stop()
+        assert service.busy and not drained
+        pending.callback(bundle)
+        assert not result(running)
+        assert drained==[True] and not service.busy
+        with pytest.raises(ValueError): service.valuation()
+
+
+def test_shutdown_timeout_does_not_hide_undrained_provider(tmp_path):
+    from twisted.internet.task import Clock
+    from twisted.internet.defer import TimeoutError
+    from trading_platform.gateways.ctrader.lifecycle import RunningGateway
+    with Database(tmp_path/'db') as db:
+        service,bundle,calls=setup(db);pending=Deferred()
+        service.provider.reconcile=lambda **_:pending
+        service.session.client=SimpleNamespace(stopService=lambda:succeed(None))
+        running_poll=service.poll();clock=Clock()
+        server=SimpleNamespace(serve_forever=lambda:None,server_close=lambda:None)
+        runner=RunningGateway(service,server,clock);failures=[]
+        runner.stop().addErrback(failures.append)
+        clock.advance(20)
+        assert failures and failures[0].check(TimeoutError)
+        assert service.busy and db.connection.execute('SELECT 1').fetchone()
+        pending.callback(bundle)
+        assert not result(running_poll)

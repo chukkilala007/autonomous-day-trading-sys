@@ -718,3 +718,7 @@ Branch: `feature/gateway_lifecycle`. **DONE** for injected-provider lifecycle. A
 ### Delivery F7.3a — reproducible paper release handoff (2026-10-16)
 
 Branch: `feature/offline_release_bundle`. **DONE** for offline packaging tooling. Added committed-source allowlist, exact Git revision and SHA256 file manifest, immutable image override, clean-tree/exclusive-destination checks and verification against tampering, extra files, traversal, symlinks and incomplete output. Docker targeted tests: **6 passed**. Bundles explicitly remain paper-only and do not claim registry publication; only public fixture tokens included. Real registry/host/backup destinations still required for external acceptance.
+
+### Delivery F6.3c — bounded shutdown drain (2026-10-16)
+
+Branch: `feature/gateway_shutdown_drain`. **DONE**. Shutdown waits for in-flight provider reconciliation before storage can close; the observation remains invalid. A 20-second timeout fails shutdown explicitly and preserves database ownership. **11 lifecycle tests passed**, including stale collection rejection, real RPC/reactor shutdown, successful drain and stalled-provider timeout. Next: installed-image regression, tracker handoff and publication.
