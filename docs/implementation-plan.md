@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 complete; S5–S7 implementation slices merged locally; see delivery ledger and remaining-work matrix below |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | encrypted_secret_recovery |
-| Next concrete action | Continue encrypted_secret_recovery; preserve pending external acceptance gates |
+| Next feature | demo_integration_hardening |
+| Next concrete action | Continue demo_integration_hardening; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Default paper stack; separate demo read-only collector available. No real broker order placed; no enabled demo/live executor service |
@@ -670,3 +670,7 @@ Branch: `feature/demo_core_adapter`. Status: IN_PROGRESS. Implemented bound demo
 ### Delivery F6.3 — implementation slice
 
 Branch: `feature/demo_service_wiring`. Status: IN_PROGRESS. Wired authenticated demo TCP server, reactor dispatch factory, isolated core service cycles and recovery supervisor calls. Full offline lifecycle now crosses real framed TCP; wrong token and stale fence rejected. 112 tests and 4 subtests pass. No enabled real-order launcher or broker connection was used. Feature commit: `git log --all --grep="F6.3:"`.
+
+### Delivery F7.4 — implementation slice
+
+Branch: `feature/encrypted_secret_recovery`. Status: IN_PROGRESS. Added offline AES-256-GCM secret archives with separate keys, private regular-file checks, authenticated restore before plaintext creation and exclusive destinations. 114 tests and 4 subtests pass; tests used synthetic secrets only. Actual off-host/key recovery remains outside current offline scope. Feature commit: `git log --all --grep="F7.4:"`.
