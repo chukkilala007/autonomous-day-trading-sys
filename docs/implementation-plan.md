@@ -10,16 +10,16 @@ This is the go-to document for **what exists, what comes next, how to implement 
 |---|---|
 | Verified implementation baseline | S1–S4 complete; additional S5–S7 offline integration delivered on feature branches; see latest ledger |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
-| Current implementation work | Outstanding offline implementation delivered and verified; actual trading remains disabled |
-| Next feature | External provider/host qualification only after a new explicit mandate; see remaining-work matrix |
-| Next concrete action | Review offline delivery evidence and preserve disabled broker execution; do not request/use credentials under the current offline-only scope |
+| Current implementation work | Provider-independent valuation inputs, disabled gateway lifecycle/drain and reproducible paper release bundle delivered; actual trading disabled |
+| Next feature | Broker-specific economics/history mapper and provider qualification when demo account is available; external release checks when destinations are selected |
+| Next concrete action | Preserve disabled orders. Await broker account plus registry/Linux host/encrypted backup destination; visual acceptance needs a working browser connection |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation and deterministic demo-protocol tests only; no actual broker connection or order |
 | External inputs | None required for completed offline scope. Future actual integration needs authorized credentials/account, audited provider economics, intended host and backup destination |
-| Known limitations | Actual valuation/settlement exporter and gateway activation require provider qualification; UI visual check blocked by browser tooling; no intended-host or off-host restore performed |
-| Verification evidence | Installed gateway: 115 tests + 4 subtests; base: 102 tests, 10 skips + 4 subtests; restart/restore/isolation pass. Prior develop CI 38824095895 passed AMD64/ARM64 |
-| Uncommitted implementation | None intended after offline_release_evidence merge; inspect git status on resume |
+| Known limitations | Strict economics input exporter and disabled lifecycle assembly exist; raw provider economics/history mapping and qualification still pending. UI visual blocked; no registry/host/off-host deployment |
+| Verification evidence | Installed gateway: 144 tests + 4 subtests. Actual Git-source bundle build/verify passed with placeholder image digest. Previous restart/restore evidence retained. Previous develop CI 38855042847 passed; new CI recorded separately |
+| Uncommitted implementation | None intended after offline_completion_handoff merge; inspect git status on resume |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -31,7 +31,7 @@ Future handoffs must name the active feature, changes already made, exact failin
 | F5.2 | Exact unit normalization, expiring account-bound evidence, hedged-account gate | Broker-specific tick/basis/session/fees/conversion/margin/protection and account-type audit |
 | F5.3 | Durable causal feed, gap/revision checks, bounded history pagination | Actual streaming/backfill checks (incremental overlap and generation-scoped subscription implemented offline) |
 | F5.4 | Separate gateway/core/workers, authenticated read-only snapshot RPC, zero order path | Actual shadow run with complete required history and evidence/lag checks |
-| F6.1–F6.3 | Fencing, uncertain-send persistence, order/position ledger, owned cancel/close/protect, recovery supervisor | Offline core/outbox adapter, TCP controller, service loop and settlement-gated reconciliation implemented. Actual account-specific valuation/settlement exporter, authorized gateway activation and broker acceptance still required |
+| F6.1–F6.3 | Fencing, uncertain-send persistence, order/position ledger, owned cancel/close/protect, recovery supervisor | Offline core/outbox adapter, TCP controller, service loop and settlement-gated reconciliation implemented. Strict valuation input exporter and disabled lifecycle assembly now delivered (F5.2a/F6.3b/c). Raw broker economics/history mapping, authorized activation and broker acceptance still required |
 | F6.4 | Fail-closed qualification report and deterministic faults | Explicit demo-test authorization plus actual lifecycle, cancellation-race, protection and reconnect evidence |
 | F7.1 | Authenticated API, dashboard proxy, stale labels, evidence links | Browser visual acceptance (available browser tools failed) and actual broker panel attribution |
 | F7.2 | Tested paper pause/resume/owned flatten, deduplicated local alerts | DONE for delivered paper controls; demo wiring belongs to pending F6 service integration |
@@ -48,7 +48,7 @@ Offline subfeatures delivered under that mandate:
 - **F6.3a DONE:** core service cycle, authenticated TCP boundary, reactor dispatch factory and recovery-supervisor calls, exercised offline. No real-order launcher enabled.
 - **F7.4a DONE:** encrypted secret archive/restore with synthetic-secret tamper, wrong-key, private-file and overwrite-refusal tests.
 
-Parent stages remain open because their original acceptance gates include actual broker/host evidence. The remaining visual dashboard check failed due browser runtime/tool connection problems; it is not claimed passed.
+Parent stages remain open because their original acceptance gates include actual broker/host evidence. The remaining visual dashboard check is unverified due browser runtime/tool connection problems; retry on 2026-10-16 still found the native dependency mismatch and no alternate connected browser. It is not claimed passed.
 
 ## Resume procedure
 
@@ -722,3 +722,17 @@ Branch: `feature/offline_release_bundle`. **DONE** for offline packaging tooling
 ### Delivery F6.3c — bounded shutdown drain (2026-10-16)
 
 Branch: `feature/gateway_shutdown_drain`. **DONE**. Shutdown waits for in-flight provider reconciliation before storage can close; the observation remains invalid. A 20-second timeout fails shutdown explicitly and preserves database ownership. **11 lifecycle tests passed**, including stale collection rejection, real RPC/reactor shutdown, successful drain and stalled-provider timeout. Next: installed-image regression, tracker handoff and publication.
+
+
+### Delivery — credential-independent follow-up handoff (2026-10-16)
+
+Branch: `feature/offline_completion_handoff`. User requested all remaining work without broker credential dependencies. Completed on separately tested branches and merged to develop:
+
+- F5.2a: strict provider-independent valuation/settlement input exporter, commit `328f7c2`.
+- F6.3b: disabled gateway assembly, SDK callbacks, reconnect/history and observation race handling, commit `4679c8d`.
+- F7.3a: reproducible paper release packaging and verification, commit `9788e90`. Also built and verified a bundle using actual committed Git blobs on the host; image digest deliberately a placeholder, not a publication claim.
+- F6.3c: bounded in-flight shutdown draining, commit `205aa99`.
+
+Final installed gateway image: **144 tests and 4 subtests passed**, network disabled. Installed base image: **120 passed, 11 dependency-related skips, 4 subtests passed**; gateway suite covers those paths. Resolved Compose isolation audit: **PASS**, five services. Browser skill retry failed on bundled native dependency ABI mismatch; alternate browser inventory contained only in-app browser and MCP Apps. Visual acceptance remains unverified. Previous successful CI `38855042847` is baseline evidence, not evidence for these new commits. New push/CI reported separately.
+
+Remaining work is explicit: implement and qualify the selected broker's raw economics/history exporter; connect/read-only qualification; authorized actual demo lifecycle/fault tests; working-browser visual acceptance; selected registry publication, clean Linux-host deployment/soak, and off-host recovery. Registry/host/backup destinations requested asynchronously; none assumed. S5/S6/S7 remain IN_PROGRESS, F6.4 BLOCKED; S8 outside current scope. No actual broker session/order, registry image publication, remote host deployment or off-host secret transfer occurred.
