@@ -53,3 +53,32 @@ def test_stream_history_incompleteness_and_foreign_quotes(tmp_path):
         errors=[];stream.repair().addErrback(lambda e:errors.append(e))
         assert errors and not stream.feed.get('coverage:X')['repaired']
         with pytest.raises(ValueError): stream.on_spot({'ctidTraderAccountId':'13','symbolId':'1'})
+
+
+def test_incremental_overlap_and_reconnect_full_backfill(tmp_path):
+    import pytest
+    pytest.importorskip('ctrader_open_api')
+    from twisted.internet.defer import succeed
+    from trading_platform.gateways.ctrader.stream import Stream
+    requests=[];clock=[T]
+    class Session:
+        generation=1;ready=True;account_id=12
+        def read(self,name,**fields):
+            requests.append((name,fields))
+            rows=[]
+            if 'fromTimestamp' in fields:
+                rows=[dict(utcTimestampInMinutes=str(n),low='100000',deltaOpen='0',deltaHigh='0',deltaClose='0') for n in range(fields['fromTimestamp']//60000,fields['toTimestamp']//60000)]
+            return succeed({'ctidTraderAccountId':'12','hasMore':False,'trendbar':rows})
+    with Database(tmp_path/'db') as db:
+        session=Session();stream=Stream(session,Feed(db),{'X':1},[('X','bid',1,100)],lambda:clock[0])
+        errors=[];stream.repair().addErrback(errors.append)
+        first=requests[-1][1]['fromTimestamp']
+        clock[0]+=timedelta(seconds=10);stream.repair().addErrback(errors.append)
+        assert not errors
+        assert sum(name=='ProtoOASubscribeSpotsReq' for name,_ in requests)==1
+        assert requests[-1][1]['fromTimestamp']==int((T-timedelta(minutes=2)).timestamp()*1000)
+        assert requests[-1][1]['fromTimestamp']>first
+        session.generation+=1;stream.repair().addErrback(errors.append)
+        assert sum(name=='ProtoOASubscribeSpotsReq' for name,_ in requests)==2
+        assert requests[-1][1]['fromTimestamp']==int((clock[0]-timedelta(minutes=102)).timestamp()*1000)
+        assert not stream.feed.snapshot(clock[0],[('X','bid',1,100)]).coverage_complete
