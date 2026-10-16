@@ -10,16 +10,16 @@ This is the go-to document for **what exists, what comes next, how to implement 
 |---|---|
 | Verified implementation baseline | S1–S4 complete; additional S5–S7 offline integration delivered on feature branches; see latest ledger |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
-| Current implementation work | Provider-independent valuation inputs, disabled gateway lifecycle/drain and reproducible paper release bundle delivered; actual trading disabled |
+| Current implementation work | Sandbox intake, raw account economics, read-only probe, deal settlement and provider history integration implemented; targeted tests pass; actual connection not yet run |
 | Next feature | Broker-specific economics/history mapper and provider qualification when demo account is available; external release checks when destinations are selected |
-| Next concrete action | Preserve disabled orders. Await broker account plus registry/Linux host/encrypted backup destination; visual acceptance needs a working browser connection |
+| Next concrete action | Restore automatic approval capacity, run full Docker regressions and read-only sandbox probe using private prepared credentials; preserve disabled orders |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Paper simulation and deterministic demo-protocol tests only; no actual broker connection or order |
-| External inputs | None required for completed offline scope. Future actual integration needs authorized credentials/account, audited provider economics, intended host and backup destination |
+| External inputs | Application and sandbox tokens now found and privately prepared. Tool approval usage limit blocks Docker/network validation. Account discovery, provider economics qualification, intended host and backup destination remain |
 | Known limitations | Strict economics input exporter and disabled lifecycle assembly exist; raw provider economics/history mapping and qualification still pending. UI visual blocked; no registry/host/off-host deployment |
 | Verification evidence | Installed gateway: 144 tests + 4 subtests. Actual Git-source bundle build/verify passed with placeholder image digest. Previous restart/restore evidence retained. Previous develop CI 38855042847 passed; new CI recorded separately |
-| Uncommitted implementation | None intended after offline_completion_handoff merge; inspect git status on resume |
+| Uncommitted implementation | See latest sandbox handoff and git status; local feature commits await push while automatic approval is unavailable |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -752,3 +752,15 @@ Branch: `feature/sandbox_readonly_probe`. DONE for tooling; actual run blocked b
 ### Delivery F6.2b — raw deal settlement mapping (2026-10-16)
 
 Branch: `feature/ctrader_settlement_mapping`. DONE for audited-profile mapping. Added raw deal-to-settlement normalization with original entry binding, exact lifecycle quantities, opening/closing fees, explicit fee signs and no double-counted closing commission. Missing cost fields, partial history, scale-ins, duplicate deals, foreign/expired policies reject. **10 Docker tests passed**. Actual fee convention/profile qualification remains blocked on application credentials and broker evidence; no guessed policy or orders enabled. Next: connect raw provider history/economics to the existing lifecycle.
+
+### Delivery F6.3d — provider history/lifecycle integration (2026-10-16)
+
+Branch: `feature/ctrader_provider_reconciliation`. Implemented raw bounded history, original-order matching, external exposure detection, settlement-backed closure, pending-remainder rejection and ledger-before-settlement checkpoint ordering. Targeted provider and lifecycle Docker checks: **14 passed**. Actual provider acceptance and broader installed-image regression remain pending.
+
+### Current sandbox handoff — approval service blocked (2026-10-16)
+
+The user supplied the repository directory as the application-credential location. Found `CtraderInt.rtf`; parsed the application ID/secret locally without displaying values. Both it and `Sandbox.rtf` are 0600 and excluded from Git/Docker builds. Private combined credentials are prepared at `var/sandbox-private/credentials.json`; application-only JSON is beside it. Do not print these files, commit them, include them in build contexts, or overwrite future rotated tokens with the old document. Copied relative token expiry forces refresh. No broker connection or order has occurred.
+
+The next Docker validation command was rejected before execution because automatic approval review hit its usage limit. The error explicitly said this was a review failure, not a safety determination. Do not bypass that gate. An already-running provider/lifecycle test completed with 14 passes. A proposed additional cache-restart test command was not executed; no claim is made that it passed.
+
+Next actions after approval capacity is restored: run full gateway/base Docker regressions, build the gateway image, invoke the read-only probe with private mounts and exclusive output/rotation paths, discover and bind the actual demo account (ask selection only if multiple), inspect actual metadata/economics, qualify contract and fee profiles, complete streaming/reconnect/shadow and provider integration acceptance. Orders remain disabled; actual demo lifecycle tests still need explicit authorization superseding the earlier no-orders instruction. Push the tested feature/develop commits and inspect CI. Registry/host/off-host destinations remain separate pending inputs.

@@ -79,6 +79,8 @@ class Lifecycle:
             recovery=DemoRecovery(self.ledger.db,self.session.account_id)
             recovery.reconcile({'ctidTraderAccountId':str(self.session.account_id),'order':list(orders.values())},history_complete=True)
             for event in events: self.ledger.apply(event)
+            checkpoint=getattr(self.provider,'checkpoint',None)
+            if checkpoint is not None: checkpoint(bundle)
             self.observation=bundle['valuation']; self.generation=generation; self.reason=None
             return True
         except Exception:

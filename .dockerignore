@@ -12,3 +12,6 @@ dist
 
 # Local broker credential documents; never commit or send to Docker builds.
 [Ss]andbox*
+
+# Local application credentials.
+[Cc]traderInt*
