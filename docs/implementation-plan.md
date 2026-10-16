@@ -740,3 +740,7 @@ Remaining work is explicit: implement and qualify the selected broker's raw econ
 ### Delivery F5.1a — sandbox credential intake (2026-10-16)
 
 Branch: `feature/sandbox_provider_qualification`. User now authorizes sandbox credential use for dependent implementation/read-only qualification. Actual orders remain disabled under the earlier explicit instruction. Found untracked `Sandbox.rtf`, restricted it to 0600 and excluded Sandbox documents from Git and Docker context. No secret values printed or committed. Added private credential import with synthetic tests; copied relative expiry forces refresh rather than inventing an issuance time. Actual connection currently blocked: document contains access/refresh tokens but no application client ID/client secret. Requested only the local application-credential path. Continue account economics and qualification tooling while awaiting it.
+
+### Delivery F5.2b — raw cTrader account economics (2026-10-16)
+
+Branch: `feature/ctrader_account_economics`. DONE for the supported protocol mapping. Added exact deposit-currency balance, server net unrealized P&L, summed used margin and conservative free margin. Supports HEDGED/SUM/no-bonus profile only; other account profiles remain blocked. Bracketed collection rejects changed account records, stale timing, reconnect races and incomplete P&L. Targeted Docker tests: **16 passed** including session gates. Actual account mapping remains unqualified until application credentials are available. Next: read-only discovery/qualification runner and provider settlement mapping.
