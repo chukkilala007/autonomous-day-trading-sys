@@ -1,0 +1,236 @@
+{
+  "evidence_hash": "ebec852ae71c3386a71a2d04190b43d1986a6e3f2a5a23e52d15ad67b9c6f585",
+  "observed_at": "2026-10-16T23:00:08.637537+00:00",
+  "orders_enabled": false,
+  "qualification_complete": false,
+  "symbols": {
+    "EURUSD": {
+      "candle_samples": [
+        {
+          "hashes": {
+            "ask": "cb02e5f7d9a001278dfa0b6e470225c647d6a025e8b7bcd411ac52f09de78009",
+            "bid": "a6bd62cd416ddb84e45d56ead5ae06bb05a340c8b0fb325e82d703991043bd9f"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29869737,
+          "tick_counts": {
+            "ask": 70,
+            "bid": 67
+          }
+        },
+        {
+          "hashes": {
+            "ask": "7af2b1ccedadd282b9f80e1da7d1499a4b3fdb3cb9d5b5be57606f96ac5875f9",
+            "bid": "289884d1b9ab49763d4850530f464fca7653752c14da75d61edc250a31e21cb1"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29869738,
+          "tick_counts": {
+            "ask": 71,
+            "bid": 66
+          }
+        },
+        {
+          "hashes": {
+            "ask": "914d2eb5d35f4db2f402e4757a24443566133cf7f58195bc9698a0166d737080",
+            "bid": "0013a294ad2dd85ed91746957e6d48931b466a871083c24070677be39a54b1a7"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29869739,
+          "tick_counts": {
+            "ask": 46,
+            "bid": 40
+          }
+        }
+      ],
+      "capability": {
+        "environment": "demo",
+        "evidence": [
+          {
+            "classification": "demo_observed",
+            "field": "account_type",
+            "observed_at": "2026-10-16T23:00:08.637537Z",
+            "source": "demo_metadata_and_tick_audit",
+            "valid_until": "2026-10-17T23:00:08.637537Z",
+            "value": "HEDGED"
+          },
+          {
+            "classification": "demo_observed",
+            "field": "symbol_id",
+            "observed_at": "2026-10-16T23:00:08.637537Z",
+            "source": "demo_metadata_and_tick_audit",
+            "valid_until": "2026-10-17T23:00:08.637537Z",
+            "value": "1"
+          },
+          {
+            "classification": "demo_observed",
+            "field": "volume_grid",
+            "observed_at": "2026-10-16T23:00:08.637537Z",
+            "source": "demo_metadata_and_tick_audit",
+            "valid_until": "2026-10-17T23:00:08.637537Z",
+            "value": "{'minVolume': '1000', 'maxVolume': '50000000', 'stepVolume': '1000'}"
+          },
+          {
+            "classification": "demo_observed",
+            "field": "candle_basis",
+            "observed_at": "2026-10-16T23:00:08.637537Z",
+            "source": "demo_metadata_and_tick_audit",
+            "valid_until": "2026-10-17T23:00:08.637537Z",
+            "value": "bid"
+          }
+        ],
+        "symbol": "EURUSD"
+      },
+      "execution_blockers": [
+        "commission",
+        "contract_value",
+        "currency_conversion",
+        "expiry",
+        "margin",
+        "order_types",
+        "protection_sides",
+        "session_state",
+        "tick_grid"
+      ],
+      "observed_metadata": {
+        "commissionType": "USD_PER_MILLION_USD",
+        "digits": 5,
+        "distanceSetIn": "SYMBOL_DISTANCE_IN_POINTS",
+        "leverageId": "1129",
+        "lotSize": "10000000",
+        "minCommissionAsset": "USD",
+        "minCommissionType": "CURRENCY",
+        "pnlConversionFeeRate": 0,
+        "preciseMinCommission": "0",
+        "preciseTradingCommissionRate": "3500000000",
+        "slDistance": 0,
+        "tpDistance": 0,
+        "tradingMode": "ENABLED"
+      },
+      "read_only_basis": "bid"
+    },
+    "XAUUSD": {
+      "candle_samples": [
+        {
+          "hashes": {
+            "ask": "ee82c7819b8498ba7bbcacd77a206839d295ee804e00d37123819002b4c68ef6",
+            "bid": "34e02f012ebda46b01750aacfe3cd8b06d7016660665a8b6ea770b7ef35c512d"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29869737,
+          "tick_counts": {
+            "ask": 144,
+            "bid": 143
+          }
+        },
+        {
+          "hashes": {
+            "ask": "3e987a9f7f5ed934538431c61fb49dffd252bea91372370bcb2fdc7fa069f51d",
+            "bid": "25b79532590226e412307cd35e100eee58e0ada1f5a52009fc8fbfaf30c3fac9"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29869738,
+          "tick_counts": {
+            "ask": 79,
+            "bid": 78
+          }
+        },
+        {
+          "hashes": {
+            "ask": "75e020ea3b9aeb2ed828128b24e3324144c0dbd051accd6b6cb8c24065719c45",
+            "bid": "8e5f5ea35d4f1b9ff8f6eac48fc86f5144e6c9445d42b44eab69b2850ef988b3"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29869739,
+          "tick_counts": {
+            "ask": 79,
+            "bid": 81
+          }
+        }
+      ],
+      "capability": {
+        "environment": "demo",
+        "evidence": [
+          {
+            "classification": "demo_observed",
+            "field": "account_type",
+            "observed_at": "2026-10-16T23:00:08.637537Z",
+            "source": "demo_metadata_and_tick_audit",
+            "valid_until": "2026-10-17T23:00:08.637537Z",
+            "value": "HEDGED"
+          },
+          {
+            "classification": "demo_observed",
+            "field": "symbol_id",
+            "observed_at": "2026-10-16T23:00:08.637537Z",
+            "source": "demo_metadata_and_tick_audit",
+            "valid_until": "2026-10-17T23:00:08.637537Z",
+            "value": "41"
+          },
+          {
+            "classification": "demo_observed",
+            "field": "volume_grid",
+            "observed_at": "2026-10-16T23:00:08.637537Z",
+            "source": "demo_metadata_and_tick_audit",
+            "valid_until": "2026-10-17T23:00:08.637537Z",
+            "value": "{'minVolume': '1', 'maxVolume': '50000', 'stepVolume': '1'}"
+          },
+          {
+            "classification": "demo_observed",
+            "field": "candle_basis",
+            "observed_at": "2026-10-16T23:00:08.637537Z",
+            "source": "demo_metadata_and_tick_audit",
+            "valid_until": "2026-10-17T23:00:08.637537Z",
+            "value": "bid"
+          }
+        ],
+        "symbol": "XAUUSD"
+      },
+      "execution_blockers": [
+        "commission",
+        "contract_value",
+        "currency_conversion",
+        "expiry",
+        "margin",
+        "order_types",
+        "protection_sides",
+        "session_state",
+        "tick_grid"
+      ],
+      "observed_metadata": {
+        "commissionType": "USD_PER_MILLION_USD",
+        "digits": 2,
+        "distanceSetIn": "SYMBOL_DISTANCE_IN_POINTS",
+        "leverageId": "1130",
+        "lotSize": "10000",
+        "minCommissionAsset": "USD",
+        "minCommissionType": "CURRENCY",
+        "pnlConversionFeeRate": 0,
+        "preciseMinCommission": "0",
+        "preciseTradingCommissionRate": "3500000000",
+        "slDistance": 0,
+        "tpDistance": 0,
+        "tradingMode": "ENABLED"
+      },
+      "read_only_basis": "bid"
+    }
+  }
+}

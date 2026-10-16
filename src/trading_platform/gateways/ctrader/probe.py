@@ -94,6 +94,9 @@ def run(reactor,args):
             report['phase']=stage
             report.setdefault('evidence',{})[stage]=evidence
         result=yield collect(session,lambda:datetime.now(timezone.utc),args.symbols,progress)
+        if args.audit:
+            from .audit import collect as audit
+            result['capability_audit']=yield audit(session,result,lambda:datetime.now(timezone.utc))
         report=dict(result,status='COLLECTED')
     except Exception as error:
         # Only fixed local classifications are allowed into reports.
@@ -115,6 +118,7 @@ def main():
     p=argparse.ArgumentParser()
     for name in ('credentials','tokens','output'): p.add_argument('--'+name,required=True)
     p.add_argument('--account');p.add_argument('--symbols',nargs='+',default=['EURUSD','XAUUSD'])
+    p.add_argument('--audit',action='store_true')
     args=p.parse_args()
     # Startup validation errors are intentionally generic.
     try: TokenStore(args.credentials,args.tokens).read()
