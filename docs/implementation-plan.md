@@ -714,3 +714,7 @@ Branch: `feature/verified_valuation_inputs`. **DONE** for the provider-independe
 ### Delivery F6.3b — operational lifecycle assembly (2026-10-16)
 
 Branch: `feature/gateway_lifecycle`. **DONE** for injected-provider lifecycle. Added disabled-by-default component assembly, SDK execution callback persistence, cold/reconnect reconciliation, event/generation race invalidation, freshness checks, and RPC/reactor shutdown. Docker tests: **9 lifecycle tests passed**, including real reactor/thread shutdown; existing TCP demo integration also passed. No credential loader, enabled order deployment or raw broker economics/history mapper claimed. Next: reproducible offline release bundle and visual dashboard acceptance retry.
+
+### Delivery F7.3a — reproducible paper release handoff (2026-10-16)
+
+Branch: `feature/offline_release_bundle`. **DONE** for offline packaging tooling. Added committed-source allowlist, exact Git revision and SHA256 file manifest, immutable image override, clean-tree/exclusive-destination checks and verification against tampering, extra files, traversal, symlinks and incomplete output. Docker targeted tests: **6 passed**. Bundles explicitly remain paper-only and do not claim registry publication; only public fixture tokens included. Real registry/host/backup destinations still required for external acceptance.
