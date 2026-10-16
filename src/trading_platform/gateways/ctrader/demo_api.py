@@ -28,13 +28,15 @@ class DemoAPI:
         if str(value.get('account_id'))!=str(self.gateway.session.account_id) or value.get('mode')!='demo': raise ValueError('valuation identity')
         if not 0<=(now-utc(value['observed_at'])).total_seconds()<=2: raise ValueError('stale valuation')
         if not value.get('evidence_hash') or value.get('classification') not in ('broker_verified','demo_observed'): blockers.append('UNVERIFIED_VALUATION')
+        currency=value['account'].get('currency','')
+        if not isinstance(currency,str) or len(currency)!=3 or not currency.isupper(): raise ValueError('verified account currency required')
         for field in ('balance','equity','free_margin'):
             amount=Decimal(value['account'][field])
             if not amount.is_finite() or (field!='free_margin' and amount<=0): raise ValueError('invalid account valuation')
         if not self.gateway.session.ready: blockers.append('DISCONNECTED')
         if not value.get('history_complete'): blockers.append('INCOMPLETE_HISTORY')
         # External exposure has no strategy risk allocation. Conservatively block entries.
-        if value.get('external_exposure'): blockers.append('EXTERNAL_EXPOSURE')
+        if value.get('external_exposure') is not False: blockers.append('EXTERNAL_EXPOSURE_OR_UNKNOWN')
         blockers.extend(self.projection.refresh(value.get('settlements')))
         return dict(mode='demo',account_id=str(self.gateway.session.account_id),observed_at=value['observed_at'],
                     account=value['account'],events=[json.loads(e.model_dump_json()) for e in self.projection.events()],blockers=blockers,

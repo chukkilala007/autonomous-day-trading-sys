@@ -1,0 +1,27 @@
+# Demo integration boundary and offline evidence
+
+The current mandate is offline implementation/testing only. Default Compose remains paper. `compose.shadow.yaml` remains read-only. No actual broker orders were placed or enabled.
+
+## Delivered path
+
+`runtime.demo_service` loads explicit demo instances and isolated workers, locks its core database, obtains a gateway fence, reads fresh normalized snapshots/contracts, and runs the same strategy, portfolio risk and outbox pipeline as paper. `DemoBroker.tick` never simulates fills. `gateways.ctrader.demo_server` exposes authenticated framed RPC; `reactor_server` marshals controller operations onto the SDK reactor. `DemoAPI` accepts only the bound account/current fence and routes supported entries, owned management and recovery to the existing gateway components.
+
+`Projection` converts owned authoritative order/position records into durable core `BrokerEvent` records. Full order identity and broker position binding are required. An acknowledgement is not management completion. Missing settlement facts keep exposure/risk unresolved and inhibit new entries. Projection IDs/revisions survive restart; no blind resends are added. Partial cancellations do not imply closed positions.
+
+`tests/broker/test_demo_end_to_end.py` sends deterministic protobuf envelopes through actual authenticated TCP, then through the shared executor. It verifies accepted → filled → closed, zero risk release before settlement, no duplicate send, stale fencing, disabled authorization and unknown exposure. Other tests cover lost acknowledgement across core restart, management confirmation, cancellation/fill races and protection recovery. These are offline protocol fixtures, not provider qualification or performance evidence.
+
+## Provider inputs still required before actual deployment
+
+`DemoAPI` receives a `valuation()` callback returning an audited account-bound object with:
+
+- `mode: demo`, exact `account_id`, UTC `observed_at` no older than two seconds, evidence hash and classification (`broker_verified` or `demo_observed`).
+- `account`: exact decimal strings for balance, equity and free margin, plus verified three-letter account currency.
+- `history_complete`: completeness for the required reconciliation window; `external_exposure` must explicitly be false for new entries. Unknown/external exposure blocks entry allocation.
+- `contracts`: instrument-keyed strict `risk.sizing.Contract` records. Currency, tick/volume grid, contract value, conversion, commission/slippage allowance and margin require audited sources. The core-approved contract must still match at send time.
+- `settlements`: command-keyed verified net account-currency outcomes, with exact `position_id`, `complete: true` and evidence hash. Completeness must include all opening/closing deals, fees, swaps and conversion costs; a closing price alone is insufficient.
+
+Capability reports are independently account/symbol-bound, expiring and restricted to the initial hedged-account, protected-limit profile. Market/stop variants and netted allocation require separate verified extensions. The timer fixture therefore is not automatically executable on this initial demo profile.
+
+An actual provider exporter must be implemented/qualified against the selected broker's available metadata and economics; this code deliberately has no fabricated valuation or signed-cost fallback. Actual startup must also attach every SDK execution event to the durable ledger, perform cold/reconnect history reconciliation, wire the gateway RPC server on its private network, and confirm graceful shutdown. The reactor server factory and core loop are implemented; an authorized operational gateway bootstrap/configuration is intentionally not enabled under the offline mandate.
+
+Before actual qualification, record the provider evidence and configuration/package hashes, supply an explicit demo-test mandate and use a separate account-bound deployment/state directory. Never change the paper or shadow deployment into a mutating gateway merely to make an offline fixture pass. S5–S7 parent acceptance remains open until actual provider/host evidence exists.

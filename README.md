@@ -29,9 +29,9 @@ The default stack has no external network, published ports, real broker endpoint
 
 The [implementation tracker](docs/implementation-plan.md) records feature status, test evidence, limitations and the next concrete action. Each implemented feature has its own `feature/<name>` branch merged into `develop` after passing tests. See [repository working instructions](AGENTS.md).
 
-S5–S7 implementation slices add a demo read-only gateway and isolated shadow workers, capability-gated demo transport and recovery components, authenticated dashboard/controls, hardened images, and paper backup/restore tooling. **S5–S7 are not qualified for autonomous broker trading.** Actual provider evidence, the integrated demo core adapter, authorized demo lifecycle tests and intended-host release checks remain open in the tracker.
+S5–S7 implementation slices add a demo read-only gateway and isolated shadow workers, capability-gated demo transport and recovery components, authenticated dashboard/controls, hardened images, and paper backup/restore tooling. **S5–S7 are not qualified for autonomous broker trading.** The integrated demo core adapter and TCP lifecycle are tested offline. Actual provider evidence, an audited account-specific valuation/settlement source, authorized demo lifecycle tests and intended-host release checks remain open in the tracker.
 
-See [provider setup](docs/evidence/provider-contract.md) for the separate read-only shadow Compose project, and [operations](deploy/operations.md) for the optional dashboard (`docker compose --profile ui up --build -d`), controls, backup and recovery. The demo order components are tested with fake transport; no enabled demo or live trading service is shipped.
+See the [demo integration boundary](docs/demo-provider-boundary.md), [provider setup](docs/evidence/provider-contract.md) for the separate read-only shadow Compose project, and [operations](deploy/operations.md) for the optional dashboard (`docker compose --profile ui up --build -d`), controls, backup and recovery. The demo controller, shared risk/outbox runtime and service loop are tested with deterministic protobuf fixtures over authenticated TCP. No enabled real-order gateway launcher or live trading deployment is shipped. The current user mandate is offline testing only.
 
 ## Layout
 

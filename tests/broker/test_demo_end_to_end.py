@@ -73,6 +73,9 @@ def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(t
         assert not db.connection.execute("SELECT 1 FROM reservations WHERE status!='RELEASED'").fetchone()
         assert calls==['ProtoOANewOrderReq']
         assert executor.reconcile(broker) and calls==['ProtoOANewOrderReq']
+        del value['external_exposure']
+        assert 'EXTERNAL_EXPOSURE_OR_UNKNOWN' in broker.observe()['blockers']
+        value['external_exposure']=False
         value['observed_at']=(now-timedelta(seconds=3)).isoformat()
         with pytest.raises(ValueError): broker.call('recover')
         with pytest.raises(ValueError): broker.call('manage',command={})
