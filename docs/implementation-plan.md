@@ -744,3 +744,7 @@ Branch: `feature/sandbox_provider_qualification`. User now authorizes sandbox cr
 ### Delivery F5.2b — raw cTrader account economics (2026-10-16)
 
 Branch: `feature/ctrader_account_economics`. DONE for the supported protocol mapping. Added exact deposit-currency balance, server net unrealized P&L, summed used margin and conservative free margin. Supports HEDGED/SUM/no-bonus profile only; other account profiles remain blocked. Bracketed collection rejects changed account records, stale timing, reconnect races and incomplete P&L. Targeted Docker tests: **16 passed** including session gates. Actual account mapping remains unqualified until application credentials are available. Next: read-only discovery/qualification runner and provider settlement mapping.
+
+### Delivery F5.1b — sandbox read-only probe (2026-10-16)
+
+Branch: `feature/sandbox_readonly_probe`. DONE for tooling; actual run blocked by missing application credentials. Added demo-only discovery, forced private refresh, explicit account selection when ambiguous, bounded metadata/history/account-economics collection and exclusive private evidence output. Targeted tests: **2 passed**; pinned SDK P&L request availability verified. Reports distinguish collected evidence from full qualification and expose no auth payloads. Next: audited settlement adapter; then run actual probe once application file path is provided.
