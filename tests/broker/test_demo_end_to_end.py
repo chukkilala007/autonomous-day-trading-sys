@@ -73,6 +73,11 @@ def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(t
         assert not db.connection.execute("SELECT 1 FROM reservations WHERE status!='RELEASED'").fetchone()
         assert calls==['ProtoOANewOrderReq']
         assert executor.reconcile(broker) and calls==['ProtoOANewOrderReq']
+        value['observed_at']=(now-timedelta(seconds=3)).isoformat()
+        with pytest.raises(ValueError): broker.call('recover')
+        with pytest.raises(ValueError): broker.call('manage',command={})
+        assert calls==['ProtoOANewOrderReq']
+        value['observed_at']=now.isoformat()
         # Stale epochs and disabled authorization never reach the transport.
         gateway.fence.acquire('replacement')
         with pytest.raises(ValueError): broker.observe()

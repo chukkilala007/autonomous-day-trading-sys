@@ -3,6 +3,7 @@ import json
 from decimal import Decimal as D
 from trading_platform.contracts.values import canonical,digest
 from .normalization import integer
+from trading_platform.execution.recovery import matches
 
 
 def money(raw,field):
@@ -32,8 +33,9 @@ class ExecutionLedger:
         sends=[]
         for row in self.db.connection.execute("SELECT id,body FROM checkpoints WHERE id LIKE 'gateway-send:%'"):
             body=json.loads(row['body'])
-            if correlation and body['fields'].get('clientOrderId')==correlation: sends.append((row['id'],body))
+            if correlation and body['fields'].get('clientOrderId')==correlation and matches(body['fields'],order): sends.append((row['id'],body))
         if len(sends)>1: raise ValueError('ambiguous order correlation')
+        if sends and position and str(order.get('positionId'))!=str(position.get('positionId')): raise ValueError('position binding mismatch')
         with self.db.transaction() as c:
             key='execution:'+event_id
             if c.execute('SELECT 1 FROM checkpoints WHERE id=?',(key,)).fetchone(): return False

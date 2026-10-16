@@ -7,9 +7,9 @@ from trading_platform.execution.protection import recovery_action
 
 def test_fill_without_protection_latches_and_old_updates_do_not_regress(tmp_path):
     with Database(tmp_path/'db') as db:
-        with db.transaction() as c: c.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:intent',json.dumps({'instance':'a','fields':{'clientOrderId':'c','stopLoss':99,'takeProfit':103},'status':'UNKNOWN'})))
+        with db.transaction() as c: c.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:intent',json.dumps({'instance':'a','fields':{'clientOrderId':'c','symbolId':1,'volume':200,'tradeSide':1,'limitPrice':100,'stopLoss':99,'takeProfit':103},'status':'UNKNOWN'})))
         ledger=ExecutionLedger(db,12)
-        event={'ctidTraderAccountId':'12','executionType':'ORDER_PARTIAL_FILL','order':{'orderId':'1','clientOrderId':'c'},'position':{'positionId':'2','tradeData':{'volume':'200'},'utcLastUpdateTimestamp':'100','positionStatus':'POSITION_STATUS_OPEN'}}
+        event={'ctidTraderAccountId':'12','executionType':'ORDER_PARTIAL_FILL','order':{'orderId':'1','clientOrderId':'c','positionId':'2','tradeData':{'symbolId':'1','volume':'200','tradeSide':'BUY'},'limitPrice':100},'position':{'positionId':'2','tradeData':{'volume':'200'},'utcLastUpdateTimestamp':'100','positionStatus':'POSITION_STATUS_OPEN'}}
         assert ledger.apply(event) and not ledger.apply(event)
         assert not ledger.owned(2,'a')['protected']
         assert db.connection.execute('SELECT 1 FROM halts').fetchone()
@@ -46,9 +46,9 @@ def test_cancelled_remainder_does_not_close_late_fill_and_requires_revision(tmp_
     import pytest
     with Database(tmp_path/'db') as db:
         with db.transaction() as c:
-            c.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:x',json.dumps({'instance':'a','fields':{'clientOrderId':'x','stopLoss':99},'status':'UNKNOWN'})))
+            c.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:x',json.dumps({'instance':'a','fields':{'clientOrderId':'x','symbolId':1,'volume':500,'tradeSide':1,'limitPrice':100,'stopLoss':99},'status':'UNKNOWN'})))
         ledger=ExecutionLedger(db,12)
-        order={'orderId':'1','clientOrderId':'x','utcLastUpdateTimestamp':'100','tradeData':{'volume':'500'},'executedVolume':'200','orderStatus':'ORDER_STATUS_ACCEPTED'}
+        order={'orderId':'1','clientOrderId':'x','positionId':'2','limitPrice':100,'utcLastUpdateTimestamp':'100','tradeData':{'symbolId':'1','volume':'500','tradeSide':'BUY'},'executedVolume':'200','orderStatus':'ORDER_STATUS_ACCEPTED'}
         event={'ctidTraderAccountId':'12','order':order}
         ledger.apply(event)
         now=datetime(2026,1,1,tzinfo=timezone.utc)
@@ -68,3 +68,16 @@ def test_cancelled_remainder_does_not_close_late_fill_and_requires_revision(tmp_
         with pytest.raises(ValueError): ledger.owned_order(1,'a')
         restarted=ExecutionLedger(db,12)
         assert restarted.owned(2,'a')['protected']
+
+
+def test_correlation_alone_cannot_adopt_foreign_order_or_position(tmp_path):
+    import pytest
+    with Database(tmp_path/'db') as db:
+        fields={'clientOrderId':'collision','symbolId':1,'volume':200,'tradeSide':1,'limitPrice':100,'stopLoss':99}
+        with db.transaction() as c:c.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:x',json.dumps({'instance':'a','fields':fields,'status':'UNKNOWN'})))
+        event={'ctidTraderAccountId':'12','order':{'orderId':'3','clientOrderId':'collision','positionId':'4','tradeData':{'symbolId':'999','volume':'200','tradeSide':'BUY'},'limitPrice':100,'utcLastUpdateTimestamp':'100'},'position':{'positionId':'4','tradeData':{'volume':'200'},'utcLastUpdateTimestamp':'100','positionStatus':'POSITION_STATUS_OPEN'}}
+        ledger=ExecutionLedger(db,12);ledger.apply(event)
+        with pytest.raises(ValueError):ledger.owned(4,'a')
+        assert json.loads(db.connection.execute("SELECT body FROM checkpoints WHERE id='gateway-send:x'").fetchone()[0])['status']=='UNKNOWN'
+        event['order']['tradeData']['symbolId']='1';event['order']['positionId']='5'
+        with pytest.raises(ValueError,match='binding'):ledger.apply(event)

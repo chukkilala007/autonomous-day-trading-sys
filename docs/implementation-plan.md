@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 complete; S5–S7 implementation slices merged locally; see delivery ledger and remaining-work matrix below |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | demo_integration_hardening |
-| Next concrete action | Continue demo_integration_hardening; preserve pending external acceptance gates |
+| Next feature | offline_release_evidence |
+| Next concrete action | Continue offline_release_evidence; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Default paper stack; separate demo read-only collector available. No real broker order placed; no enabled demo/live executor service |
@@ -674,3 +674,7 @@ Branch: `feature/demo_service_wiring`. Status: IN_PROGRESS. Wired authenticated 
 ### Delivery F7.4 — implementation slice
 
 Branch: `feature/encrypted_secret_recovery`. Status: IN_PROGRESS. Added offline AES-256-GCM secret archives with separate keys, private regular-file checks, authenticated restore before plaintext creation and exclusive destinations. 114 tests and 4 subtests pass; tests used synthetic secrets only. Actual off-host/key recovery remains outside current offline scope. Feature commit: `git log --all --grep="F7.4:"`.
+
+### Delivery F6.2 — implementation slice
+
+Branch: `feature/demo_integration_hardening`. Status: IN_PROGRESS. Hardened ownership with full order identity matching and position binding; management/recovery require fresh verified reconciliation. 115 tests and 4 subtests pass, including correlation collisions and stale TCP requests. Actual broker orders remain disabled under the users offline-only instruction. Feature commit: `git log --all --grep="F6.2:"`.
