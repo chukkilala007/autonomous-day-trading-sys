@@ -10,9 +10,9 @@ This is the go-to document for **what exists, what comes next, how to implement 
 |---|---|
 | Verified implementation baseline | S1–S4 complete; S5–S7 implementation slices merged locally; see delivery ledger and remaining-work matrix below |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
-| Current implementation work | Release integration verification; S5–S7 remain IN_PROGRESS pending their acceptance gates |
-| Next feature | F5.1/F5.2 actual read-only provider qualification |
-| Next concrete action | Mount authorized Open API credential/config files, select a demo account, run the separate shadow stack and record provider evidence; do not activate order components |
+| Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
+| Next feature | demo_core_adapter |
+| Next concrete action | Continue demo_core_adapter; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Default paper stack; separate demo read-only collector available. No real broker order placed; no enabled demo/live executor service |
@@ -658,3 +658,7 @@ Observed final local checks:
 - Earlier measured backup/restore and 60-second soak evidence remains in `docs/evidence/s7-local-drills.json`; not rerun without relevant changes. Browser visual acceptance and remote-host qualification remain unverified.
 
 No actual broker session or trade was run. S5/S6/S7 remain IN_PROGRESS; F6.4 remains BLOCKED. The next required gate is read-only provider qualification with local credential files and an explicit demo account. The integrated demo service must subsequently be implemented against those verified contracts, then tested under explicit demo-order authorization. Do not mark these stages complete or enable real orders based on synthetic tests. Publication/CI results are recorded separately after observing them.
+
+### Delivery F5.3 — implementation slice
+
+Branch: `feature/incremental_feed_repair`. Status: IN_PROGRESS. Added incremental overlapping history queries, one subscription per connection generation and full reconnect backfill; incomplete history cannot advance the cursor. 108 tests and 4 subtests pass. Previous release CI passed on AMD64 and ARM64 (run 38824095895); actual provider streaming remains unverified. Feature commit: `git log --all --grep="F5.3:"`.
