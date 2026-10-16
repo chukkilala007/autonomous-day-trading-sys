@@ -24,7 +24,7 @@ def test_unknown_economics_rejected(fault):
     trader,rec,pnl,assets=fixture()
     if fault=='foreign': pnl['ctidTraderAccountId']='99'
     if fault=='netted': trader['trader']['accountType']='NETTED'
-    if fault=='margin': trader['trader']['totalMarginCalculationType']='MAX'
+    if fault=='margin': trader['trader']['totalMarginCalculationType']='NET'
     if fault=='bonus': trader['trader']['managerBonus']='1'
     if fault=='missing_pnl': pnl['positionUnrealizedPnL']=[]
     if fault=='duplicate': rec['position']*=2
@@ -49,3 +49,20 @@ def test_collection_brackets_mutable_account_and_never_uses_new_receipt_as_fresh
     EconomicsCollector(session,lambda:clock[0]).collect().addCallbacks(values.append,errors.append)
     assert bool(values)==(race=='none')
     assert bool(errors)==(race!='none')
+
+
+def test_max_margin_groups_direction_totals_per_symbol_not_individual_positions():
+    trader,rec,pnl,assets=fixture();trader['trader']['totalMarginCalculationType']='MAX'
+    rec['position']=[];pnl['positionUnrealizedPnL']=[]
+    for i,(symbol,side,amount) in enumerate([(1,'BUY',1000),(1,'BUY',2000),(1,'SELL',2500),(2,'SELL',4000),(2,'BUY',1000)]):
+        rec['position'].append(dict(positionId=str(i),positionStatus='POSITION_STATUS_OPEN',usedMargin=str(amount),moneyDigits=2,tradeData=dict(symbolId=str(symbol),tradeSide=side)))
+        pnl['positionUnrealizedPnL'].append(dict(positionId=str(i),netUnrealizedPnL='0'))
+    assert account_money('12',trader,rec,pnl,assets)['free_margin']=='9930'
+    rec['position'][0]['tradeData']['tradeSide']='UNKNOWN'
+    with pytest.raises(ValueError):account_money('12',trader,rec,pnl,assets)
+
+
+def test_max_margin_empty_account():
+    trader,rec,pnl,assets=fixture();trader['trader']['totalMarginCalculationType']='MAX'
+    rec['position']=[];pnl['positionUnrealizedPnL']=[]
+    assert account_money('12',trader,rec,pnl,assets)['free_margin']=='10000'
