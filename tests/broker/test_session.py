@@ -83,3 +83,23 @@ def test_sdk_request_pacing_stays_below_historical_limit(monkeypatch):
     assert all(abs(sent[i][0]-(i+1)*.26)<1e-8 for i in range(8))
     protocol.connectionLost(None)
     assert not protocol._send_task.running
+
+
+def test_readonly_wire_rejects_mutations_even_without_read_helper():
+    from trading_platform.gateways.ctrader.read_only_session import ReadOnlySession
+    session=ReadOnlySession(Client(),Tokens(),12)
+    for name in ('ProtoOANewOrderReq','ProtoOACancelOrderReq','ProtoOAClosePositionReq','ProtoOAAmendPositionSLTPReq'):
+        with pytest.raises(ValueError,match='read-only wire'):session.wire(name)
+    assert session.rejected_writes==4 and not session.requests
+
+
+def test_readonly_report_separates_reconnect_and_fresh_coverage():
+    from trading_platform.gateways.ctrader.read_only_session import summarize
+    metrics=dict(reconnect_requested=True,disconnects=1,reconciled_generations=[1,3],complete_snapshots=0,reconciliations=4)
+    report=summarize(metrics,{'ProtoOAReconcileReq':4},0,reconnect_required=True)
+    assert report['reconnect_status']=='PASS' and report['status']=='BLOCKED_FRESH_COVERAGE' and report['order_writes']==0
+    metrics['complete_snapshots']=1
+    assert summarize(metrics,{},0,reconnect_required=True)['status']=='PASS'
+    metrics['reconciled_generations']=[1]
+    assert summarize(metrics,{},0,reconnect_required=True)['status']=='BLOCKED_RECONNECT'
+    assert summarize(metrics,{'ProtoOANewOrderReq':1},0,reconnect_required=True)['status']=='FAILED_READONLY_BOUNDARY'

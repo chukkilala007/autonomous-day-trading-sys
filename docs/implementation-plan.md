@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-16. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-17. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -8,18 +8,18 @@ This is the go-to document for **what exists, what comes next, how to implement 
 
 | Item | Current value |
 |---|---|
-| Verified implementation baseline | S1–S4 complete; additional S5–S7 offline integration delivered on feature branches; see latest ledger |
-| Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
-| Current implementation work | Sandbox intake, economics/settlement mapping and provider integration implemented; actual demo authentication and history retrieval observed |
-| Next feature | Broker-specific economics/history mapper and provider qualification when demo account is available; external release checks when destinations are selected |
-| Next concrete action | MAX economics probe passed; qualify capability evidence, streaming/reconnect and read-only shadow flow |
-| Next milestone | S5: verified provider data and read-only shadow runtime |
-| Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
-| Trading state | Actual read-only demo connection to user-selected account; no broker orders enabled or sent |
-| External inputs | Private application credentials and rotated sandbox tokens available; user selected demo account 48232468. Intended host, registry and backup destination remain unspecified |
-| Known limitations | Strict economics input exporter and disabled lifecycle assembly exist; raw provider economics/history mapping and qualification still pending. UI visual blocked; no registry/host/off-host deployment |
-| Verification evidence | Latest source gateway: 175 tests + 4 subtests; installed pre-fix gateway: 174 + 4 subtests; installed base: 132 passed, 14 dependency skips + 4 subtests. Actual Git-source bundle build/verify passed with placeholder image digest. Previous restart/restore evidence retained. Previous develop CI 38855042847 passed; new CI recorded separately |
-| Uncommitted implementation | See latest connection acceptance ledger; approval capacity restored and publication pending |
+| Verified baseline | S1–S4 complete; S5–S7 remain partially complete; S8 unstarted |
+| Latest features | MAX-margin mapping and valuation pacing; capability audit; bounded read-only shadow/reconnect harness |
+| Account state | User-selected demo account authenticated; rotated tokens remain private; no orders enabled or sent |
+| Actual qualification | Fresh empty-account economics collected; three completed M1 bid/ask comparisons per symbol establish sampled bid basis; metadata and historical bars retrieved |
+| Actual shadow result | 9 reconciliations across generations 1 and 3; 2 subscriptions; 744 cached bars; both isolated workers healthy; zero commands/reservations/decisions |
+| Current blocker | Last EURUSD/XAUUSD quotes were around 20:59 UTC while run ended 23:03 UTC on Friday 16 October (Saturday locally); no fresh coverage, so analysis correctly blocked |
+| Next concrete action | After fresh quotes return, repeat the bounded shadow run with a new exclusive report path and sufficient complete warm-up history; verify actual updates, repaired coverage, recorded strategy decisions and zero writes |
+| Capability blockers | Tick grid, contract-value policy, complete commission/conversion policy, prospective margin, protection sides, order/expiry behavior and current session state remain unqualified |
+| Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
+| Latest tests | Installed gateway: 188 passed + 4 subtests. Actual read-only run exit 0; fresh-market acceptance intentionally NOT claimed |
+| External inputs | Registry/Linux host/backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
+| Publication | Latest prior baseline CI 38977108837 passed. Current feature publication/CI checked separately; inspect Git remote state |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -27,7 +27,7 @@ Future handoffs must name the active feature, changes already made, exact failin
 
 | Feature | Implemented and tested locally | Required before parent can be DONE |
 |---|---|---|
-| F5.1 | Verified TLS, demo binding, rotated private tokens, terminal refresh failure | Actual authorized connect/refresh/reconnect evidence |
+| F5.1 | Verified TLS, demo binding, rotated private tokens, terminal refresh failure | DONE: actual auth, token rotation and forced reconnect/re-auth observed; no order permission |
 | F5.2 | Exact unit normalization, expiring account-bound evidence, hedged-account gate | Broker-specific tick/basis/session/fees/conversion/margin/protection and account-type audit |
 | F5.3 | Durable causal feed, gap/revision checks, bounded history pagination | Actual streaming/backfill checks (incremental overlap and generation-scoped subscription implemented offline) |
 | F5.4 | Separate gateway/core/workers, authenticated read-only snapshot RPC, zero order path | Actual shadow run with complete required history and evidence/lag checks |
@@ -301,7 +301,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 ## S5 — broker feasibility and read-only shadow operation
 
-### F5.1 — cTrader authentication and account binding — IN_PROGRESS
+### F5.1 — cTrader authentication and account binding — DONE
 
 **Depends on:** F1.1, F1.4. **Code:** `gateways/ctrader/client.py`, `auth.py`, gateway image/secret configuration.
 
@@ -786,3 +786,11 @@ Targeted Docker regression: **25 passed**. Actual read-only probe `var/sandbox-s
 Branch: `feature/provider_capability_audit`. Added `probe --audit`: bounded complete bid/ask tick samples, strict delta decoding and exact completed-bar OHLC comparisons, account/symbol-bound expiring capability reports and explicit remaining execution blockers. Docker targeted tests: **10 passed**. Actual `probe-006.json`: three completed M1 bars per EURUSD/XAUUSD matched bid OHLC and differed from ask; account type, symbol IDs and volume grids observed. Sanitized evidence: `docs/evidence/demo-capability-audit.json`. Tick price delta decoding is observed against bar OHLC; no broker tick-grid inference is made from observed price increments or digits.
 
 Capability audit is delivered; full execution qualification remains open: tradable tick grid, contract-value policy, complete commission/conversion policy, fresh prospective margin, protection sides, order/expiry behavior and current session state. Metadata fee fields are evidence only, not an audited settlement policy. Read-only feed basis is supported for the sampled account/symbols; streaming/reconnect validation follows.
+
+### Delivery F5.3b / F5.4b — bounded read-only shadow acceptance (2026-10-17)
+
+Branch: `feature/readonly_shadow_acceptance`. Implemented read-only wire allowlist/audit, bounded service runtime, forced TCP reconnect, immediate disconnect coverage invalidation, in-flight collection drain and private exclusive acceptance reports. Reporting separates reconnect success from fresh market coverage; unknown/mutating wire calls reject. Operations runbook documents isolated Compose execution, private state and required warm-up data.
+
+Tests: session/feed/shadow targeted **13 passed** before drill; final installed gateway **188 passed, 4 subtests passed** including report classifications. Actual installed four-container stack: gateway, core and two authenticated healthy workers. Drill requested 90 seconds, with bounded shutdown drain; exit **0**. Reconciliations **9**, generations **1 and 3**, application/account authentication twice, subscriptions twice, cached bars **744**, spot events **4**, failures **0**, order writes **0**. Core had 2 registered instances and **0 events/decisions/commands/reservations**. Sanitized evidence: `docs/evidence/demo-shadow-acceptance.json`; private raw report `var/sandbox-state/shadow-run-001.json`. Only this uniquely named test stack was stopped; private state retained.
+
+Outcome: actual reconnect/authentication/subscription/history/account recovery demonstrated; F5.1 DONE. Full F5.3/F5.4 acceptance is **BLOCKED_FRESH_COVERAGE**, not passed. Quote source times were 2026-10-16 20:59:34/35 UTC, over two hours before the run. Four subscription snapshots do not prove live updates. Do not alter source timestamps, invent closed intervals, replay as current data, relax freshness or claim strategy evaluation. Next: rerun with fresh quotes and complete required history (same rotated token store, one gateway writer, new report filename). Continue missing broker capability qualification independently; actual orders stay disabled.

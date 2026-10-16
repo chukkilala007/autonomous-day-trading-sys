@@ -1,6 +1,6 @@
 # Demo integration boundary and offline evidence
 
-The current mandate is offline implementation/testing only. Default Compose remains paper. `compose.shadow.yaml` remains read-only. No actual broker orders were placed or enabled.
+The current mandate permits offline implementation/testing and actual read-only demo qualification. Default Compose remains paper. `compose.shadow.yaml` remains read-only. No actual broker orders were placed or enabled.
 
 ## Delivered path
 
@@ -30,7 +30,7 @@ Before actual qualification, record the provider evidence and configuration/pack
 
 `gateways.ctrader.valuation.export` now provides the provider-independent exporter boundary. Its strict `Valuation` schema validates account/currency, observation and contract freshness, exact decimal amounts, unique settlement allocation, full lifecycle history coverage and equal opened/closed quantities. Settlement net includes every supplied signed account-currency cash movement, including opening fees; duplicated movements, foreign currencies and incomplete costs reject. Original input evidence and the canonical exported record are hashed.
 
-This is a validated input adapter, not a raw cTrader economics mapper. The selected broker exporter still must establish field/sign/conversion semantics and certify complete movements. A truthful zero outcome requires explicit zero-valued evidence. No defaults invent margin, exchange rates, costs or account balances. Invoke `export(serialized_observation, account_id, now)` from the valuation callback; source assertions do not become provider qualification merely by passing schema validation.
+This is the provider-independent validated input adapter; the raw account mapper is described below. The selected broker exporter still must establish field/sign/conversion semantics and certify complete movements. A truthful zero outcome requires explicit zero-valued evidence. No defaults invent margin, exchange rates, costs or account balances. Invoke `export(serialized_observation, account_id, now)` from the valuation callback; source assertions do not become provider qualification merely by passing schema validation.
 
 ## Gateway lifecycle (F6.3b)
 
