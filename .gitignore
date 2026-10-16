@@ -14,3 +14,6 @@ var/
 *.sqlite*
 *.db
 .DS_Store
+
+# Local broker credential documents; never commit or send to Docker builds.
+[Ss]andbox*
