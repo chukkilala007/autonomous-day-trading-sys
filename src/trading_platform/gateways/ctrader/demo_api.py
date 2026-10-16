@@ -14,9 +14,9 @@ from trading_platform.risk.sizing import Contract
 
 
 class DemoAPI:
-    def __init__(self,gateway,ledger,feed,reports,valuation,now):
+    def __init__(self,gateway,ledger,feed,reports,valuation,now,requirements=()):
         self.gateway=gateway;self.ledger=ledger;self.feed=feed;self.reports=reports
-        self.valuation=valuation;self.now=now;self.projection=Projection(gateway.db)
+        self.valuation=valuation;self.now=now;self.projection=Projection(gateway.db);self.requirements=requirements
 
     def check(self,body):
         if str(body['account_id'])!=str(self.gateway.session.account_id): raise ValueError('foreign account')
@@ -62,6 +62,19 @@ class DemoAPI:
             return dict(mode='demo',authorized=True,account_id=str(self.gateway.session.account_id),epoch=self.gateway.fence.acquire(body['core_id']))
         self.check(body)
         if op=='observe': return self.view()
+        if op=='snapshot':
+            view=self.view()
+            if view['blockers']: raise ValueError('snapshot reconciliation blocked')
+            if not self.requirements: raise ValueError('explicit feed requirements required')
+            return {'snapshot':json.loads(self.feed.snapshot(self.now(),self.requirements).model_dump_json()),'contracts':view['contracts']}
+        if op=='recover':
+            from .supervisor import ProtectionSupervisor
+            supervisor=ProtectionSupervisor(self.gateway,self.ledger)
+            observed=utc(self.valuation()['observed_at']);actions={}
+            for row in self.gateway.db.connection.execute("SELECT id FROM checkpoints WHERE id LIKE 'broker-position:%'").fetchall():
+                pid=row['id'].split(':',1)[1]
+                actions[pid]=supervisor.step(pid,body['core_id'],body['epoch'],self.now(),observed)
+            return actions
         if op=='management_confirmed': return self.confirmed(body['command_id'])
         if op not in ('submit','manage'): raise ValueError('unsupported demo operation')
         command=body['command'];now=self.now()
