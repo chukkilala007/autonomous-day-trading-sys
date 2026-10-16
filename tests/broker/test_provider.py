@@ -1,5 +1,5 @@
 import copy,json,runpy
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 from types import SimpleNamespace
 import pytest
 pytest.importorskip('ctrader_open_api')
@@ -33,7 +33,7 @@ def test_closed_deals_recover_missing_position_without_inventing_settlement(tmp_
     order=dict(orderId='3',clientOrderId='cmd',positionId='2',tradeData=dict(symbolId='1',volume='200',tradeSide='BUY'),limitPrice=99,executedVolume='200',utcLastUpdateTimestamp=str(int(T.timestamp()*1000)),orderStatus='ORDER_STATUS_FILLED')
     deals[0]['executionPrice']=99
     with Database(tmp_path/'db') as db:
-        with db.transaction() as c: c.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:cmd',canonical(dict(fields=fields,at=T.replace(hour=0)-__import__('datetime').timedelta(days=1),instance='x',status='UNKNOWN'))))
+        with db.transaction() as c: c.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:cmd',canonical(dict(fields=fields,at=T-timedelta(days=1),instance='x',status='UNKNOWN'))))
         session=SimpleNamespace(account_id=12,generation=1,ready=True)
         def read(name,**kwargs): return succeed(dict(ctidTraderAccountId='12',hasMore=False,**({'order':[order]} if name=='ProtoOAOrderListReq' else {'deal':copy.deepcopy(deals)})))
         session.read=read
@@ -43,7 +43,18 @@ def test_closed_deals_recover_missing_position_without_inventing_settlement(tmp_
         assert not errors,errors
         value=json.loads(results[0]['valuation']);assert value['settlements'][0]['closed']=='2'
         assert results[0]['execution_events'][0]['position']['positionStatus']=='POSITION_STATUS_CLOSED'
+        complete=results[0]
+        with pytest.raises(ValueError): provider.checkpoint(complete)
         # Missing opening deal must halt, even though the broker position is absent.
         deals.pop(0);results=[];errors=[]
         provider.reconcile().addCallbacks(results.append,errors.append)
         assert errors and not results
+
+        from trading_platform.gateways.ctrader.execution import ExecutionLedger
+        ledger=ExecutionLedger(db,12)
+        for event in complete['execution_events']: ledger.apply(event)
+        provider.checkpoint(complete)
+        session.read=lambda *a,**k: (_ for _ in ()).throw(AssertionError('unexpected history re-fetch'))
+        results=[];errors=[];provider.reconcile(reconnect=True).addCallbacks(results.append,errors.append)
+        assert results and not errors
+        assert json.loads(results[0]['valuation'])['settlements'][0]['command_id']=='cmd'

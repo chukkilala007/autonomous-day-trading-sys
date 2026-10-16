@@ -10,16 +10,16 @@ This is the go-to document for **what exists, what comes next, how to implement 
 |---|---|
 | Verified implementation baseline | S1–S4 complete; additional S5–S7 offline integration delivered on feature branches; see latest ledger |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
-| Current implementation work | Sandbox intake, raw account economics, read-only probe, deal settlement and provider history integration implemented; targeted tests pass; actual connection not yet run |
+| Current implementation work | Sandbox intake, economics/settlement mapping and provider integration implemented; actual demo authentication and history retrieval observed |
 | Next feature | Broker-specific economics/history mapper and provider qualification when demo account is available; external release checks when destinations are selected |
-| Next concrete action | Restore automatic approval capacity, run full Docker regressions and read-only sandbox probe using private prepared credentials; preserve disabled orders |
+| Next concrete action | Implement and test HEDGED/MAX margin support from verified provider semantics; resolve bounded economics collection latency; repeat read-only qualification |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
-| Trading state | Paper simulation and deterministic demo-protocol tests only; no actual broker connection or order |
-| External inputs | Application and sandbox tokens now found and privately prepared. Tool approval usage limit blocks Docker/network validation. Account discovery, provider economics qualification, intended host and backup destination remain |
+| Trading state | Actual read-only demo connection to user-selected account; no broker orders enabled or sent |
+| External inputs | Private application credentials and rotated sandbox tokens available; user selected demo account 48232468. Intended host, registry and backup destination remain unspecified |
 | Known limitations | Strict economics input exporter and disabled lifecycle assembly exist; raw provider economics/history mapping and qualification still pending. UI visual blocked; no registry/host/off-host deployment |
-| Verification evidence | Installed gateway: 144 tests + 4 subtests. Actual Git-source bundle build/verify passed with placeholder image digest. Previous restart/restore evidence retained. Previous develop CI 38855042847 passed; new CI recorded separately |
-| Uncommitted implementation | See latest sandbox handoff and git status; local feature commits await push while automatic approval is unavailable |
+| Verification evidence | Latest source gateway: 175 tests + 4 subtests; installed pre-fix gateway: 174 + 4 subtests; installed base: 132 passed, 14 dependency skips + 4 subtests. Actual Git-source bundle build/verify passed with placeholder image digest. Previous restart/restore evidence retained. Previous develop CI 38855042847 passed; new CI recorded separately |
+| Uncommitted implementation | See latest connection acceptance ledger; approval capacity restored and publication pending |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -764,3 +764,13 @@ The user supplied the repository directory as the application-credential locatio
 The next Docker validation command was rejected before execution because automatic approval review hit its usage limit. The error explicitly said this was a review failure, not a safety determination. Do not bypass that gate. An already-running provider/lifecycle test completed with 14 passes. A proposed additional cache-restart test command was not executed; no claim is made that it passed.
 
 Next actions after approval capacity is restored: run full gateway/base Docker regressions, build the gateway image, invoke the read-only probe with private mounts and exclusive output/rotation paths, discover and bind the actual demo account (ask selection only if multiple), inspect actual metadata/economics, qualify contract and fee profiles, complete streaming/reconnect/shadow and provider integration acceptance. Orders remain disabled; actual demo lifecycle tests still need explicit authorization superseding the earlier no-orders instruction. Push the tested feature/develop commits and inspect CI. Registry/host/off-host destinations remain separate pending inputs.
+
+### Delivery F5.1c — actual sandbox connection acceptance (2026-10-16)
+
+Branch: `feature/sandbox_connection_acceptance`. Application authentication and refresh rotation succeeded against verified demo TLS. User selected account 48232468 from three demo accounts. Fixed duplicate application authentication after discovery; reconnect still performs full authentication. Added redacted staged probe diagnostics and a durable settlement cache/restart test.
+
+Actual read-only account authentication, exact EURUSD/XAUUSD symbol selection, metadata and 24-hour M1 history retrieval succeeded (1,341 bars per symbol). Economics collection failed closed with STALE_ACCOUNT_ECONOMICS. Observed profile is HEDGED/MAX, also outside the current HEDGED/SUM mapper. Neither margin semantics nor freshness limits were relaxed. Full qualification remains incomplete. Sanitized evidence: `docs/evidence/demo-connection-acceptance.json`; raw reports remain private in `var/sandbox-state/`.
+
+Verification: targeted session/probe/provider tests **9 passed**; full source gateway suite **175 passed, 4 subtests passed**. Earlier installed gateway suite **174 passed, 4 subtests passed**; installed base **132 passed, 14 dependency-related skips, 4 subtests passed**. The newest authentication correction is source-tested; rebuilt installed-image acceptance remains pending. No actual broker order was sent.
+
+This supersedes the approval-service blocker above. Preserve rotated `var/sandbox-state/tokens.json`; never seed it again from the old document. Next: verify MAX margin aggregation semantics, implement explicit profile support with tests, resolve the five-read valuation freshness window without weakening stale-data gates, then repeat probe using a new exclusive output filename (probe-004.json next). Streaming/reconnect/shadow, fee/conversion/contract qualification and authorized demo order acceptance remain open.

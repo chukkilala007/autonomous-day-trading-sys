@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "source": "actual_demo_endpoint",
+  "endpoint": "demo.ctraderapi.com:5035",
+  "application_authentication": "PASS",
+  "refresh_rotation": "PASS",
+  "selected_demo_account_authentication": "PASS",
+  "orders_enabled": false,
+  "qualification_complete": false,
+  "observed_profile": "HEDGED/MAX",
+  "history_bar_counts": {
+    "EURUSD": 1341,
+    "XAUUSD": 1341
+  },
+  "economics_status": "STALE_ACCOUNT_ECONOMICS",
+  "additional_gate": "UNSUPPORTED_MARGIN_PROFILE",
+  "private_report": "var/sandbox-state/probe-003.json"
+}
