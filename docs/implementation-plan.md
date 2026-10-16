@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 complete; S5–S7 implementation slices merged locally; see delivery ledger and remaining-work matrix below |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | demo_core_adapter |
-| Next concrete action | Continue demo_core_adapter; preserve pending external acceptance gates |
+| Next feature | demo_service_wiring |
+| Next concrete action | Continue demo_service_wiring; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Default paper stack; separate demo read-only collector available. No real broker order placed; no enabled demo/live executor service |
@@ -662,3 +662,7 @@ No actual broker session or trade was run. S5/S6/S7 remain IN_PROGRESS; F6.4 rem
 ### Delivery F5.3 — implementation slice
 
 Branch: `feature/incremental_feed_repair`. Status: IN_PROGRESS. Added incremental overlapping history queries, one subscription per connection generation and full reconnect backfill; incomplete history cannot advance the cursor. 108 tests and 4 subtests pass. Previous release CI passed on AMD64 and ARM64 (run 38824095895); actual provider streaming remains unverified. Feature commit: `git log --all --grep="F5.3:"`.
+
+### Delivery F6.1 — implementation slice
+
+Branch: `feature/demo_core_adapter`. Status: IN_PROGRESS. Implemented bound demo core adapter sharing strategy/risk/outbox, fenced controller and durable broker-event projection; unknown settlements retain risk and management acknowledgements require broker confirmation. 112 tests and 4 subtests pass, including offline protobuf accept-fill-close and uncertain-send restart. User requires offline tests only; actual orders remain disabled. Feature commit: `git log --all --grep="F6.1:"`.

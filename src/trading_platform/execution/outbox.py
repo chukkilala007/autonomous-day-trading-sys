@@ -71,7 +71,9 @@ class Executor:
         for event in events: self.apply(event)
         with self.db.transaction() as c:
             c.execute("UPDATE attempts SET outcome='ACKNOWLEDGED' WHERE command=?",(id,))
-            if body['type']=='management': c.execute("UPDATE commands SET status='CLOSED' WHERE id=?",(id,))
+            if body['type']=='management':
+                confirmed=broker.management_confirmed(id)
+                c.execute('UPDATE commands SET status=? WHERE id=?',('CLOSED' if confirmed else 'UNKNOWN',id))
 
     def recover_attempts(self):
         with self.db.transaction() as c:
@@ -85,7 +87,7 @@ class Executor:
                 body=json.loads(row['body'])
                 if body['type']=='management' and broker.management_confirmed(row['id']):
                     c.execute("UPDATE commands SET status='CLOSED' WHERE id=?",(row['id'],))
-        return self.db.connection.execute("SELECT count(*) FROM commands WHERE status='UNKNOWN'").fetchone()[0]==0
+        return self.db.connection.execute("SELECT count(*) FROM commands WHERE status='UNKNOWN'").fetchone()[0]==0 and not getattr(broker,'blockers',())
 
     def apply(self,event):
         with self.db.transaction() as c:
