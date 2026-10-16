@@ -748,3 +748,7 @@ Branch: `feature/ctrader_account_economics`. DONE for the supported protocol map
 ### Delivery F5.1b — sandbox read-only probe (2026-10-16)
 
 Branch: `feature/sandbox_readonly_probe`. DONE for tooling; actual run blocked by missing application credentials. Added demo-only discovery, forced private refresh, explicit account selection when ambiguous, bounded metadata/history/account-economics collection and exclusive private evidence output. Targeted tests: **2 passed**; pinned SDK P&L request availability verified. Reports distinguish collected evidence from full qualification and expose no auth payloads. Next: audited settlement adapter; then run actual probe once application file path is provided.
+
+### Delivery F6.2b — raw deal settlement mapping (2026-10-16)
+
+Branch: `feature/ctrader_settlement_mapping`. DONE for audited-profile mapping. Added raw deal-to-settlement normalization with original entry binding, exact lifecycle quantities, opening/closing fees, explicit fee signs and no double-counted closing commission. Missing cost fields, partial history, scale-ins, duplicate deals, foreign/expired policies reject. **10 Docker tests passed**. Actual fee convention/profile qualification remains blocked on application credentials and broker evidence; no guessed policy or orders enabled. Next: connect raw provider history/economics to the existing lifecycle.
