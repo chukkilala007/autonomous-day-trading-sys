@@ -706,3 +706,7 @@ Final observed evidence:
 - Only generated test-stack containers/volumes were cleaned up. No actual broker credentials, connection, order, host deployment, registry publication or off-host transfer was used.
 
 The offline scope is delivered. Remaining parent-stage gates are actual provider/metadata/valuation qualification, explicit demo-order authorization and operational gateway bootstrap, intended-host release/restore/soak and visual dashboard acceptance. They are not marked DONE and should not be activated under the current offline-only mandate.
+
+### Delivery F5.2a — validated economics inputs (2026-10-16)
+
+Branch: `feature/verified_valuation_inputs`. **DONE** for the provider-independent boundary. Added strict valuation and settlement schemas and exporter with exact signed account-currency cash movements, unique allocation, lifecycle coverage, quantity completeness, evidence hashing and freshness checks. Docker offline targeted tests: **12 passed**. Actual broker economics mapping/qualification remains open; no credentials or orders used. Next: gateway lifecycle and reconnect orchestration using injected offline provider adapters.
