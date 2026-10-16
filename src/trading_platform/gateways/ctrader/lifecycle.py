@@ -16,6 +16,7 @@ class Lifecycle:
         self.provider=provider; self.now=now
         self.busy=False; self.stopped=False; self.observation=None
         self.generation=None; self.event_revision=0; self.reason='STARTUP_RECONCILIATION'
+        self.drained=defer.succeed(None)
 
     def invalidate(self, reason):
         self.observation=None; self.reason=reason
@@ -47,6 +48,7 @@ class Lifecycle:
         if not self.session.ready:
             self.invalidate('DISCONNECTED'); self.stream.disconnected(); return False
         self.busy=True
+        self.drained=defer.Deferred()
         generation=self.session.generation; revision=self.event_revision
         reconnect=generation!=self.generation
         self.invalidate('RECONCILING')
@@ -83,6 +85,7 @@ class Lifecycle:
             self.invalidate('RECONCILIATION_REQUIRED'); self.stream.disconnected(); return False
         finally:
             self.busy=False
+            self.drained.callback(None)
 
     def stop(self):
         self.stopped=True; self.invalidate('STOPPED'); self.stream.disconnected()
@@ -125,9 +128,10 @@ class RunningGateway:
             if self.thread.is_alive(): raise RuntimeError('RPC shutdown incomplete')
         self.server.server_close()
         yield defer.maybeDeferred(self.lifecycle.session.client.stopService)
-        # In-flight collection may still need the DB. Caller closes storage only
-        # after pending poll completes, or aborts shutdown without closing it.
-        if self.lifecycle.busy: raise RuntimeError('provider collection still draining')
+        # Let in-flight collection settle before the owner can close storage.
+        # Timeout fails shutdown explicitly and leaves storage owned/open.
+        if self.lifecycle.busy:
+            yield self.lifecycle.drained.addTimeout(20,self.clock)
 
 
 def assemble(session, stream, ledger, provider, feed, reports, now, requirements,
