@@ -21,7 +21,7 @@ from trading_platform.gateways.ctrader.execution import ExecutionLedger
 from trading_platform.gateways.ctrader.demo_api import DemoAPI
 
 
-def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(tmp_path):
+def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(tmp_path,request):
     fixture=runpy.run_path('tests/broker/test_demo_transport.py');command,report,quote=fixture['fixture']();now=fixture['T']
     contract=Contract(instrument='X',account_currency='GBP',valuation_currency='GBP',quote_to_account='1',contract_value_per_unit='1',commission_per_unit='0',slippage_per_unit='0',minimum='1',maximum='100',step='1',tick='.01',margin_per_unit='1',verified_at=now,provenance='offline-protocol-fixture')
     data=json.loads(Path('config/instances/tpr1.json').read_text());data.update(mode='demo',universe=['X']);data['account'].update(environment='demo',broker_account='12')
@@ -45,7 +45,15 @@ def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(t
             if errors: errors[0].raiseException()
             assert results,'fixture must complete synchronously'
             return results[0]
-        broker=DemoBroker('',0,'','12','core',call=call,now=lambda:now)
+        import threading
+        from trading_platform.gateways.ctrader.demo_server import Server
+        server=Server(('127.0.0.1',0),'x'*40,call)
+        thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+        def cleanup(): server.shutdown();server.server_close();thread.join(5)
+        request.addfinalizer(cleanup)
+        broker=DemoBroker('127.0.0.1',server.server_address[1],'x'*40,'12','core',now=lambda:now)
+        from trading_platform.runtime.transport import request as rpc
+        with pytest.raises(ValueError): rpc('127.0.0.1',server.server_address[1],'wrong','demo-core',{'op':'acquire'})
         executor=Executor(db,instance.account);executor.book.limits.observe(now,D('10000'))
         cid=executor.enqueue(decision,instance,quote,contract,now,D('10000'),D('10000'),D('10000'),'X')
         executor.dispatch(cid,broker,quote,now)

@@ -11,8 +11,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified implementation baseline | S1–S4 complete; S5–S7 implementation slices merged locally; see delivery ledger and remaining-work matrix below |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | demo_service_wiring |
-| Next concrete action | Continue demo_service_wiring; preserve pending external acceptance gates |
+| Next feature | encrypted_secret_recovery |
+| Next concrete action | Continue encrypted_secret_recovery; preserve pending external acceptance gates |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Default paper stack; separate demo read-only collector available. No real broker order placed; no enabled demo/live executor service |
@@ -666,3 +666,7 @@ Branch: `feature/incremental_feed_repair`. Status: IN_PROGRESS. Added incrementa
 ### Delivery F6.1 — implementation slice
 
 Branch: `feature/demo_core_adapter`. Status: IN_PROGRESS. Implemented bound demo core adapter sharing strategy/risk/outbox, fenced controller and durable broker-event projection; unknown settlements retain risk and management acknowledgements require broker confirmation. 112 tests and 4 subtests pass, including offline protobuf accept-fill-close and uncertain-send restart. User requires offline tests only; actual orders remain disabled. Feature commit: `git log --all --grep="F6.1:"`.
+
+### Delivery F6.3 — implementation slice
+
+Branch: `feature/demo_service_wiring`. Status: IN_PROGRESS. Wired authenticated demo TCP server, reactor dispatch factory, isolated core service cycles and recovery supervisor calls. Full offline lifecycle now crosses real framed TCP; wrong token and stale fence rejected. 112 tests and 4 subtests pass. No enabled real-order launcher or broker connection was used. Feature commit: `git log --all --grep="F6.3:"`.
