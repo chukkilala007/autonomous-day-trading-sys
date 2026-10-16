@@ -63,3 +63,23 @@ def test_discovered_connection_skips_duplicate_application_auth_but_reconnect_do
     assert session.ready and sent==['ProtoOAGetAccountListByAccessTokenReq','ProtoOAAccountAuthReq']
     sent.clear();client.disconnected();client.connected()
     assert session.ready and sent==['ProtoOAApplicationAuthReq','ProtoOAGetAccountListByAccessTokenReq','ProtoOAAccountAuthReq']
+
+
+def test_sdk_request_pacing_stays_below_historical_limit(monkeypatch):
+    from twisted.internet import task
+    from types import SimpleNamespace
+    from trading_platform.gateways.ctrader.client import IsolatedProtocol
+    clock=task.Clock();original=task.LoopingCall
+    def looping(*args,**kwargs):
+        loop=original(*args,**kwargs);loop.clock=clock;return loop
+    monkeypatch.setattr(task,'LoopingCall',looping)
+    protocol=IsolatedProtocol();sent=[]
+    protocol.factory=SimpleNamespace(numberOfMessagesToSendPerSecond=1,connected=lambda _:None,disconnected=lambda _:None)
+    protocol.sendString=lambda data:sent.append((clock.seconds(),data))
+    protocol.connectionMade();sent.clear()
+    for i in range(8):protocol.send(bytes([i]))
+    for _ in range(8):clock.advance(.26)
+    assert len(sent)==8
+    assert all(abs(sent[i][0]-(i+1)*.26)<1e-8 for i in range(8))
+    protocol.connectionLost(None)
+    assert not protocol._send_task.running

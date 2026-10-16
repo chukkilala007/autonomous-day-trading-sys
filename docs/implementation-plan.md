@@ -12,7 +12,7 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
 | Current implementation work | Sandbox intake, economics/settlement mapping and provider integration implemented; actual demo authentication and history retrieval observed |
 | Next feature | Broker-specific economics/history mapper and provider qualification when demo account is available; external release checks when destinations are selected |
-| Next concrete action | Implement and test HEDGED/MAX margin support from verified provider semantics; resolve bounded economics collection latency; repeat read-only qualification |
+| Next concrete action | MAX economics probe passed; qualify capability evidence, streaming/reconnect and read-only shadow flow |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
 | Trading state | Actual read-only demo connection to user-selected account; no broker orders enabled or sent |
@@ -774,3 +774,9 @@ Actual read-only account authentication, exact EURUSD/XAUUSD symbol selection, m
 Verification: targeted session/probe/provider tests **9 passed**; full source gateway suite **175 passed, 4 subtests passed**. Earlier installed gateway suite **174 passed, 4 subtests passed**; installed base **132 passed, 14 dependency-related skips, 4 subtests passed**. The newest authentication correction is source-tested; rebuilt installed-image acceptance remains pending. No actual broker order was sent.
 
 This supersedes the approval-service blocker above. Preserve rotated `var/sandbox-state/tokens.json`; never seed it again from the old document. Next: verify MAX margin aggregation semantics, implement explicit profile support with tests, resolve the five-read valuation freshness window without weakening stale-data gates, then repeat probe using a new exclusive output filename (probe-004.json next). Streaming/reconnect/shadow, fee/conversion/contract qualification and authorized demo order acceptance remain open.
+
+### Delivery F5.2c — MAX margin and bounded valuation latency (2026-10-16)
+
+Branch: `feature/max_margin_valuation`. Supports HEDGED/MAX by summing margins by symbol and side, then summing the larger side for each symbol. NET and unknown grouping remain rejected. SDK queue drains one request per 260ms (below 5 historical requests/sec) instead of one-second batches; independent bracket reads overlap. Two-second freshness, unchanged-record and generation checks remain enforced. Official semantics: https://help.ctrader.com/ctrader-algo/references/Account/TotalMarginCalculationType/ .
+
+Targeted Docker regression: **25 passed**. Actual read-only probe `var/sandbox-state/probe-004.json`: **COLLECTED**, including account economics within the unchanged freshness gate, EURUSD/XAUUSD metadata and history. Selected account had zero positions, so multi-position MAX aggregation is protocol-tested with synthetic fixtures, not claimed observed on this account. No orders enabled. Next: capability evidence and actual streaming/reconnect/shadow qualification.

@@ -21,11 +21,15 @@ class IsolatedProtocol(TcpProtocol):
     def connectionMade(self):
         self._send_queue=deque(); self._send_task=None; self._lastSendMessageTime=None
         super().connectionMade()
+        # Pinned SDK batches once per second, making five bracketed reads stale.
+        # Drain one request every 260ms: below even the historical 5/sec limit.
+        self._send_task.stop()
+        self._send_task.start(0.26,now=False)
 
 
 class VerifiedClient(Client):
     def __init__(self, clock=reactor):
-        self._runningReactor=clock; self.numberOfMessagesToSendPerSecond=4
+        self._runningReactor=clock; self.numberOfMessagesToSendPerSecond=1
         endpoint=SSL4ClientEndpoint(clock,HOST,5035,optionsForClientTLS(HOST),timeout=10)
         ClientService.__init__(self,endpoint,Factory.forProtocol(IsolatedProtocol,client=self),retryPolicy=backoffPolicy(initialDelay=1,maxDelay=60))
         self._events={}; self._responseDeferreds={}; self.isConnected=False

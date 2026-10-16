@@ -1,6 +1,6 @@
 """Read-only cTrader account economics from scaled protocol money and server P&L.
 
-Initial supported profile: hedged accounts, SUM margin, no account bonuses.
+Initial supported profile: hedged accounts, SUM or MAX margin, no account bonuses.
 No quote-currency conversions or fee signs are invented here.
 """
 from decimal import Decimal
@@ -24,7 +24,7 @@ def account_money(account,trader,reconcile,pnl,assets):
         if str(response.get('ctidTraderAccountId'))!=str(account): raise ValueError('foreign economics response')
     raw=trader['trader']
     if str(raw.get('ctidTraderAccountId'))!=str(account): raise ValueError('foreign trader')
-    if raw.get('accountType')!='HEDGED' or raw.get('totalMarginCalculationType')!='SUM':
+    if raw.get('accountType')!='HEDGED' or raw.get('totalMarginCalculationType') not in ('SUM','MAX'):
         raise ValueError('unsupported account margin profile')
     if any(integer(raw.get(k,0))!=0 for k in ('managerBonus','ibBonus','nonWithdrawableBonus')):
         raise ValueError('bonus valuation requires separate qualification')
@@ -37,13 +37,21 @@ def account_money(account,trader,reconcile,pnl,assets):
     if set(positions)!=set(profits): raise ValueError('incomplete position P&L')
     balance=money(raw,'balance')
     if balance is None: raise ValueError('balance scale required')
-    used=Decimal(0);net=Decimal(0)
+    used=Decimal(0);net=Decimal(0);sides={}
     for pid,position in positions.items():
         if position.get('positionStatus')!='POSITION_STATUS_OPEN': raise ValueError('unexpected reconciled position status')
         margin=money(position,'usedMargin')
         profit=money(dict(profits[pid],moneyDigits=pnl['moneyDigits']),'netUnrealizedPnL')
         if margin is None or margin<0 or profit is None: raise ValueError('incomplete position economics')
-        used+=margin;net+=profit
+        if raw['totalMarginCalculationType']=='MAX':
+            trade=position['tradeData'];symbol=integer(trade['symbolId']);side=trade['tradeSide']
+            if symbol<=0 or side not in ('BUY','SELL'): raise ValueError('invalid margin grouping')
+            group=sides.setdefault(symbol,{'BUY':Decimal(0),'SELL':Decimal(0)})
+            group[side]+=margin
+        else: used+=margin
+        net+=profit
+    if raw['totalMarginCalculationType']=='MAX':
+        used=sum((max(group.values()) for group in sides.values()),Decimal(0))
     equity=balance+net
     return dict(currency=currency,balance=str(balance),equity=str(equity),free_margin=str(equity-used))
 
@@ -58,11 +66,9 @@ class EconomicsCollector:
         if self.asset_generation!=generation:
             self.assets=yield self.session.read('ProtoOAAssetListReq');self.asset_generation=generation
         started=self.now()
-        trader=yield self.session.read('ProtoOATraderReq')
-        reconciliation=yield self.session.read('ProtoOAReconcileReq')
+        trader,reconciliation=yield defer.gatherResults([self.session.read('ProtoOATraderReq'),self.session.read('ProtoOAReconcileReq')],consumeErrors=True)
         pnl=yield self.session.read('ProtoOAGetPositionUnrealizedPnLReq')
-        check_trader=yield self.session.read('ProtoOATraderReq')
-        check_positions=yield self.session.read('ProtoOAReconcileReq')
+        check_trader,check_positions=yield defer.gatherResults([self.session.read('ProtoOATraderReq'),self.session.read('ProtoOAReconcileReq')],consumeErrors=True)
         if (not self.session.ready or self.session.generation!=generation or
                 not 0<=(self.now()-started).total_seconds()<=2): raise ValueError('stale account economics')
         if 'balanceVersion' not in trader['trader'] or digest(trader)!=digest(check_trader) or digest(reconciliation)!=digest(check_positions):
