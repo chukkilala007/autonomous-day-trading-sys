@@ -41,7 +41,7 @@ class Projection:
             net=None
             if filled and position['closed']:
                 settlement=(settlements or {}).get(command)
-                if not settlement or settlement.get('position_id')!=str(pid) or not settlement.get('complete') or not settlement.get('evidence_hash'):
+                if not settlement or settlement.get('position_id')!=str(pid) or settlement.get('complete') is not True or not settlement.get('evidence_hash'):
                     blockers.append('SETTLEMENT_REQUIRED:'+command);continue
                 net=D(settlement['net'])
                 if not net.is_finite(): raise ValueError('nonfinite settlement')

@@ -8,18 +8,18 @@ This is the go-to document for **what exists, what comes next, how to implement 
 
 | Item | Current value |
 |---|---|
-| Verified implementation baseline | S1–S4 complete; S5–S7 implementation slices merged locally; see delivery ledger and remaining-work matrix below |
+| Verified implementation baseline | S1–S4 complete; additional S5–S7 offline integration delivered on feature branches; see latest ledger |
 | Completed stage | S1, S2, S3 and S4; persistent two-strategy paper runtime |
-| Current implementation work | Implementing S5–S7; actual broker/host qualification remains separately gated |
-| Next feature | offline_release_evidence |
-| Next concrete action | Continue offline_release_evidence; preserve pending external acceptance gates |
+| Current implementation work | Outstanding offline implementation delivered and verified; actual trading remains disabled |
+| Next feature | External provider/host qualification only after a new explicit mandate; see remaining-work matrix |
+| Next concrete action | Review offline delivery evidence and preserve disabled broker execution; do not request/use credentials under the current offline-only scope |
 | Next milestone | S5: verified provider data and read-only shadow runtime |
 | Working branch policy | One feature/<feature_name> branch from develop; test, commit, merge --no-ff to develop |
-| Trading state | Default paper stack; separate demo read-only collector available. No real broker order placed; no enabled demo/live executor service |
-| External inputs | Private Open API credentials and selected demo account; later explicit demo-order test authorization, intended Linux host and encrypted off-host backup destination |
-| Known limitations | Demo core/outbox adapter and supervised service wiring deferred until S5 contract qualification; incremental feed optimization open; browser visual check and intended-host release drills unverified |
-| Verification evidence | Latest source gateway suite: 107 tests and 4 subtests; final installed-image/restart results recorded in the release-review ledger |
-| Uncommitted implementation | None intended after release_integration_review merge; verify git status on resume |
+| Trading state | Paper simulation and deterministic demo-protocol tests only; no actual broker connection or order |
+| External inputs | None required for completed offline scope. Future actual integration needs authorized credentials/account, audited provider economics, intended host and backup destination |
+| Known limitations | Actual valuation/settlement exporter and gateway activation require provider qualification; UI visual check blocked by browser tooling; no intended-host or off-host restore performed |
+| Verification evidence | Installed gateway: 115 tests + 4 subtests; base: 102 tests, 10 skips + 4 subtests; restart/restore/isolation pass. Prior develop CI 38824095895 passed AMD64/ARM64 |
+| Uncommitted implementation | None intended after offline_release_evidence merge; inspect git status on resume |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -29,16 +29,26 @@ Future handoffs must name the active feature, changes already made, exact failin
 |---|---|---|
 | F5.1 | Verified TLS, demo binding, rotated private tokens, terminal refresh failure | Actual authorized connect/refresh/reconnect evidence |
 | F5.2 | Exact unit normalization, expiring account-bound evidence, hedged-account gate | Broker-specific tick/basis/session/fees/conversion/margin/protection and account-type audit |
-| F5.3 | Durable causal feed, gap/revision checks, bounded history pagination | Incremental history/subscription optimization and actual streaming/backfill checks |
+| F5.3 | Durable causal feed, gap/revision checks, bounded history pagination | Actual streaming/backfill checks (incremental overlap and generation-scoped subscription implemented offline) |
 | F5.4 | Separate gateway/core/workers, authenticated read-only snapshot RPC, zero order path | Actual shadow run with complete required history and evidence/lag checks |
-| F6.1–F6.3 | Fencing, uncertain-send persistence, order/position ledger, owned cancel/close/protect, recovery supervisor | After S5 passes: implement the demo core/outbox adapter and service wiring using verified capabilities; reconcile risk/costs/events end to end. Current components alone are not an autonomous demo service |
+| F6.1–F6.3 | Fencing, uncertain-send persistence, order/position ledger, owned cancel/close/protect, recovery supervisor | Offline core/outbox adapter, TCP controller, service loop and settlement-gated reconciliation implemented. Actual account-specific valuation/settlement exporter, authorized gateway activation and broker acceptance still required |
 | F6.4 | Fail-closed qualification report and deterministic faults | Explicit demo-test authorization plus actual lifecycle, cancellation-race, protection and reconnect evidence |
 | F7.1 | Authenticated API, dashboard proxy, stale labels, evidence links | Browser visual acceptance (available browser tools failed) and actual broker panel attribution |
 | F7.2 | Tested paper pause/resume/owned flatten, deduplicated local alerts | DONE for delivered paper controls; demo wiring belongs to pending F6 service integration |
-| F7.3 | Slim Docker targets, isolation audit, resource/log limits, immutable release helper, native-architecture CI | Observe CI, publish verified immutable images, clean intended Linux-host deployment after F6 qualification |
-| F7.4 | Quiesced paired paper archive, isolated halted restore, measured local soak/recovery | Encrypted off-host secret/archive recovery, representative intended-host soak and real-account restore reconciliation |
+| F7.3 | Slim Docker targets, isolation audit, resource/log limits, immutable release helper, native-architecture CI | Prior develop CI observed passing on native AMD64/ARM64; immutable publication and clean intended-host qualification remain outside offline scope |
+| F7.4 | Quiesced paired paper archive, isolated halted restore, measured local soak/recovery | Encrypted secret recovery tooling tested offline; actual off-host/key recovery, intended-host soak and real-account restore reconciliation remain outside offline scope |
 
-The remaining demo adapter is an explicit implementation dependency, not merely a credential switch. Do not reuse paper fill/economics semantics for actual broker events. Keep its branch separate after provider qualification; require protocol-to-core event/risk reconciliation and restart fault tests before enabling any demo service. A netted account requires a separately reviewed allocation adapter; the initial demo profile rejects it.
+The user explicitly selected **implement and test offline; leave actual broker orders disabled** on 2026-10-16. Offline adapter/service work is now delivered, superseding the earlier dependency deferral. It does not supply or infer actual broker economics. `DemoAPI` requires fresh account-bound valuation evidence and explicit settlement evidence; missing facts block entries or keep reservations unresolved. A provider-specific exporter and authorized gateway activation are future qualification work, not a configuration switch justified by synthetic tests. Netted accounts remain unsupported.
+
+Offline subfeatures delivered under that mandate:
+
+- **F5.3a DONE:** generation-scoped subscriptions, incremental revision overlap, full reconnect repair and incomplete-history cursor checks.
+- **F6.1a DONE:** bound demo RPC adapter, shared risk/outbox runtime and deterministic protobuf accept/fill/close integration.
+- **F6.2a DONE:** owned event projection, correlation-collision rejection, settlement-gated closure, broker-confirmed management and stale-request guards.
+- **F6.3a DONE:** core service cycle, authenticated TCP boundary, reactor dispatch factory and recovery-supervisor calls, exercised offline. No real-order launcher enabled.
+- **F7.4a DONE:** encrypted secret archive/restore with synthetic-secret tamper, wrong-key, private-file and overwrite-refusal tests.
+
+Parent stages remain open because their original acceptance gates include actual broker/host evidence. The remaining visual dashboard check failed due browser runtime/tool connection problems; it is not claimed passed.
 
 ## Resume procedure
 
@@ -678,3 +688,21 @@ Branch: `feature/encrypted_secret_recovery`. Status: IN_PROGRESS. Added offline 
 ### Delivery F6.2 — implementation slice
 
 Branch: `feature/demo_integration_hardening`. Status: IN_PROGRESS. Hardened ownership with full order identity matching and position binding; management/recovery require fresh verified reconciliation. 115 tests and 4 subtests pass, including correlation collisions and stale TCP requests. Actual broker orders remain disabled under the users offline-only instruction. Feature commit: `git log --all --grep="F6.2:"`.
+
+### Delivery — outstanding offline implementation verified (2026-10-16)
+
+Branch: `feature/offline_release_evidence`. User mandate: implement/test offline and leave actual broker orders disabled. The earlier demo-adapter implementation deferral is superseded by F6.1a/F6.2a/F6.3a; provider-specific economics and actual activation remain gated. Added strict unknown-external-exposure and settlement-completeness checks and documented the provider boundary in `docs/demo-provider-boundary.md`.
+
+Final observed evidence:
+
+- Built runtime, base test, gateway-check and gateway images with installed packages.
+- Installed gateway suite: **115 passed, 4 subtests passed**. Installed base suite: **102 passed, 10 dependency-related skips, 4 subtests passed**. Gateway suite exercises those dependency paths.
+- Full offline protobuf entry acceptance, fill and settlement-gated closure pass over authenticated TCP. Uncertain sends survive core restart without duplication; wrong token/stale fence/stale management requests are rejected.
+- Encrypted secret backup/restore tests use synthetic secrets only and verify tamper/wrong-key/path/permission/overwrite handling.
+- Docker open-exposure restart drill: **PASS**, same two original order IDs, both instances READY at cursor 4, zero positions/reservations/rejections.
+- Isolated paired paper restore: **PASS**, zero lost committed events, retained restore halt, two original orders, zero remaining positions; measured recovery **0.0081 seconds** against the predeclared 10-second limit.
+- Resolved Compose isolation audit: **PASS**. Dashboard HTML and authenticated proxy verified inside the isolated private network: paper mode, stale indicator, two closed orders, zero exposure. Host/browser visual acceptance remains unverified: the browser plugin had a native dependency mismatch, and the alternate UI connection stalled and was interrupted. No screenshot acceptance is claimed.
+- Previous published develop CI run `38824095895`: **success**, including native AMD64 and ARM64 jobs. Current publication CI is separate evidence, to be inspected after push.
+- Only generated test-stack containers/volumes were cleaned up. No actual broker credentials, connection, order, host deployment, registry publication or off-host transfer was used.
+
+The offline scope is delivered. Remaining parent-stage gates are actual provider/metadata/valuation qualification, explicit demo-order authorization and operational gateway bootstrap, intended-host release/restore/soak and visual dashboard acceptance. They are not marked DONE and should not be activated under the current offline-only mandate.

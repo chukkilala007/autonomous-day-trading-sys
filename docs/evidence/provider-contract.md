@@ -20,7 +20,7 @@ Prepare the separate analysis configuration with `python3 scripts/prepare_shadow
 
 Add `--profile analysis` before `up` to run the isolated core and two workers. The gateway exposes only an authenticated snapshot RPC on its internal network. Core receives normalized snapshots/account views; workers receive only their instance token. Neither has broker credentials or an order transport. History completeness, fresh account views and causal market coverage gate evaluation.
 
-History pagination recursively splits bounded timestamp ranges without assuming provider sort direction. Unpageable windows, request-budget exhaustion, conflicting deal records and incomplete coverage block acceptance. The collector records only the configured account history window: completeness is relative to that window, not lifetime trading history. Unknown ownership remains external. The current polling bridge repairs configured history on each cycle; incremental subscription optimization and real-provider qualification remain open F5 work.
+History pagination recursively splits bounded timestamp ranges without assuming provider sort direction. Unpageable windows, request-budget exhaustion, conflicting deal records and incomplete coverage block acceptance. The collector records only the configured account history window: completeness is relative to that window, not lifetime trading history. Unknown ownership remains external. The polling bridge subscribes once per connection generation, requests overlapping incremental history after complete warm-up, and repeats full backfill after reconnect. Incomplete history cannot advance its cursor. Real-provider qualification remains open F5 work.
 
 ## Demo execution boundary
 
