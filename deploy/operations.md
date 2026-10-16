@@ -51,3 +51,12 @@ Schema 1 is the current supported version. A future schema is rejected. Roll bac
 `config/soak-acceptance.json` fixes the limits before measurement: 60 seconds, 5 synthetic events/second, at least 250 processed events, p95 processing below 500ms, maximum process RSS 256MiB, exactly two original entry commands and zero residual positions/reservations. This is a modest paper tick workload, not a production trading-load claim. `scripts/soak.py` reports the actual metrics and fails if any limit is missed.
 
 `scripts/recovery_drill.py` starts with two owned commands and open risk, backs up quiesced state, restores to a new isolated directory and reconciles through protected exits. Acceptance: zero lost committed events, identical order IDs, no duplicate submissions, retained restore halt and recovery below 10 seconds. Run these scripts in the test/gateway-check image. Production soak duration, operational RPO/RTO and actual host outage tests must be agreed and measured on the intended host before release.
+
+## Encrypted secret recovery tooling
+
+The gateway/tools image includes `python -m trading_platform.persistence.secret_archive`.
+Use `keygen --output /private/archive.key` once, store this 32-byte key separately in an approved offline key store, and keep it out of archives and Git. Back up explicitly named private files with `backup --key /private/archive.key --source credentials.json=/private/credentials.json --source tokens.json=/state/tokens.json --output /backup/NEW.sealed`. Stop token rotation while capturing the pair; per-file change detection is not a cross-file transaction. Files must be private regular files, not symlinks.
+
+The format uses AES-256-GCM with a random nonce and authenticated version header. Verify recovery using `restore --key /recovery/archive.key --archive /backup/NEW.sealed --destination /restore/NEW_DIRECTORY` in a no-network container. Authentication completes before any plaintext destination is created. The destination must be new; files are 0600 in a 0700 directory. An incomplete restore retains an `INCOMPLETE` marker. Neither command activates credentials or contacts a broker. Test restored credentials only during a separately authorized provider qualification.
+
+Only synthetic secrets were exercised locally. Copying ciphertext to an off-host destination, separately recovering the key, and qualifying an actual credential restore remain operator/deployment acceptance tasks; no remote destination is configured or assumed.
