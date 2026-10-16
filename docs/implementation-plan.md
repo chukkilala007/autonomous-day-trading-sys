@@ -710,3 +710,7 @@ The offline scope is delivered. Remaining parent-stage gates are actual provider
 ### Delivery F5.2a — validated economics inputs (2026-10-16)
 
 Branch: `feature/verified_valuation_inputs`. **DONE** for the provider-independent boundary. Added strict valuation and settlement schemas and exporter with exact signed account-currency cash movements, unique allocation, lifecycle coverage, quantity completeness, evidence hashing and freshness checks. Docker offline targeted tests: **12 passed**. Actual broker economics mapping/qualification remains open; no credentials or orders used. Next: gateway lifecycle and reconnect orchestration using injected offline provider adapters.
+
+### Delivery F6.3b — operational lifecycle assembly (2026-10-16)
+
+Branch: `feature/gateway_lifecycle`. **DONE** for injected-provider lifecycle. Added disabled-by-default component assembly, SDK execution callback persistence, cold/reconnect reconciliation, event/generation race invalidation, freshness checks, and RPC/reactor shutdown. Docker tests: **9 lifecycle tests passed**, including real reactor/thread shutdown; existing TCP demo integration also passed. No credential loader, enabled order deployment or raw broker economics/history mapper claimed. Next: reproducible offline release bundle and visual dashboard acceptance retry.
