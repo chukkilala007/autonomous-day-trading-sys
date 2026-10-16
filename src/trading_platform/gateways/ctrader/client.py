@@ -14,7 +14,7 @@ HOST = 'demo.ctraderapi.com'
 READ_REQUESTS = frozenset(('ProtoOATraderReq','ProtoOASymbolsListReq','ProtoOASymbolByIdReq','ProtoOAAssetListReq',
     'ProtoOAReconcileReq','ProtoOADealListReq','ProtoOAOrderListReq','ProtoOAGetTrendbarsReq','ProtoOAGetTickDataReq',
     'ProtoOASubscribeSpotsReq','ProtoOAUnsubscribeSpotsReq','ProtoOASubscribeLiveTrendbarReq',
-    'ProtoOAUnsubscribeLiveTrendbarReq','ProtoOAExpectedMarginReq','ProtoOASymbolsForConversionReq'))
+    'ProtoOAUnsubscribeLiveTrendbarReq','ProtoOAExpectedMarginReq','ProtoOASymbolsForConversionReq','ProtoOAGetPositionUnrealizedPnLReq'))
 
 
 class IsolatedProtocol(TcpProtocol):
