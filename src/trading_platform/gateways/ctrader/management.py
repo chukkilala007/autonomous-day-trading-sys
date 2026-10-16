@@ -26,11 +26,12 @@ def prepare(ledger,instance,management,now):
 def send_owned(gateway,ledger,command_id,instance,management,core,epoch,now):
     gateway.fence.check(core,epoch)
     if not gateway.authorized or not gateway.session.ready: raise ValueError('authorized connected demo session required')
+    target=(ledger.owned_order if management.action=='cancel' else ledger.owned)(management.target_id,instance)
     name,fields=prepare(ledger,instance,management,now)
     fields['ctidTraderAccountId']=gateway.session.account_id
     key='gateway-management:'+command_id
     with gateway.db.transaction() as c:
         if c.execute('SELECT 1 FROM checkpoints WHERE id=?',(key,)).fetchone(): raise ValueError('management already attempted')
-        c.execute('INSERT INTO checkpoints VALUES (?,?)',(key,canonical({'status':'UNKNOWN','request':name,'fields':fields,'owner':instance})))
+        c.execute('INSERT INTO checkpoints VALUES (?,?)',(key,canonical({'status':'UNKNOWN','request':name,'fields':fields,'owner':instance,'target_revision':target['updated'],'target_quantity':target.get('quantity','0')})))
     from ctrader_open_api.messages import OpenApiMessages_pb2 as messages
     return gateway.session.client.send(getattr(messages,name)(**fields),responseTimeoutInSeconds=10)

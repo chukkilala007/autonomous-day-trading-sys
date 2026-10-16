@@ -18,11 +18,12 @@ from trading_platform.runtime.controls import Controls
 
 
 class PaperRuntime:
+    mode="paper"
     def __init__(self,db,registry,instances,broker,workers=None,factors=None):
         self.db=db;self.registry=registry;self.instances=instances;self.broker=broker;self.workers=workers or {};self.factors=factors or {}
         self.controls=Controls(db);self.last_snapshot=None
         self.journal=Journal(db);self.recovery=Recovery(db);self.portfolio=Portfolio(db)
-        if any(i.mode!='paper' for i in instances): raise ValueError('paper runtime only')
+        if any(i.mode!=self.mode for i in instances): raise ValueError('runtime mode mismatch')
         if len({i.account.model_dump_json() for i in instances})!=1: raise ValueError('shared account policy required')
         if sum((i.allocation for i in instances),D(0))>instances[0].account.total_risk: raise ValueError('allocations exceed account ceiling')
         self.executor=Executor(db,instances[0].account)

@@ -18,7 +18,7 @@ def check_entry(entry,quote,now):
 
 
 def plan(decision,instance,quote,contract,now,balance,equity,free_margin):
-    if instance.mode!='paper': raise ValueError('Only paper execution implemented')
+    if instance.mode not in ('paper','demo'): raise ValueError('execution mode disabled')
     if (decision.instance,decision.account,decision.environment,decision.config_hash)!=(instance.instance_id,instance.account.alias,instance.account.environment,instance.hash): raise ValueError('decision binding mismatch')
     if decision.outcome!='ENTRY': raise ValueError('entry decision required')
     if decision.at>now: raise ValueError('future decision')
