@@ -29,10 +29,15 @@ def discover(wire,store,now=time.time):
 
 
 @defer.inlineCallbacks
-def collect(session,now,symbols=('EURUSD','XAUUSD')):
+def collect(session,now,symbols=('EURUSD','XAUUSD'),progress=None):
     at=now();generation=session.generation
+    progress=progress or (lambda stage,evidence:None)
+    profile=yield session.read('ProtoOATraderReq')
+    if str(profile.get('ctidTraderAccountId'))!=str(session.account_id): raise ValueError('foreign trader profile')
+    progress('ACCOUNT_PROFILE',profile)
     catalog=yield session.read('ProtoOASymbolsListReq',includeArchivedSymbols=False)
     if str(catalog.get('ctidTraderAccountId'))!=str(session.account_id): raise ValueError('foreign symbol catalog')
+    progress('SYMBOL_CATALOG',catalog)
     selected={}
     for name in symbols:
         matches=[s for s in catalog.get('symbol',[]) if s.get('symbolName')==name]
@@ -41,10 +46,12 @@ def collect(session,now,symbols=('EURUSD','XAUUSD')):
     metadata=yield session.read('ProtoOASymbolByIdReq',symbolId=list(selected.values()))
     if str(metadata.get('ctidTraderAccountId'))!=str(session.account_id): raise ValueError('foreign metadata')
     if {int(s['symbolId']) for s in metadata.get('symbol',[])}!=set(selected.values()): raise ValueError('incomplete metadata')
+    progress('SYMBOL_METADATA',metadata)
     history={}
     start=at-timedelta(hours=24)
     for name,symbol in selected.items():
         history[name]=yield complete_range(session,'ProtoOAGetTrendbarsReq','trendbar',int(start.timestamp()*1000),int(at.timestamp()*1000),symbolId=symbol,period=1)
+    progress('HISTORY',history)
     economics=yield EconomicsCollector(session,now).collect()
     if session.generation!=generation or not session.ready: raise ValueError('connection changed during probe')
     payload=dict(format=1,mode='demo-readonly',host=HOST,orders_enabled=False,account_id=str(session.account_id),
@@ -69,22 +76,33 @@ def run(reactor,args):
     try:
         yield connected.addTimeout(20,reactor)
         wire=lambda name,**fields:Session.wire(SimpleNamespace(client=client),name,**fields)
+        report['phase']='APPLICATION_AUTH_AND_DISCOVERY'
         accounts=yield discover(wire,store)
         if disconnected[0]: raise ValueError('discovery disconnected')
         account=args.account
         if account is None:
             if len(accounts)!=1:
-                report.update(status='ACCOUNT_SELECTION_REQUIRED',demo_account_ids=[str(a['ctidTraderAccountId']) for a in accounts])
+                report.update(status='ACCOUNT_SELECTION_REQUIRED',reason='SELECT_EXPLICIT_DEMO_ACCOUNT',demo_account_ids=[str(a['ctidTraderAccountId']) for a in accounts])
                 return
             account=str(accounts[0]['ctidTraderAccountId'])
         bind_demo(accounts,account)
+        report['phase']='ACCOUNT_AUTH'
         session=Session(client,store,account)
-        yield session.authenticate(session.generation)
-        result=yield collect(session,lambda:datetime.now(timezone.utc),args.symbols)
+        yield session.authenticate(session.generation,application_authenticated=True)
+        report['account_id']=str(account)
+        def progress(stage,evidence):
+            report['phase']=stage
+            report.setdefault('evidence',{})[stage]=evidence
+        result=yield collect(session,lambda:datetime.now(timezone.utc),args.symbols,progress)
         report=dict(result,status='COLLECTED')
-    except Exception:
-        # Broker descriptions and SDK failures can contain credentials.
-        pass
+    except Exception as error:
+        # Only fixed local classifications are allowed into reports.
+        known={'unsupported account margin profile':'UNSUPPORTED_MARGIN_PROFILE',
+               'bonus valuation requires separate qualification':'UNQUALIFIED_BONUS',
+               'stale account economics':'STALE_ACCOUNT_ECONOMICS',
+               'account changed during valuation':'ACCOUNT_CHANGED_DURING_VALUATION',
+               'explicit unique broker symbol required':'SYMBOL_SELECTION_REQUIRED'}
+        report['reason']=known.get(str(error),'READONLY_QUALIFICATION_REQUIRED')
     finally:
         yield defer.maybeDeferred(client.stopService)
         with os.fdopen(fd,'w') as output:

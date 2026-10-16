@@ -67,9 +67,10 @@ class Session:
         return None
 
     @defer.inlineCallbacks
-    def authenticate(self, generation):
+    def authenticate(self, generation, *, application_authenticated=False):
         credentials=self.tokens.read()
-        yield self.wire('ProtoOAApplicationAuthReq',clientId=credentials['client_id'],clientSecret=credentials['client_secret'])
+        if not application_authenticated:
+            yield self.wire('ProtoOAApplicationAuthReq',clientId=credentials['client_id'],clientSecret=credentials['client_secret'])
         if credentials['expires_at'] <= self.now()+60:
             response=yield self.wire('ProtoOARefreshTokenReq',refreshToken=credentials['refresh_token'])
             credentials=self.tokens.rotate(credentials,response,self.now())

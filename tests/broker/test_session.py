@@ -51,3 +51,15 @@ def test_failed_refresh_stops_client_and_exposes_terminal_state():
     errors=[];session.refresh_if_due().addErrback(lambda error:errors.append(error))
     assert errors and str(errors[0].value)=='authentication refresh failed'
     assert not session.ready and session.error=='AUTHENTICATION_FAILED' and client.stopped
+
+
+def test_discovered_connection_skips_duplicate_application_auth_but_reconnect_does_not():
+    client=Client();session=Session(client,Tokens(),12,now=lambda:1);sent=[]
+    def wire(name,**fields):
+        sent.append(name)
+        return succeed({'ctidTraderAccount':[{'ctidTraderAccountId':'12','isLive':False}]} if name=='ProtoOAGetAccountListByAccessTokenReq' else {'ctidTraderAccountId':'12'})
+    session.wire=wire
+    session.authenticate(session.generation,application_authenticated=True)
+    assert session.ready and sent==['ProtoOAGetAccountListByAccessTokenReq','ProtoOAAccountAuthReq']
+    sent.clear();client.disconnected();client.connected()
+    assert session.ready and sent==['ProtoOAApplicationAuthReq','ProtoOAGetAccountListByAccessTokenReq','ProtoOAAccountAuthReq']
