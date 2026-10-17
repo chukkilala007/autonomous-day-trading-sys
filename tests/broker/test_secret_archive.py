@@ -30,3 +30,20 @@ def test_secret_archive_rejects_public_files_paths_and_key_inclusion(tmp_path):
     with pytest.raises(ValueError,match='key cannot'):backup(key,{'key.key':key},tmp_path/'out')
     link=tmp_path/'link';link.symlink_to(secret)
     with pytest.raises(OSError):backup(key,{'tokens.json':link},tmp_path/'out')
+
+
+def test_partial_secret_restore_retains_incomplete_marker(tmp_path,monkeypatch):
+    from trading_platform.persistence import secret_archive
+    key=tmp_path/'key';secret=tmp_path/'secret';archive=tmp_path/'sealed'
+    exclusive_write(key,os.urandom(32));exclusive_write(secret,b'synthetic')
+    backup(key,{'a.json':secret,'b.json':secret},archive)
+    original=secret_archive.exclusive_write
+    def fail_second(path,data):
+        if path.name=='b.json':raise OSError('injected disk failure')
+        original(path,data)
+    monkeypatch.setattr(secret_archive,'exclusive_write',fail_second)
+    destination=tmp_path/'restore'
+    with pytest.raises(OSError,match='injected'):restore(key,archive,destination)
+    assert (destination/'INCOMPLETE').exists()
+    assert (destination/'a.json').stat().st_mode & 0o777==0o600
+    with pytest.raises(FileExistsError):restore(key,archive,destination)

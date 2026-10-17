@@ -39,3 +39,32 @@ def test_backup_rejects_active_simulator_lock(tmp_path):
     with open(str(tmp_path/'broker')+'.lock','a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         with pytest.raises(BlockingIOError): backup(tmp_path/'db',tmp_path/'broker',tmp_path/'archive')
+
+
+def test_interrupted_restore_never_publishes_unhalted_core(tmp_path,monkeypatch):
+    from trading_platform.persistence import archive
+    with Database(tmp_path/'db'):pass
+    (tmp_path/'broker').write_text('{}')
+    backup(tmp_path/'db',tmp_path/'broker',tmp_path/'archive')
+    original=archive.shutil.copyfile
+    def fail_second(source,destination):
+        if str(destination).endswith('paper.json'):raise OSError('injected disk failure')
+        return original(source,destination)
+    monkeypatch.setattr(archive.shutil,'copyfile',fail_second)
+    with pytest.raises(OSError,match='injected'):restore(tmp_path/'archive',tmp_path/'restore')
+    assert (tmp_path/'restore'/'INCOMPLETE').exists()
+    assert not (tmp_path/'restore'/'core.db').exists()
+    with pytest.raises(FileExistsError):restore(tmp_path/'archive',tmp_path/'restore')
+    assert verify(tmp_path/'archive')['mode']=='paper'
+
+
+def test_manifest_schema_and_incomplete_backup_refuse_restore(tmp_path):
+    with Database(tmp_path/'db'):pass
+    (tmp_path/'broker').write_text('{}')
+    backup(tmp_path/'db',tmp_path/'broker',tmp_path/'archive')
+    manifest=tmp_path/'archive'/'manifest.json'
+    body=json.loads(manifest.read_text());body['schema']=999;manifest.write_text(json.dumps(body))
+    with pytest.raises(ValueError,match='unsupported'):restore(tmp_path/'archive',tmp_path/'restore')
+    assert not (tmp_path/'restore').exists()
+    (tmp_path/'archive'/'INCOMPLETE').touch()
+    with pytest.raises(ValueError,match='incomplete'):verify(tmp_path/'archive')
