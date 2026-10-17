@@ -11,6 +11,7 @@ class Policy(Record):
     instrument: Name
     symbol_id: int = Field(gt=0)
     currency: Name
+    quote_currency: Name
     tick: Positive
     minimum: Positive
     maximum: Positive
