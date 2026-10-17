@@ -89,6 +89,15 @@ class DemoAPI:
             contract=Contract.model_validate_json(json.dumps(view['contracts'][symbol]))
             if contract.account_currency!=view['account']['currency'] or not 0<=(now-contract.verified_at).total_seconds()<=30: raise ValueError('unverified contract')
             if command['body']['contract']!=json.loads(contract.model_dump_json()): raise ValueError('valuation changed before send')
+            if contract.exact_costs:
+                from trading_platform.risk.sizing import size
+                from trading_platform.contracts.orders import Entry
+                from trading_platform.contracts.values import decimal
+                if contract.exact_costs.account_id!=str(self.gateway.session.account_id): raise ValueError('foreign quantity economics')
+                proposal=Entry.model_validate_json(json.dumps(command['body']['decision']['proposal']))
+                requested=command['body']['size']
+                sized=size(proposal,contract,decimal(requested['risk']),now=now,free_margin=decimal(view['account']['free_margin']),equity=decimal(view['account']['equity']),reserve_fraction=decimal('0'))
+                if json.loads(sized.model_dump_json())!=requested: raise ValueError('quantity economics changed before send')
             raw=self.feed.get('quote:'+symbol)
             from trading_platform.contracts.events import Quote
             quote=Quote.model_validate_json(json.dumps(raw))
