@@ -9,7 +9,7 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 remain partially complete; S8 unstarted |
-| Latest features | MAX-margin mapping and valuation pacing; capability audit; bounded read-only shadow/reconnect harness |
+| Latest features | Strategy-derived shadow config; Chrome-verified provider dashboard; offline cost arithmetic; interrupted restore hardening |
 | Account state | User-selected demo account authenticated; rotated tokens remain private; no orders enabled or sent |
 | Actual qualification | Fresh empty-account economics collected; three completed M1 bid/ask comparisons per symbol establish sampled bid basis; metadata and historical bars retrieved |
 | Actual shadow result | 9 reconciliations across generations 1 and 3; 2 subscriptions; 744 cached bars; both isolated workers healthy; zero commands/reservations/decisions |
@@ -17,9 +17,9 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Next concrete action | After fresh quotes return, repeat the bounded shadow run with a new exclusive report path and sufficient complete warm-up history; verify actual updates, repaired coverage, recorded strategy decisions and zero writes |
 | Capability blockers | Tick grid, contract-value policy, complete commission/conversion policy, prospective margin, protection sides, order/expiry behavior and current session state remain unqualified |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 188 passed + 4 subtests. Actual read-only run exit 0; fresh-market acceptance intentionally NOT claimed |
+| Latest tests | Installed gateway: 207 passed + 4 subtests, network disabled. Fresh-market acceptance intentionally NOT claimed |
 | External inputs | Registry/Linux host/backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
-| Publication | Latest prior baseline CI 38977108837 passed. Current feature publication/CI checked separately; inspect Git remote state |
+| Publication | Prior baseline CI 38979408055 passed. Follow-up publication/CI is recorded in the delivery handoff below |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -33,7 +33,7 @@ Future handoffs must name the active feature, changes already made, exact failin
 | F5.4 | Separate gateway/core/workers, authenticated read-only snapshot RPC, zero order path | Actual shadow run with complete required history and evidence/lag checks |
 | F6.1–F6.3 | Fencing, uncertain-send persistence, order/position ledger, owned cancel/close/protect, recovery supervisor | Offline core/outbox adapter, TCP controller, service loop and settlement-gated reconciliation implemented. Strict valuation input exporter and disabled lifecycle assembly now delivered (F5.2a/F6.3b/c). Raw broker economics/history mapping, authorized activation and broker acceptance still required |
 | F6.4 | Fail-closed qualification report and deterministic faults | Explicit demo-test authorization plus actual lifecycle, cancellation-race, protection and reconnect evidence |
-| F7.1 | Authenticated API, dashboard proxy, stale labels, evidence links | Browser visual acceptance (available browser tools failed) and actual broker panel attribution |
+| F7.1 | Authenticated API, dashboard proxy, stale labels, evidence links | Fresh actual broker panel acceptance; Chrome paper/synthetic visual checks passed |
 | F7.2 | Tested paper pause/resume/owned flatten, deduplicated local alerts | DONE for delivered paper controls; demo wiring belongs to pending F6 service integration |
 | F7.3 | Slim Docker targets, isolation audit, resource/log limits, immutable release helper, native-architecture CI | Prior develop CI observed passing on native AMD64/ARM64; immutable publication and clean intended-host qualification remain outside offline scope |
 | F7.4 | Quiesced paired paper archive, isolated halted restore, measured local soak/recovery | Encrypted secret recovery tooling tested offline; actual off-host/key recovery, intended-host soak and real-account restore reconciliation remain outside offline scope |
@@ -48,7 +48,7 @@ Offline subfeatures delivered under that mandate:
 - **F6.3a DONE:** core service cycle, authenticated TCP boundary, reactor dispatch factory and recovery-supervisor calls, exercised offline. No real-order launcher enabled.
 - **F7.4a DONE:** encrypted secret archive/restore with synthetic-secret tamper, wrong-key, private-file and overwrite-refusal tests.
 
-Parent stages remain open because their original acceptance gates include actual broker/host evidence. The remaining visual dashboard check is unverified due browser runtime/tool connection problems; retry on 2026-10-16 still found the native dependency mismatch and no alternate connected browser. It is not claimed passed.
+Parent stages remain open because their original acceptance gates include actual broker/host evidence. Chrome visual acceptance passed on 2026-10-17 for paper and synthetic shadow fixtures; the in-app browser native dependency failure persists. Fresh actual broker-panel acceptance remains pending.
 
 ## Resume procedure
 
@@ -812,3 +812,9 @@ Branch: `feature/broker_cost_mapping`. DONE for offline arithmetic, with **6 Doc
 ### Delivery F7.4b — interrupted restore drills (2026-10-17)
 
 Branch: `feature/recovery_failure_drills`. DONE for local failure handling. Paired paper restore now stages the core database until the paired broker copy and durable entry halt exist, and retains an INCOMPLETE marker on failure. Added injected disk-failure tests for paired state and encrypted synthetic secrets, plus incompatible-manifest rejection. **7 targeted Docker tests passed** including successful halted restore and no-overwrite recovery. Failed destinations are retained for inspection; retry into a new isolated directory. Actual off-host recovery and intended-host soak still need destinations and evidence.
+
+### Delivery — offline follow-up handoff (2026-10-17)
+
+Completed and merged separately: strategy-derived configuration `4c8770e`, dashboard/Chrome acceptance `28457d3`, prospective cost arithmetic `f2891e3`, interrupted restore hardening `f8c481c`. Final rebuilt installed gateway suite: **207 passed, 4 subtests passed**, network disabled. Chrome screenshot uses synthetic fixture data. No credentials or orders used in this follow-up. Publication and CI are checked after this commit; do not treat the earlier baseline CI as verification of these changes.
+
+Next: fresh-market shadow run with new exclusive report filename and preserved rotated token store. Verify real quote updates, sufficient warm-up history, decisions and zero writes. Contract qualification still requires audited multiplier/tick/fee incidence, nonlinear sizing integration and fresh conversions/margin. Demo order lifecycle acceptance needs explicit authorization. Intended Linux host, registry and off-host backup destination remain unspecified. S5–S7 stay open; S8 remains unstarted.
