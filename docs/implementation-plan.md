@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 remain partially complete; S8 unstarted |
-| Latest features | Strategy-derived shadow config; Chrome-verified provider dashboard; offline cost arithmetic; interrupted restore hardening |
+| Latest features | Exact-quantity nonlinear sizing; audited contract assembly; proposal quoting RPC; revision-aware read-only margin collector |
 | Account state | User-selected demo account authenticated; rotated tokens remain private; no orders enabled or sent |
 | Actual qualification | Fresh empty-account economics collected; three completed M1 bid/ask comparisons per symbol establish sampled bid basis; metadata and historical bars retrieved |
 | Actual shadow result | 9 reconciliations across generations 1 and 3; 2 subscriptions; 744 cached bars; both isolated workers healthy; zero commands/reservations/decisions |
 | Current blocker | Last EURUSD/XAUUSD quotes were around 20:59 UTC while run ended 23:03 UTC on Friday 16 October (Saturday locally); no fresh coverage, so analysis correctly blocked |
 | Next concrete action | After fresh quotes return, repeat the bounded shadow run with a new exclusive report path and sufficient complete warm-up history; verify actual updates, repaired coverage, recorded strategy decisions and zero writes |
-| Capability blockers | Tick grid, contract-value policy, complete commission/conversion policy, prospective margin, protection sides, order/expiry behavior and current session state remain unqualified |
+| Capability blockers | Assembly and nonlinear sizing implemented offline. Actual tick grid, multiplier/cost policy, conversion and margin evidence, protection/order/expiry behavior and session state remain unqualified |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 207 passed + 4 subtests, network disabled. Fresh-market acceptance intentionally NOT claimed |
+| Latest tests | Installed gateway: 225 passed + 4 subtests, network disabled. Fresh-market acceptance intentionally NOT claimed |
 | External inputs | Registry/Linux host/backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
 | Publication | Prior baseline CI 38979408055 passed. Follow-up publication/CI is recorded in the delivery handoff below |
 
@@ -830,3 +830,11 @@ Branch: `feature/audited_contract_assembly`. DONE for offline assembly/integrati
 ### Delivery F5.2h — read-only prospective margin collector (2026-10-17)
 
 Branch: `feature/prospective_margin_collector`. DONE for offline provider tooling. `MarginQuote` supplies the injected proposal quote callback using allowlisted expected-margin reads, exact integer normalization and explicit candidate volumes. Audited policies and conversions bind account/instrument/currencies; source freshness, generation and exposure revision guard requests and bounded evidence reuse. **16 targeted Docker tests passed**, including in-flight reconnect, exposure change, disconnect, timeout and foreign conversion rejection before transport. No actual provider request/order used. Actual policy/conversion inputs and fresh broker qualification remain open.
+
+### Delivery — offline economics completion handoff (2026-10-17)
+
+Feature commits: nonlinear sizing `726a3b7`, audited assembly/proposal RPC `7b7909e`, read-only margin collector `db03931`; each tested and merged separately from develop. Rebuilt installed gateway suite: **225 passed, 4 subtests passed**, networking disabled. No actual broker connection or order occurred. Publication/CI checked after this handoff commit; local suite is not a CI result.
+
+The previously outstanding offline nonlinear sizing and contract assembly are delivered. Runtime consumes proposal-specific quotes and validates them at send time; collector is injected only with explicit audited policy, conversion source, candidate volumes and an exposure revision provider. Missing inputs continue to block. No default broker policy, candidate schedule or currency conversion is invented.
+
+Next concrete work: qualify actual account/symbol tick and multiplier, complete fee/conversion policy and protection/order capabilities; supply reviewed quote inputs; rerun fresh-market streaming/shadow and actual panel acceptance. Actual demo lifecycle tests still need explicit order authorization. Registry, intended Linux host and encrypted off-host destination remain unspecified. These are distinct gates: fresh market data alone does not complete S5–S7. S8 remains unstarted.
