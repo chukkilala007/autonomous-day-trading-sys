@@ -14,8 +14,9 @@ services:
     pids_limit: 128
     cpus: 1
     restart: unless-stopped
-    command: [python, -m, trading_platform.gateways.ctrader.service, --credentials, /private/credentials.json, --tokens, /state/tokens.json, --account, "${CTRADER_DEMO_ACCOUNT:?set explicit demo account}", --state, /state/shadow.db, --feed-config, /private/feed.json, --rpc-token, /run/secrets/gateway_token]
+    command: [python, -m, trading_platform.gateways.ctrader.service, --credentials, /private/credentials.json, --tokens, /state/tokens.json, --account, "${CTRADER_DEMO_ACCOUNT:?set explicit demo account}", --state, /state/shadow.db, --feed-config, /analysis/feed.json, --rpc-token, /run/secrets/gateway_token]
     volumes:
+      - "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/feed.json:/analysis/feed.json:ro"
       - "${SHADOW_SECRET_DIR:?set private credential/config directory}:/private:ro"
       - "${SHADOW_STATE_DIR:?set private UID10001 writable directory}:/state"
     networks: [egress, broker]
