@@ -137,7 +137,7 @@ class RunningGateway:
 
 
 def assemble(session, stream, ledger, provider, feed, reports, now, requirements,
-             address, token, reactor):
+             address, token, reactor, contract_quote=None):
     """Construct the operational graph with order authorization disabled.
 
     The caller owns the locked database and provider qualification. This factory
@@ -148,7 +148,7 @@ def assemble(session, stream, ledger, provider, feed, reports, now, requirements
     from .demo_server import reactor_server
     lifecycle=Lifecycle(session,stream,ledger,provider,now)
     gateway=DemoTransport(ledger.db,session,authorized=False)
-    api=DemoAPI(gateway,ledger,feed,reports,lifecycle.valuation,now,requirements)
+    api=DemoAPI(gateway,ledger,feed,reports,lifecycle.valuation,now,requirements,contract_quote=contract_quote)
     server=reactor_server(address,token,api,reactor)
     service=RunningGateway(lifecycle,server,reactor)
     return service,api

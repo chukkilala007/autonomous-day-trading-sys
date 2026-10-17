@@ -26,6 +26,11 @@ class DemoBroker:
         if not 0<=(self.now()-utc(view['observed_at'])).total_seconds()<=2: raise ValueError('stale broker observation')
         return view
 
+    def contract_for(self,proposal):
+        from trading_platform.risk.sizing import Contract
+        result=self.call('quote_contract',proposal=json.loads(proposal.model_dump_json()))
+        return Contract.model_validate_json(json.dumps(result))
+
     def events(self):
         view=self.observe()
         self.blockers=view['blockers']

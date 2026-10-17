@@ -44,7 +44,7 @@ def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(t
         feed=Feed(gdb);feed.ingest_quote(quote)
         ledger=ExecutionLedger(gdb,12);gateway=DemoTransport(gdb,Session(),authorized=True)
         value=dict(mode='demo',account_id='12',observed_at=now.isoformat(),classification='broker_verified',evidence_hash='offline-only',history_complete=True,external_exposure=False,account={'balance':'10000','equity':'10000','free_margin':'10000','currency':'GBP'},contracts={'X':json.loads(contract.model_dump_json())},settlements={})
-        api=DemoAPI(gateway,ledger,feed,{'X':report},lambda:value,lambda:now)
+        api=DemoAPI(gateway,ledger,feed,{'X':report},lambda:value,lambda:now,contract_quote=(lambda proposal:contract) if exact else None)
         def call(body):
             results=[];errors=[];api.handle(body).addCallbacks(results.append,errors.append)
             if errors: errors[0].raiseException()
@@ -59,6 +59,7 @@ def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(t
         broker=DemoBroker('127.0.0.1',server.server_address[1],'x'*40,'12','core',now=lambda:now)
         from trading_platform.runtime.transport import request as rpc
         with pytest.raises(ValueError): rpc('127.0.0.1',server.server_address[1],'wrong','demo-core',{'op':'acquire'})
+        assert broker.contract_for(decision.proposal)==contract
         executor=Executor(db,instance.account);executor.book.limits.observe(now,D('10000'))
         cid=executor.enqueue(decision,instance,quote,contract,now,D('10000'),D('10000'),D('10000'),'X')
         if exact:

@@ -14,9 +14,9 @@ from trading_platform.risk.sizing import Contract
 
 
 class DemoAPI:
-    def __init__(self,gateway,ledger,feed,reports,valuation,now,requirements=()):
+    def __init__(self,gateway,ledger,feed,reports,valuation,now,requirements=(),contract_quote=None):
         self.gateway=gateway;self.ledger=ledger;self.feed=feed;self.reports=reports
-        self.valuation=valuation;self.now=now;self.projection=Projection(gateway.db);self.requirements=requirements
+        self.valuation=valuation;self.now=now;self.projection=Projection(gateway.db);self.requirements=requirements;self.contract_quote=contract_quote
 
     def check(self,body):
         if str(body['account_id'])!=str(self.gateway.session.account_id): raise ValueError('foreign account')
@@ -64,6 +64,20 @@ class DemoAPI:
             return dict(mode='demo',authorized=True,account_id=str(self.gateway.session.account_id),epoch=self.gateway.fence.acquire(body['core_id']))
         self.check(body)
         if op=='observe': return self.view()
+        if op=='quote_contract':
+            from trading_platform.contracts.orders import Entry
+            proposal=Entry.model_validate_json(json.dumps(body['proposal']))
+            view=self.view()
+            if view['blockers']: raise ValueError('broker observation blocked')
+            contract=yield defer.maybeDeferred(self.contract_quote,proposal) if self.contract_quote else defer.succeed(view['contracts'][proposal.instrument])
+            contract=Contract.model_validate_json(contract.model_dump_json() if isinstance(contract,Contract) else json.dumps(contract))
+            if contract.instrument!=proposal.instrument or contract.account_currency!=view['account']['currency']: raise ValueError('foreign contract quote')
+            if not 0<=(self.now()-contract.verified_at).total_seconds()<=30: raise ValueError('stale contract quote')
+            if contract.exact_costs:
+                from trading_platform.contracts.values import digest
+                if contract.exact_costs.account_id!=str(self.gateway.session.account_id) or contract.exact_costs.proposal_hash!=digest(proposal): raise ValueError('foreign proposal economics')
+                if not 0<=(self.now()-contract.exact_costs.observed_at).total_seconds()<=2: raise ValueError('stale proposal economics')
+            return json.loads(contract.model_dump_json())
         if op=='snapshot':
             view=self.view()
             if view['blockers']: raise ValueError('snapshot reconciliation blocked')
@@ -86,7 +100,10 @@ class DemoAPI:
             view=self.view()
             if view['blockers']: raise ValueError('broker observation blocked')
             symbol=command['body']['decision']['proposal']['instrument']
-            contract=Contract.model_validate_json(json.dumps(view['contracts'][symbol]))
+            quoted=yield self.handle(dict(body,op='quote_contract',proposal=command['body']['decision']['proposal']))
+            contract=Contract.model_validate_json(json.dumps(quoted))
+            now=self.now()
+            view=self.view()
             if contract.account_currency!=view['account']['currency'] or not 0<=(now-contract.verified_at).total_seconds()<=30: raise ValueError('unverified contract')
             if command['body']['contract']!=json.loads(contract.model_dump_json()): raise ValueError('valuation changed before send')
             if contract.exact_costs:
