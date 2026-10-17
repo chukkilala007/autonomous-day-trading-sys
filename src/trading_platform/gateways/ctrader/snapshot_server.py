@@ -25,7 +25,7 @@ class Handler(socketserver.BaseRequestHandler):
                 at=self.server.now();account=self.server.feed.get('shadow:account')
                 if not account or not 0<=(at-utc(account['observed_at'])).total_seconds()<=30: raise ValueError('stale account view')
                 snapshot=self.server.feed.snapshot(at,self.server.requirements)
-                result={'snapshot':json.loads(snapshot.model_dump_json()),'account':account,'source':'actual_demo_readonly'}
+                result={'snapshot':json.loads(snapshot.model_dump_json()),'account':account,'source':'actual_demo_readonly','provider':self.server.feed.get('operations:provider') or {}}
             send(self.request,{'request_id':message['request_id'],'body':result})
         except (ValueError,KeyError,TypeError):
             send(self.request,{'request_id':message.get('request_id'),'error':'READONLY_SNAPSHOT_UNAVAILABLE'})

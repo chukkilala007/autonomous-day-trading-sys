@@ -17,7 +17,11 @@ def status(db,now=None):
         for row in c.execute('SELECT id,body FROM decisions ORDER BY event_seq DESC LIMIT 100'):
             body=json.loads(row['body'])
             decisions.append({k:body.get(k) for k in ('instance','outcome','at','event_id','snapshot_hash','reasons','package','config_hash')}|{'id':row['id']})
-        return dict(identity=identity,observed_at=now.isoformat(),data_age_seconds=lag,stale=lag is None or lag>30,
+        provider_row=c.execute("SELECT body FROM checkpoints WHERE id='operations:provider'").fetchone()
+        provider_raw=json.loads(provider_row['body']) if provider_row else {}
+        provider={k:provider_raw[k] for k in ('connection_state','generation','coverage_complete','capability_blockers','observed_at','source') if k in provider_raw}
+        provider['stale']=not provider.get('observed_at') or not 0<=(now-utc(provider['observed_at'])).total_seconds()<=30
+        return dict(provider=provider,identity=identity,observed_at=now.isoformat(),data_age_seconds=lag,stale=lag is None or lag>30,
             instances=[dict(r) for r in c.execute('SELECT id,package,cursor,status,halt FROM instances')],
             orders=[dict(r) for r in c.execute('SELECT id,instance,instrument,status,revision FROM commands')],
             positions=[json.loads(r['body']) for r in c.execute('SELECT body FROM positions')],risk=risk,
