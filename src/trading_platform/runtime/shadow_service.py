@@ -28,8 +28,11 @@ def main():
         runtime=ShadowRuntime(db,load_registry(config['registry']),instances,workers)
         with db.transaction() as c: c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('operations:identity',canonical({'mode':'shadow','account_alias':instances[0].account.alias,'config_hashes':{i.instance_id:i.hash for i in instances}})))
         while not stopped:
+            received=False
             try:
                 data=request(config['gateway']['host'],config['gateway'].get('port',9100),token('gateway'),'shadow-core',{'op':'snapshot'})
+                received=True
+                with db.transaction() as c:c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('operations:provider',canonical(data.get('provider',{}))))
                 snapshot=Snapshot.model_validate_json(json.dumps(data['snapshot']))
                 wall=datetime.now(timezone.utc)
                 if not 0<=(wall-snapshot.cutoff).total_seconds()<=2: raise ValueError('stale gateway snapshot')
@@ -39,6 +42,8 @@ def main():
                 with db.transaction() as c: c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('shadow:account',canonical(data['account'])))
                 print(json.dumps({'mode':'shadow','processed':event.event_id,'order_writes':0}),flush=True)
             except (ValueError,OSError,TimeoutError):
+                if not received:
+                    with db.transaction() as c:c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('operations:provider',canonical(dict(connection_state='UNAVAILABLE',coverage_complete=False,observed_at=datetime.now(timezone.utc),source='gateway_rpc'))))
                 print('{"mode":"shadow","ready":false,"reason":"COVERAGE_OR_RECONCILIATION_REQUIRED"}',flush=True)
             time.sleep(1)
 

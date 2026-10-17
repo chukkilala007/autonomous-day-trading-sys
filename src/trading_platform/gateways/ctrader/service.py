@@ -14,6 +14,7 @@ from .readonly import Collector
 from .stream import Stream
 from .snapshot_server import Server
 from .feed_config import validate as validate_feed
+from .metadata import CapabilityReport
 
 
 def main():
@@ -62,6 +63,8 @@ def main():
             if session.generation not in metrics['reconciled_generations']:metrics['reconciled_generations'].append(session.generation)
             complete=feed.snapshot(now(),config['requirements']).coverage_complete
             metrics['complete_snapshots']+=int(complete)
+            reports={name:CapabilityReport.model_validate_json(json.dumps(raw)) for name,raw in config['reports'].items()}
+            feed.put('operations:provider',dict(connection_state='CONNECTED',generation=session.generation,coverage_complete=complete,observed_at=now(),source='actual_demo_readonly',capability_blockers={name:r.blockers(now(),str(session.account_id),name) for name,r in reports.items()}))
             print(json.dumps({'mode':'shadow','account_reconciled':view['history_complete'],'coverage_complete':complete,'generation':session.generation,'orders_enabled':False}),flush=True)
         except Exception:
             metrics['failures']+=1
