@@ -32,6 +32,12 @@ class PaperRuntime:
             self.recovery.restart(i.instance_id)
         self.reconciled=self.executor.reconcile(broker)
 
+    def execution_time(self,snapshot):
+        return snapshot.cutoff
+
+    def contract_for(self,proposal,contracts):
+        return contracts[proposal.instrument]
+
     def process(self,event,snapshot,contracts):
         self.last_snapshot=snapshot
         seq=self.journal.append(event);h=self.journal.snapshot(snapshot)
@@ -76,16 +82,16 @@ class PaperRuntime:
                 if d.outcome=='ENTRY':
                     if self.controls.state()['paused']: raise ValueError('OPERATOR_PAUSED')
                     q=next(q for q in snapshot.quotes if q.instrument==d.proposal.instrument)
-                    contract=contracts[d.proposal.instrument]
+                    contract=self.contract_for(d.proposal,contracts)
                     bucket=self.factors.get(d.proposal.instrument,{}).get(d.proposal.side,d.proposal.instrument)
-                    id=self.executor.enqueue(d,i,q,contract,snapshot.cutoff,D(account['balance']),D(account['equity']),D(account['free_margin']),bucket)
+                    id=self.executor.enqueue(d,i,q,contract,self.execution_time(snapshot),D(account['balance']),D(account['equity']),D(account['free_margin']),bucket)
                 else: id=self.executor.queue_management(d,snapshot.cutoff)
             except (ValueError,KeyError,StopIteration) as exc:
                 with self.db.transaction() as c: c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('rejection:'+d.id,canonical({'reason':str(exc),'decision':d.id})))
         for row in self.db.connection.execute("SELECT id,instrument FROM commands WHERE status='QUEUED'").fetchall():
             try:
                 q=next(q for q in snapshot.quotes if q.instrument==row['instrument'])
-                self.executor.dispatch(row['id'],self.broker,q,snapshot.cutoff)
+                self.executor.dispatch(row['id'],self.broker,q,self.execution_time(snapshot))
             except (ValueError,StopIteration) as exc:
                 # Only unattempted commands may be locally rejected and release risk.
                 with self.db.transaction() as c:

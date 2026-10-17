@@ -20,6 +20,7 @@ def test_core_demo_uses_shared_risk_and_preserves_unknown_across_restart(tmp_pat
         if body['op']=='acquire': return dict(mode='demo',account_id='12',authorized=True,epoch=1)
         if body['op']=='observe': return dict(mode='demo',account_id='12',observed_at=at.isoformat(),events=[],blockers=[],account={'balance':'10000','equity':'10000','free_margin':'10000','currency':'GBP'})
         if body['op']=='snapshot': return {'snapshot':json.loads(rows[0][1].model_dump_json()),'contracts':{k:json.loads(v.model_dump_json()) for k,v in rows[0][2].items()}}
+        if body['op']=='quote_contract': return json.loads(rows[0][2][body['proposal']['instrument']].model_dump_json())
         if body['op']=='recover': return {}
         if body['op']=='submit': sent.append(body['command']['id']);raise TimeoutError('lost acknowledgement')
         if body['op']=='management_confirmed': return False
