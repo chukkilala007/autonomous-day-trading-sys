@@ -67,6 +67,7 @@ class Valuation(Record):
         for symbol, contract in self.contracts.items():
             if symbol != contract.instrument or contract.account_currency != self.currency:
                 raise ValueError('contract identity/currency mismatch')
+        if any(c.exact_costs and c.exact_costs.account_id!=self.account_id for c in self.contracts.values()): raise ValueError('foreign quantity economics')
         if len({s.command_id for s in self.settlements}) != len(self.settlements): raise ValueError('duplicate command settlement')
         if len({s.position_id for s in self.settlements}) != len(self.settlements): raise ValueError('duplicate position settlement')
         movements = [m for s in self.settlements for m in s.movements]
@@ -84,6 +85,7 @@ def export(value, account_id, now):
     if not 0 <= (now-value.observed_at).total_seconds() <= 2: raise ValueError('stale valuation')
     if any(not 0 <= (now-c.verified_at).total_seconds() <= 30 for c in value.contracts.values()):
         raise ValueError('stale contract economics')
+    if any(c.exact_costs and not 0<=(now-c.exact_costs.observed_at).total_seconds()<=2 for c in value.contracts.values()): raise ValueError('stale quantity economics')
     settlements = {s.command_id: dict(position_id=s.position_id, complete=True,
         net=str(sum((m.amount for m in s.movements), Decimal(0))), evidence_hash=digest(s)) for s in value.settlements}
     return dict(mode='demo', account_id=value.account_id, observed_at=value.observed_at.isoformat(),

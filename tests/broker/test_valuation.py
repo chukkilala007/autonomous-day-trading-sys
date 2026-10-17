@@ -34,3 +34,15 @@ def test_net_includes_open_close_costs_and_never_rounds():
 def test_invalid_economics_never_export(mutation):
     value=fixture();mutation(value)
     with pytest.raises(ValueError): export(json.dumps(value),'12',T)
+
+
+def test_exact_costs_cannot_cross_account_or_outlive_observation():
+    import runpy
+    entry,contract=runpy.run_path('tests/risk/test_exact_sizing.py')['fixture']()
+    raw=json.loads(contract.model_dump_json());raw['verified_at']=T.isoformat();raw['exact_costs']['observed_at']=T.isoformat()
+    value=fixture();value['contracts']={'X':raw}
+    assert export(json.dumps(value),'12',T)['contracts']['X']['exact_costs']['account_id']=='12'
+    raw['exact_costs']['account_id']='13'
+    with pytest.raises(ValueError,match='foreign quantity'):export(json.dumps(value),'12',T)
+    raw['exact_costs']['account_id']='12';raw['exact_costs']['observed_at']=(T-timedelta(seconds=3)).isoformat()
+    with pytest.raises(ValueError,match='stale quantity'):export(json.dumps(value),'12',T)

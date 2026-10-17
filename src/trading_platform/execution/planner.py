@@ -24,4 +24,5 @@ def plan(decision,instance,quote,contract,now,balance,equity,free_margin):
     if decision.at>now: raise ValueError('future decision')
     check_entry(decision.proposal,quote,now)
     if contract.account_currency!=instance.account.currency: raise ValueError('account currency mismatch')
+    if contract.exact_costs and contract.exact_costs.account_id!=instance.account.broker_account: raise ValueError('quantity economics account mismatch')
     return size(decision.proposal,contract,balance*min(instance.account.per_trade,instance.allocation),now=now,free_margin=free_margin,equity=equity,reserve_fraction=instance.account.free_margin_fraction)
