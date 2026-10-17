@@ -8,7 +8,7 @@ from trading_platform.risk.sizing import size
 
 def fixture():
     entry,old=runpy.run_path('tests/risk/test_sizing.py')['inputs']();now=old.verified_at
-    policy=Policy(account_id='12',instrument='X',symbol_id=2,currency='GBP',tick='.01',minimum='1',maximum='100',step='1',contract_value_per_unit='1',roundtrip_cost_per_unit='.1',minimum_total_cost='3',fixed_cost='.5',cost_coverage='complete_roundtrip_upper_bound',classification='broker_verified',evidence_hash='a'*64,observed_at=now-timedelta(days=1),valid_until=now+timedelta(days=1))
+    policy=Policy(account_id='12',instrument='X',symbol_id=2,currency='GBP',quote_currency='USD',tick='.01',minimum='1',maximum='100',step='1',contract_value_per_unit='1',roundtrip_cost_per_unit='.1',minimum_total_cost='3',fixed_cost='.5',cost_coverage='complete_roundtrip_upper_bound',classification='broker_verified',evidence_hash='a'*64,observed_at=now-timedelta(days=1),valid_until=now+timedelta(days=1))
     args=dict(account=12,now=now,quote_to_account='.8',conversion_observed_at=now,conversion_evidence_hash='b'*64,margin_request=dict(ctidTraderAccountId=12,symbolId=2,volume=[100,500,1000]),margin_response=dict(ctidTraderAccountId=12,moneyDigits=2,margin=[dict(volume=v,buyMargin=m,sellMargin=m+100) for v,m in [(100,1000),(500,40000),(1000,80000)]]),margin_observed_at=now)
     return policy,entry,args
 
