@@ -6,6 +6,24 @@
     "subscriptions": [
       "bar",
       "timer"
+    ],
+    "history": [
+      [
+        "M1",
+        400
+      ],
+      [
+        "M5",
+        80
+      ],
+      [
+        "M15",
+        24
+      ],
+      [
+        "H1",
+        16
+      ]
     ]
   },
   {
@@ -15,6 +33,12 @@
     "subscriptions": [
       "bar",
       "timer"
+    ],
+    "history": [
+      [
+        "M1",
+        1
+      ]
     ]
   }
 ]

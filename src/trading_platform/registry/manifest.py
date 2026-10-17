@@ -12,5 +12,6 @@ class Manifest(Record):
     capabilities: tuple[str,...] = ('protected',)
     state_version: int = Field(default=1, ge=1)
     max_evaluation_seconds: int = Field(default=5, ge=1, le=60)
+    price_basis: Literal['bid','ask'] = 'bid'
     history: tuple[tuple[str,int],...] = ()
     dependencies: tuple[tuple[str,str],...] = ()

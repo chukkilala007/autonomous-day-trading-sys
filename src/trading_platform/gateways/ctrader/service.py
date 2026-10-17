@@ -13,6 +13,7 @@ from .read_only_session import ReadOnlySession as Session,summarize
 from .readonly import Collector
 from .stream import Stream
 from .snapshot_server import Server
+from .feed_config import validate as validate_feed
 
 
 def main():
@@ -26,6 +27,7 @@ def main():
         parser.error('reconnect drill requires a bounded run')
     report_fd=os.open(args.report,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600) if args.report else None
     config=json.loads(Path(args.feed_config).read_text())
+    validate_feed(config,args.account,now())
     db=Database(args.state);client=VerifiedClient();session=Session(client,TokenStore(args.credentials,args.tokens),args.account)
     feed=Feed(db);stream=Stream(session,feed,config['symbols'],config['requirements'],now);collector=Collector(session,db,now)
     server=Server(("0.0.0.0",9100),Path(args.rpc_token).read_text().strip(),session,feed,config["requirements"])
@@ -52,6 +54,7 @@ def main():
             return
         busy=True
         try:
+            validate_feed(config,args.account,now())
             yield session.refresh_if_due()
             yield stream.repair()
             view=yield collector.collect(now()-timedelta(hours=config.get('history_hours',24)))
