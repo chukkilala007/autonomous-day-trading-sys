@@ -53,14 +53,23 @@ def verify(archive):
 def restore(archive,destination):
     manifest=verify(archive);destination=Path(destination)
     destination.mkdir(mode=0o700,parents=True,exist_ok=False)
-    shutil.copyfile(Path(archive)/'core.sqlite',destination/'core.db')
+    marker=destination/'INCOMPLETE'
+    marker.write_text('Restore incomplete; do not activate.\n')
+    marker.chmod(0o600)
+    shutil.copyfile(Path(archive)/'core.sqlite',destination/'core.restoring')
     shutil.copyfile(Path(archive)/'broker.json',destination/'paper.json')
     for path in destination.iterdir(): path.chmod(0o600)
-    with Database(destination/'core.db') as db:
+    with Database(destination/'core.restoring') as db:
         with db.transaction() as c:
             c.execute('INSERT OR REPLACE INTO halts VALUES (?,?)',('restore','RESTORED_REQUIRES_ISOLATED_RECONCILIATION'))
             c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('operations:control',canonical({'paused':True,'by':'restore'})))
             c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('restore:manifest',canonical(manifest)))
+    # Publish the core only after both files exist and its entry halt is durable.
+    os.rename(destination/'core.restoring',destination/'core.db')
+    marker.unlink()
+    directory=os.open(destination,os.O_RDONLY)
+    try: os.fsync(directory)
+    finally: os.close(directory)
     return manifest
 
 

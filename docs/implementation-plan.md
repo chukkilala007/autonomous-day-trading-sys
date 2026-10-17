@@ -808,3 +808,7 @@ Branch: `feature/dashboard_acceptance`. DONE for read-only UI slice. Gateway/cor
 ### Delivery F5.2e — prospective cost arithmetic (2026-10-17)
 
 Branch: `feature/broker_cost_mapping`. DONE for offline arithmetic, with **6 Docker tests passed**. Added all four precise commission types/minimums, account-bound fresh conservative FX conversion, and correlated exact-volume expected margin. Explicitly rejects tier extrapolation, missing paths and ambiguous identities. Contract export remains pending audited multiplier/tick/fee incidence and nonlinear sizing integration; these helpers do not mark capabilities qualified or enable orders. See demo-provider boundary for supported inputs and limitations. Next: recovery fault drills and full regression.
+
+### Delivery F7.4b — interrupted restore drills (2026-10-17)
+
+Branch: `feature/recovery_failure_drills`. DONE for local failure handling. Paired paper restore now stages the core database until the paired broker copy and durable entry halt exist, and retains an INCOMPLETE marker on failure. Added injected disk-failure tests for paired state and encrypted synthetic secrets, plus incompatible-manifest rejection. **7 targeted Docker tests passed** including successful halted restore and no-overwrite recovery. Failed destinations are retained for inspection; retry into a new isolated directory. Actual off-host recovery and intended-host soak still need destinations and evidence.
