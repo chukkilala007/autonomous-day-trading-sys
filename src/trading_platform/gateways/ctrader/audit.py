@@ -27,6 +27,27 @@ def matches_bar(bar,ticks):
         low+integer(bar['deltaOpen']),low+integer(bar['deltaHigh']),low,low+integer(bar['deltaClose'])]
 
 
+def quote_ohlc(sides,start,end):
+    """Reconstruct each side at the first observed bid OR ask event.
+
+    Independent tick series omit unchanged prices. Carry only a known earlier
+    tick; conflicting equal-time updates are ambiguous and must reject.
+    """
+    events=sorted({at for ticks in sides.values() for at,_ in ticks if start<=at<=end})
+    if not events:raise ValueError('empty quote interval')
+    result={}
+    for side,ticks in sides.items():
+        by_time={}
+        for at,price in ticks:
+            if at in by_time and by_time[at]!=price:raise ValueError('ambiguous same-time ticks')
+            by_time[at]=price
+        earlier=[at for at in by_time if at<=events[0]]
+        if not earlier:raise ValueError('missing preceding side quote')
+        prices=[by_time[max(earlier)]]+[p for at,p in sorted(by_time.items()) if events[0]<at<=end]
+        result[side]=[prices[0],max(prices),min(prices),prices[-1]]
+    return result
+
+
 @defer.inlineCallbacks
 def collect(session,probe,now):
     generation=session.generation;at=now();account=str(session.account_id)
@@ -45,13 +66,21 @@ def collect(session,probe,now):
         bars=sorted((b for b in probe['trendbars'][name] if integer(b['utcTimestampInMinutes'])*60+60<=at.timestamp()),key=lambda b:integer(b['utcTimestampInMinutes']))[-3:]
         for bar in bars:
             start=integer(bar['utcTimestampInMinutes'])*60000;end=start+59999
-            sample={'minute':bar['utcTimestampInMinutes'],'matches':{},'tick_counts':{},'hashes':{}}
+            sample={'minute':bar['utcTimestampInMinutes'],'matches':{},'tick_counts':{},'hashes':{},'tick_ohlc':{},'bar_ohlc':[integer(bar['low'])+integer(bar[k]) for k in ('deltaOpen','deltaHigh')]+[integer(bar['low']),integer(bar['low'])+integer(bar['deltaClose'])]}
+            sides={}
             for side,kind in [('bid',1),('ask',2)]:
-                response=yield session.read('ProtoOAGetTickDataReq',symbolId=sid,type=kind,fromTimestamp=start,toTimestamp=end)
-                ticks=decode_ticks(response,account,start,end)
-                sample['matches'][side]=matches_bar(bar,ticks);sample['tick_counts'][side]=len(ticks);sample['hashes'][side]=digest(response)
+                response=yield session.read('ProtoOAGetTickDataReq',symbolId=sid,type=kind,fromTimestamp=start-60000,toTimestamp=end)
+                ticks=decode_ticks(response,account,start-60000,end)
+                sides[side]=ticks
+                current=[(t,p) for t,p in ticks if start<=t<=end]
+                sample['tick_ohlc'][side]=[current[0][1],max(p for _,p in current),min(p for _,p in current),current[-1][1]] if current else None
+                sample['matches'][side]=bool(current) and matches_bar(bar,current);sample['tick_counts'][side]=len(current);sample['hashes'][side]=digest(response)
+            try:
+                sample['quote_ohlc']=quote_ohlc(sides,start,end)
+                sample['quote_matches']={side:ohlc==sample['bar_ohlc'] for side,ohlc in sample['quote_ohlc'].items()}
+            except ValueError:sample['quote_matches']={}
             samples.append(sample)
-        basis='bid' if len(samples)==3 and all(s['matches']=={'bid':True,'ask':False} for s in samples) else None
+        basis='bid' if len(samples)==3 and all(s['quote_matches']=={'bid':True,'ask':False} for s in samples) else None
         if basis:add('candle_basis',basis)
         report=CapabilityReport(account_id=account,symbol=name,evidence=tuple(evidence))
         # Metadata values are recorded, not promoted into complete cost/contract policies.

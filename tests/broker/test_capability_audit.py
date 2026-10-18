@@ -37,7 +37,7 @@ def test_audit_distinguishes_observed_basis_from_execution_qualification():
     probe={'account_id':'12','symbols':{'X':1},'metadata':{'symbol':[dict(symbolId='1',minVolume='100',maxVolume='1000',stepVolume='100',digits=5)]},'economics':{'trader':{'accountType':'HEDGED'}},'trendbars':{'X':[dict(utcTimestampInMinutes=str(s//60000),low='100',deltaOpen='0',deltaHigh='0',deltaClose='0') for s in starts]}}
     def read(name,**fields):
         assert name=='ProtoOAGetTickDataReq'
-        return succeed(dict(ctidTraderAccountId='12',hasMore=False,tickData=[dict(timestamp=str(fields['fromTimestamp']),tick='100' if fields['type']==1 else '101')]))
+        return succeed(dict(ctidTraderAccountId='12',hasMore=False,tickData=[dict(timestamp=str(fields['fromTimestamp']+60000),tick='100' if fields['type']==1 else '101')]))
     session=SimpleNamespace(account_id=12,generation=1,ready=True,read=read);values=[]
     collect(session,probe,lambda:at).addCallback(values.append)
     result=values[0]['symbols']['X']
@@ -45,3 +45,11 @@ def test_audit_distinguishes_observed_basis_from_execution_qualification():
     assert 'candle_basis' not in result['execution_blockers']
     assert {'tick_grid','commission','margin','session_state'}<=set(result['execution_blockers'])
     assert not values[0]['qualification_complete'] and not values[0]['orders_enabled']
+
+
+def test_quote_open_preserves_observed_unchanged_side():
+    from trading_platform.gateways.ctrader.audit import quote_ohlc
+    sides={'bid':[(59000,100),(62000,99),(65000,101)],'ask':[(59500,103),(61000,104),(64000,105)]}
+    assert quote_ohlc(sides,60000,65999)=={'bid':[100,101,99,101],'ask':[104,105,104,105]}
+    with pytest.raises(ValueError,match='preceding'):quote_ohlc({'bid':[(62000,99)],'ask':sides['ask']},60000,65999)
+    with pytest.raises(ValueError,match='ambiguous'):quote_ohlc({'bid':[(59000,100),(59000,101)],'ask':sides['ask']},60000,65999)
