@@ -1,0 +1,168 @@
+{
+  "observed_at": "2026-10-18T21:41:50.542851+00:00",
+  "symbol": "EURUSD",
+  "basis": "bid",
+  "samples": [
+    {
+      "bar_ohlc": [
+        111878,
+        111882,
+        111877,
+        111878
+      ],
+      "hashes": {
+        "ask": "c56748a2ec6e4495bbe3f9954fc83623266566ab8dba873d5fae03da195f5ea8",
+        "bid": "2a314643e8fb43883fc42a293a1e57597aad56dd172289eb3a3a70c7f1643893"
+      },
+      "matches": {
+        "ask": false,
+        "bid": false
+      },
+      "minute": 29872658,
+      "quote_matches": {
+        "ask": false,
+        "bid": true
+      },
+      "quote_ohlc": {
+        "ask": [
+          111893,
+          111895,
+          111890,
+          111891
+        ],
+        "bid": [
+          111878,
+          111882,
+          111877,
+          111878
+        ]
+      },
+      "tick_counts": {
+        "ask": 11,
+        "bid": 4
+      },
+      "tick_ohlc": {
+        "ask": [
+          111893,
+          111895,
+          111890,
+          111891
+        ],
+        "bid": [
+          111877,
+          111882,
+          111877,
+          111878
+        ]
+      }
+    },
+    {
+      "bar_ohlc": [
+        111879,
+        111885,
+        111875,
+        111882
+      ],
+      "hashes": {
+        "ask": "3a49b01e1cb7ae99543093a2159b8294494c626ac86cb4b9c49c5fc4e4dfd2bd",
+        "bid": "852a7ea045292c30e69a2dbb4aa77077c4cd3a1ac3f57b589d7897d5ccc9a857"
+      },
+      "matches": {
+        "ask": false,
+        "bid": true
+      },
+      "minute": 29872659,
+      "quote_matches": {
+        "ask": false,
+        "bid": true
+      },
+      "quote_ohlc": {
+        "ask": [
+          111894,
+          111898,
+          111889,
+          111895
+        ],
+        "bid": [
+          111879,
+          111885,
+          111875,
+          111882
+        ]
+      },
+      "tick_counts": {
+        "ask": 37,
+        "bid": 40
+      },
+      "tick_ohlc": {
+        "ask": [
+          111894,
+          111898,
+          111889,
+          111895
+        ],
+        "bid": [
+          111879,
+          111885,
+          111875,
+          111882
+        ]
+      }
+    },
+    {
+      "bar_ohlc": [
+        111884,
+        111888,
+        111867,
+        111877
+      ],
+      "hashes": {
+        "ask": "0918b5809454cad6a5cbf815454fddd1413f013acc67cf3899a78a3ed9da080b",
+        "bid": "c63a47e760a0481ccc9ced396d5cd7d019691dd1f4207025f3f28a8cb7b8c488"
+      },
+      "matches": {
+        "ask": false,
+        "bid": true
+      },
+      "minute": 29872660,
+      "quote_matches": {
+        "ask": false,
+        "bid": true
+      },
+      "quote_ohlc": {
+        "ask": [
+          111899,
+          111906,
+          111882,
+          111888
+        ],
+        "bid": [
+          111884,
+          111888,
+          111867,
+          111877
+        ]
+      },
+      "tick_counts": {
+        "ask": 18,
+        "bid": 16
+      },
+      "tick_ohlc": {
+        "ask": [
+          111899,
+          111906,
+          111882,
+          111888
+        ],
+        "bid": [
+          111884,
+          111888,
+          111867,
+          111877
+        ]
+      }
+    }
+  ],
+  "orders_enabled": false,
+  "qualification_complete": false
+}
