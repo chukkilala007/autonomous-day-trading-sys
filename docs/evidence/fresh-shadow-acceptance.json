@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "started_at": "2026-10-19T02:52:05.465613+00:00",
+  "ended_at": "2026-10-19T02:54:06.852563+00:00",
+  "spot_events": 287,
+  "reconciliations": 12,
+  "complete_snapshots": 6,
+  "failures": 0,
+  "reconnect_status": "PASS",
+  "reconciled_generations": [
+    1,
+    3
+  ],
+  "order_writes": 0,
+  "quote_sources": {
+    "XAUUSD": "2026-10-19T02:54:06.227000+00:00"
+  },
+  "strategy": "timer_fixture@1",
+  "symbol": "XAUUSD",
+  "scope": "shared-runtime acceptance only; not TPR strategy qualification",
+  "counts": {
+    "events": 14,
+    "decisions": 14,
+    "commands": 0,
+    "reservations": 0
+  },
+  "outcomes": {
+    "ENTRY": 1,
+    "NO_ACTION": 13
+  }
+}

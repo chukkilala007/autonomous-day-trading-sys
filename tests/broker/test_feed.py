@@ -82,3 +82,25 @@ def test_incremental_overlap_and_reconnect_full_backfill(tmp_path):
         assert sum(name=='ProtoOASubscribeSpotsReq' for name,_ in requests)==2
         assert requests[-1][1]['fromTimestamp']==int((clock[0]-timedelta(minutes=102)).timestamp()*1000)
         assert not stream.feed.snapshot(clock[0],[('X','bid',1,100)]).coverage_complete
+
+
+def test_partial_spots_preserve_oldest_side_age_and_reset_on_disconnect(tmp_path):
+    import pytest
+    pytest.importorskip('ctrader_open_api')
+    from types import SimpleNamespace
+    from trading_platform.gateways.ctrader.stream import Stream
+    from trading_platform.contracts.values import utc
+    clock=[T];base=int(T.timestamp()*1000)
+    with Database(tmp_path/'db') as db:
+        stream=Stream(SimpleNamespace(account_id=12),Feed(db),{'X':1},[('X','bid',1,1)],lambda:clock[0])
+        def send(**fields):stream.on_spot(dict(ctidTraderAccountId='12',symbolId='1',**fields))
+        send(timestamp=base,bid=100000,ask=100100)
+        clock[0]+=timedelta(seconds=1)
+        send(timestamp=base+1000,bid=100010)
+        assert utc(stream.feed.get('quote:X')['source_time'])==T
+        send(timestamp=base+1000,ask=100110)
+        assert utc(stream.feed.get('quote:X')['source_time'])==clock[0]
+        stream.disconnected()
+        send(timestamp=base+2000,bid=100020)
+        assert utc(stream.feed.get('quote:X')['source_time'])==clock[0]
+        assert not stream.feed.get('coverage:X')['repaired']
