@@ -18,8 +18,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Capability blockers | Assembly and nonlinear sizing implemented offline. Actual tick grid, multiplier/cost policy, conversion and proposal-time margin evidence beyond sampled quantities, protection/order/expiry behavior and session state remain unqualified |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed gateway: 229 passed + 4 subtests in 18.68 seconds, network disabled. Bounded actual timer shadow/reconnect and sampled margins passed |
-| External inputs | Registry/Linux host/backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
-| Publication | Published baseline 054e24c passed CI 39076098251. Fresh-data work publication/CI checked separately |
+| External inputs | This Mac/Docker Desktop selected for demo; local image IDs remove the demo registry dependency. Off-host backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
+| Publication | Published fresh-data baseline ab1d6c1 passed CI 39222216267 |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -864,3 +864,13 @@ Read-only probe-013 succeeded after host latency recovered: EURUSD quantities 1,
 Actual shared-runtime shadow acceptance remains bounded to the timer fixture: 287 spot events, 12 reconciliations, six complete snapshots, forced reconnect, 14 decisions and zero order writes. Chrome evidence is in `docs/evidence/live-shadow-status.png` and `live-shadow-dashboard.png`. Acceptance containers have been removed; no ongoing shadow process is implied.
 
 Remaining: full contiguous TPR history and strategy shadow acceptance; audited tick grid, multiplier, complete fee/conversion policies and session/protection/order/expiry capabilities; explicitly authorized demo order lifecycle acceptance; intended Linux host, registry and encrypted off-host recovery qualification. S5–S7 remain partial and S8 unstarted. No order activation. Next: check all manifest history windows before a new both-strategy shadow run; use exclusive report paths and preserve rotated tokens.
+
+### Delivery F7.3b — selected local demo host (2026-10-19)
+
+DONE for local prerequisite tooling on `feature/local_demo_host`. User selected the current system for demo infrastructure. Added read-only Docker prerequisite checks and local exact-image Compose overrides, with fail-closed Linux/native architecture/non-root/resource checks. Registry publication and a separate Linux host are no longer local demo prerequisites. Two targeted container tests passed; actual installed-image host prerequisites passed. Host sleep is enabled; documented session-scoped wake assertion without changing global settings. Local paper soak passed: 300 events/60.07s, p95 317.8ms, RSS 38.94MiB, zero residual positions/risk. Isolated recovery is being measured separately. This does not qualify broker execution or authorize orders.
+
+### Readiness for first actual demo order test
+
+Before requesting order authorization: establish fresh full-strategy shadow acceptance, audit exact symbol tick/value and complete fee/conversion policy, qualify current sessions and supported order/protection/expiry parameters, and prepare a bounded isolated test deployment with exclusive account ownership and persistent recovery state. Sampled margin checks already passed; every order still requires fresh proposal-bound margin/economics. Use this Mac with exact tested images and an attended awake session.
+
+Then obtain explicit authorization for the concrete demo-only test scope (account, symbol, maximum quantity/exposure, duration, stop protection and cleanup). Actual entry/fill/protection/exit, observed fees, cancellation races and restart reconciliation are acceptance results of that test phase, not prerequisites that can be claimed from read-only checks. Autonomous demo operation follows successful lifecycle acceptance; live trading is outside this mandate.
