@@ -890,3 +890,7 @@ Added bounded fixed-label quote rejection counters without exposing raw payloads
 The actual broker was identified from the selected-account profile. Public specification review is in `docs/evidence/broker-specification-review.md`; it corroborates some fields but leaves account-specific tick/fee/protection/expiry policy unresolved, including the displayed gold volume-step discrepancy. No credentials or account balances are in public evidence. Both diagnostic runs have ended; orders remain disabled.
 
 Final installed regression including quote diagnostics: **234 passed, 4 subtests passed in 6.20 seconds**, networking disabled. Five Docker guest/host receive-time samples were within 2.1–2.9ms (including stdout delay), so no material additional guest drift was observed; this is not a clock synchronization proof. The host administrator synchronization request remains pending. No broker connection is left running. Tested changes are merged/published under the existing per-feature workflow; inspect the new develop CI separately from local results.
+
+### CI correction — optional SDK test boundary (2026-10-19)
+
+DONE on `feature/optional_sdk_test_guard`. CI run 39266453830 failed in the paper-only image because the new quote-rejection test imported Twisted without the existing optional cTrader SDK guard. Added the same importorskip guard as the other SDK tests; the gateway suite still executes it. Paper-only installed suite: 163 passed, 18 skipped, 4 subtests passed. Gateway feed tests: 8 passed; the diagnostic test executes there.
