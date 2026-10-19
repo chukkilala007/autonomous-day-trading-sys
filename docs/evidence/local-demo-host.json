@@ -1,0 +1,51 @@
+{
+  "host": {
+    "format": 1,
+    "scope": "local_docker_prerequisites_only",
+    "passed": true,
+    "blockers": [],
+    "orders_enabled": false,
+    "images": {
+      "runtime": "sha256:b7cefaca7ef102f6c5222157e7d8b5c1d521ba4ea34bc8f0b53c64bbf7718885",
+      "gateway": "sha256:746967386ff001cf2792606baf6124c6d7921765c14263bf6a026d3aa4806bc5"
+    },
+    "docker": {
+      "ServerVersion": "29.6.2",
+      "OSType": "linux",
+      "Architecture": "aarch64",
+      "NCPU": 8,
+      "MemTotal": 8321798144
+    },
+    "remaining_gates": [
+      "host_awake_during_session",
+      "fresh_broker_capabilities",
+      "strategy_shadow_acceptance",
+      "explicit_demo_order_authorization",
+      "broker_order_lifecycle_acceptance",
+      "backup_recovery"
+    ]
+  },
+  "soak": {
+    "passed": true,
+    "limits": {
+      "version": 1,
+      "duration_seconds": 60,
+      "events_per_second": 5,
+      "minimum_events": 250,
+      "maximum_p95_seconds": 0.5,
+      "maximum_rss_mib": 256,
+      "maximum_unexplained_positions": 0,
+      "expected_entry_commands": 2,
+      "scope": "single-host two-strategy synthetic paper tick workload; not production throughput qualification"
+    },
+    "events": 300,
+    "elapsed_seconds": 60.06731752702035,
+    "p95_seconds": 0.31776166683994234,
+    "rss_mib": 38.9375,
+    "orders": 2,
+    "positions": 0,
+    "active_risk": 0
+  },
+  "scope": "local demo prerequisites and synthetic paper workload; no actual orders",
+  "host_sleep_enabled": true
+}
