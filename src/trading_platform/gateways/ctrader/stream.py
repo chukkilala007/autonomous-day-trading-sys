@@ -10,13 +10,13 @@ PERIODS={1:1,5:5,15:7,30:8,60:9,240:10,1440:12}
 class Stream:
     def __init__(self,session,feed,symbols,requirements,now):
         self.session=session;self.feed=feed;self.symbols=symbols;self.requirements=requirements;self.now=now
-        self.failures={};self.busy=False;self.subscribed_generation=None;self.last_complete={}
+        self.failures={};self.busy=False;self.subscribed_generation=None;self.last_complete={};self.quote_sides={}
         for symbol,basis,minutes,count in requirements:
             if minutes not in PERIODS or count<=0 or count>1000: raise ValueError('unsupported history request')
             if symbol not in symbols or basis not in ('bid','ask'): raise ValueError('unverified symbol or basis')
 
     def disconnected(self):
-        self.subscribed_generation=None;self.last_complete={}
+        self.subscribed_generation=None;self.last_complete={};self.quote_sides={}
         for symbol in self.symbols: self.feed.disconnect(symbol)
 
     @defer.inlineCallbacks
@@ -58,6 +58,20 @@ class Stream:
         if str(raw.get('ctidTraderAccountId'))!=str(self.session.account_id): raise ValueError('foreign account feed')
         symbol=next((s for s,id in self.symbols.items() if str(id)==str(raw.get('symbolId'))),None)
         if symbol is None: raise ValueError('unknown symbol')
-        try: self.feed.ingest_quote(spot(symbol,raw,self.now()))
+        try:
+            from .normalization import timestamp_ms,relative_price
+            from trading_platform.contracts.events import Quote
+            if 'timestamp' not in raw or not any(side in raw for side in ('bid','ask')):
+                raise ValueError('missing quote timestamp or side')
+            at=timestamp_ms(raw['timestamp']);sides=dict(self.quote_sides.get(symbol,{}))
+            for side in ('bid','ask'):
+                if side in raw:
+                    if side in sides and at<sides[side][1]:raise ValueError('out-of-order quote side')
+                    sides[side]=(relative_price(raw[side]),at)
+            self.quote_sides[symbol]=sides
+            if len(sides)<2:return
+            # Never make an unchanged side look newer than its actual observation.
+            quote=Quote(instrument=symbol,bid=sides['bid'][0],ask=sides['ask'][0],source_time=min(v[1] for v in sides.values()),received_at=self.now())
+            self.feed.ingest_quote(quote)
         except ValueError:
             self.feed.disconnect(symbol);self.failures[symbol]='INCOMPLETE_OR_STALE_SPOT'

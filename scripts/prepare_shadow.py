@@ -9,7 +9,8 @@ from trading_platform.gateways.ctrader.feed_config import build
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--probe',required=True);p.add_argument('--account',required=True);p.add_argument('--symbol',required=True);p.add_argument('--destination',default='var/shadow-analysis');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--probe',required=True);p.add_argument('--account',required=True);p.add_argument('--symbol',required=True);p.add_argument('--destination',default='var/shadow-analysis');p.add_argument('--instances',nargs='+',choices=['tpr1','timer_fixture'],default=['tpr1','timer_fixture']);a=p.parse_args()
+    if len(set(a.instances))!=len(a.instances):raise ValueError('unique instances required')
     if not a.account.isdigit() or int(a.account)<=0: raise ValueError('explicit demo account ID required')
     probe=json.loads(Path(a.probe).read_text())
     if probe.get('status')!='COLLECTED' or probe.get('account_id')!=a.account:raise ValueError('bound collected probe required')
@@ -20,7 +21,8 @@ def main():
         data=json.loads(Path('config/instances/'+name+'.json').read_text());data['mode']='shadow';data['universe']=[a.symbol]
         data['account'].update(alias='demo-shadow',environment='demo',broker_account=a.account,currency=probe['economics']['account']['currency'])
         instances.append(Instance.model_validate_json(json.dumps(data)))
-    feed=build(instances,manifests,reports,a.account,datetime.now(timezone.utc))
+    active=[i for i in instances if i.instance_id in a.instances]
+    feed=build(active,manifests,reports,a.account,datetime.now(timezone.utc))
     root=Path(a.destination);root.mkdir(parents=True,mode=0o700,exist_ok=False)
     for name in ('gateway','tpr1','timer_fixture','reader'):
         file=root/(name+'.token');file.write_text(secrets.token_urlsafe(48)+'\n');file.chmod(0o600)
@@ -30,6 +32,8 @@ def main():
     deployment={'registry':'/app/config/registry.json','instances':['/analysis/tpr1.json','/analysis/timer_fixture.json'],
         'gateway':{'host':'shadow-gateway'},'workers':{'tpr1':{'host':'shadow-tpr'},'timer_fixture':{'host':'shadow-timer'}},
         'tokens':{name:'/run/secrets/'+name+'_token' for name in ('gateway','tpr1','timer_fixture')},'api':{'reader_token':'/run/secrets/reader_token','port':9010}}
+    deployment['instances']=['/analysis/'+i.instance_id+'.json' for i in active]
+    deployment['workers']={k:v for k,v in deployment['workers'].items() if k in a.instances}
     (root/'deployment.json').write_text(json.dumps(deployment,indent=2));print('Created private analysis configuration; no broker authorization or order capability enabled.')
 
 if __name__=='__main__': main()

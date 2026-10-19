@@ -35,3 +35,18 @@ def test_invalid_or_changed_configuration_cannot_start(fault):
     if fault!='hash':config['evidence_hash']=digest({k:v for k,v in config.items() if k!='evidence_hash'})
     else:config['evidence_hash']='bad'
     with pytest.raises(ValueError):validate(config,'12',T+timedelta(hours=2) if fault=='expired' else T)
+
+
+def test_prepare_selects_only_requested_strategy_without_reducing_others(tmp_path,monkeypatch):
+    import runpy,sys
+    _,_,reports=inputs();now=datetime.now(timezone.utc)
+    report=reports['X'].model_copy(update={'evidence':tuple(e.model_copy(update={'observed_at':now-timedelta(seconds=1),'valid_until':now+timedelta(hours=1)}) for e in reports['X'].evidence)})
+    probe=tmp_path/'probe.json';probe.write_text(json.dumps({'status':'COLLECTED','account_id':'12','economics':{'account':{'currency':'GBP'}},'capability_audit':{'symbols':{'X':{'capability':report.model_dump(mode='json')}}}}))
+    output=tmp_path/'config'
+    monkeypatch.setattr(sys,'argv',['prepare_shadow','--probe',str(probe),'--account','12','--symbol','X','--instances','timer_fixture','--destination',str(output)])
+    runpy.run_path('scripts/prepare_shadow.py',run_name='__main__')
+    feed=json.loads((output/'feed.json').read_text());deployment=json.loads((output/'deployment.json').read_text())
+    assert feed['requirements']==[['X','bid',1,1]]
+    assert set(deployment['workers'])=={'timer_fixture'}
+    assert deployment['instances']==['/analysis/timer_fixture.json']
+    assert (output/'tpr1.json').exists()  # Compatible optional Compose mount, not active.
