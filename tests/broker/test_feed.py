@@ -152,7 +152,40 @@ def test_spot_rejection_diagnostics_do_not_relax_validation(tmp_path):
         send(timestamp=base)
         send(timestamp=base,bid=100100,ask=100000)
         send(timestamp=base+1000,bid=100000,ask=100100)
-        send(timestamp=base,bid=100000)
+        send(timestamp=base,bid=100000,ask=100100)
+        send(timestamp=base-1,bid=100000)
         assert stream.spot_rejections=={'MISSING_SPOT_FIELDS':1,'CROSSED_QUOTE':1,'FUTURE_QUOTE':1,'OUT_OF_ORDER_SIDE':1}
-        assert stream.feed.get('quote:X') is None
-        assert not stream.feed.get('coverage:X')['repaired']
+        assert stream.feed.get('quote:X') is not None
+        assert stream.feed.get('quote-valid:X')=={'valid':False}
+
+
+def test_bad_quote_blocks_use_without_discarding_repaired_history(tmp_path):
+    import pytest
+    pytest.importorskip('ctrader_open_api')
+    from types import SimpleNamespace
+    from trading_platform.gateways.ctrader.stream import Stream
+    end=T+timedelta(minutes=1);clock=[end];base=int(end.timestamp()*1000)
+    with Database(tmp_path/'db') as db:
+        feed=Feed(db);feed.ingest_bar(bar(end));feed.repaired('X',end)
+        stream=Stream(SimpleNamespace(account_id=12),feed,{'X':1},[('X','bid',1,1)],lambda:clock[0])
+        def send(**fields):stream.on_spot(dict(ctidTraderAccountId='12',symbolId='1',**fields))
+        send(timestamp=base,bid=100000,ask=100100)
+        assert feed.snapshot(end,stream.requirements).coverage_complete
+        send(timestamp=base+1000,bid=100000,ask=100100)
+        assert feed.get('coverage:X')['repaired']
+        assert not feed.snapshot(end,stream.requirements).coverage_complete
+        # Invalid input clears both side observations; one side cannot restore readiness.
+        send(timestamp=base,bid=100000)
+        assert not feed.snapshot(end,stream.requirements).coverage_complete
+        send(timestamp=base,ask=100100)
+        assert feed.snapshot(end,stream.requirements).coverage_complete
+        # Real disconnect still requires history repair as well as a new quote.
+        stream.disconnected();send(timestamp=base,bid=100000,ask=100100)
+        assert not feed.snapshot(end,stream.requirements).coverage_complete
+        feed.repaired('X',end)
+        assert feed.snapshot(end,stream.requirements).coverage_complete
+        assert not feed.snapshot(end+timedelta(seconds=3),stream.requirements).coverage_complete
+        # Retaining the accepted quote prevents time regression after invalidation.
+        feed.invalidate_quote('X')
+        with pytest.raises(ValueError):feed.ingest_quote(Quote(instrument='X',bid='1',ask='1.01',source_time=end-timedelta(seconds=1),received_at=end))
+        assert not feed.snapshot(end,stream.requirements).coverage_complete

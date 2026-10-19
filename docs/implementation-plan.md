@@ -894,3 +894,9 @@ Final installed regression including quote diagnostics: **234 passed, 4 subtests
 ### CI correction — optional SDK test boundary (2026-10-19)
 
 DONE on `feature/optional_sdk_test_guard`. CI run 39266453830 failed in the paper-only image because the new quote-rejection test imported Twisted without the existing optional cTrader SDK guard. Added the same importorskip guard as the other SDK tests; the gateway suite still executes it. Paper-only installed suite: 163 passed, 18 skipped, 4 subtests passed. Gateway feed tests: 8 passed; the diagnostic test executes there.
+
+### F5.3e — independent quote recovery gate (2026-10-19)
+
+DONE for implementation on `feature/quote_recovery_isolation`. Actual future quote rejections exposed a conflation of quote validity and historical repair. Add a durable quote-validity gate: rejected quotes block cached quote use and clear side observations, while completed history remains independently qualified. Both sides must be observed and valid before recovery; retained last accepted timestamps still reject regression. Real disconnect invalidates both history and quotes. Future-time and two-second freshness checks are unchanged.
+
+Validation: 19 targeted feed/session/shadow integration tests passed. Installed gateway suite: **235 passed, 4 subtests passed**; installed paper-only suite: **163 passed, 19 optional-SDK skips, 4 subtests passed**. Actual run-006 after user-reported clock synchronization still rejected 390 future quotes out of 455 spots and had zero complete snapshots; reconnect passed. Preserve `docs/evidence/post-sync-shadow-006.json` as failed evidence. Re-run using the recovery fix; no future quote or stale quote is made valid by this change.
