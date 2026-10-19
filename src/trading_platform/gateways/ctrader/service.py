@@ -61,7 +61,9 @@ def main():
             view=yield collector.collect(now()-timedelta(hours=config.get('history_hours',24)))
             metrics['reconciliations']+=1
             if session.generation not in metrics['reconciled_generations']:metrics['reconciled_generations'].append(session.generation)
-            complete=feed.snapshot(now(),config['requirements']).coverage_complete
+            coverage=[]
+            complete=feed.snapshot(now(),config['requirements'],diagnostics=coverage).coverage_complete
+            metrics['latest_coverage']=coverage
             metrics['complete_snapshots']+=int(complete)
             reports={name:CapabilityReport.model_validate_json(json.dumps(raw)) for name,raw in config['reports'].items()}
             feed.put('operations:provider',dict(connection_state='CONNECTED',generation=session.generation,coverage_complete=complete,observed_at=now(),source='actual_demo_readonly',capability_blockers={name:r.blockers(now(),str(session.account_id),name) for name,r in reports.items()}))

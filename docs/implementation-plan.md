@@ -867,10 +867,16 @@ Remaining: full contiguous TPR history and strategy shadow acceptance; audited t
 
 ### Delivery F7.3b — selected local demo host (2026-10-19)
 
-DONE for local prerequisite tooling on `feature/local_demo_host`. User selected the current system for demo infrastructure. Added read-only Docker prerequisite checks and local exact-image Compose overrides, with fail-closed Linux/native architecture/non-root/resource checks. Registry publication and a separate Linux host are no longer local demo prerequisites. Two targeted container tests passed; actual installed-image host prerequisites passed. Host sleep is enabled; documented session-scoped wake assertion without changing global settings. Local paper soak passed: 300 events/60.07s, p95 317.8ms, RSS 38.94MiB, zero residual positions/risk. Isolated recovery is being measured separately. This does not qualify broker execution or authorize orders.
+DONE for local prerequisite tooling on `feature/local_demo_host`. User selected the current system for demo infrastructure. Added read-only Docker prerequisite checks and local exact-image Compose overrides, with fail-closed Linux/native architecture/non-root/resource checks. Registry publication and a separate Linux host are no longer local demo prerequisites. Two targeted container tests passed; actual installed-image host prerequisites passed. Host sleep is enabled; documented session-scoped wake assertion without changing global settings. Local paper soak passed: 300 events/60.07s, p95 317.8ms, RSS 38.94MiB, zero residual positions/risk. Isolated recovery passed in 0.020s with zero lost committed events, zero remaining positions and the restore halt preserved. This does not qualify broker execution or authorize orders.
 
 ### Readiness for first actual demo order test
 
 Before requesting order authorization: establish fresh full-strategy shadow acceptance, audit exact symbol tick/value and complete fee/conversion policy, qualify current sessions and supported order/protection/expiry parameters, and prepare a bounded isolated test deployment with exclusive account ownership and persistent recovery state. Sampled margin checks already passed; every order still requires fresh proposal-bound margin/economics. Use this Mac with exact tested images and an attended awake session.
 
 Then obtain explicit authorization for the concrete demo-only test scope (account, symbol, maximum quantity/exposure, duration, stop protection and cleanup). Actual entry/fill/protection/exit, observed fees, cancellation races and restart reconciliation are acceptance results of that test phase, not prerequisites that can be claimed from read-only checks. Autonomous demo operation follows successful lifecycle acceptance; live trading is outside this mandate.
+
+### Delivery F5.3c — actionable shadow coverage diagnostics (2026-10-19)
+
+DONE for diagnostics on `feature/shadow_coverage_diagnostics`; 14 targeted Docker feed/session tests passed. Shadow reports now retain the last exact per-symbol/timeframe contiguous count, required count and first missing bar, independently from quote age and reconnect repair status. Diagnostics use the same selection as the readiness gate; no extra closures, old quotes or fabricated bars are accepted. This makes the TPR warm-up blocker inspectable rather than reporting only a false coverage flag.
+
+First actual order qualification scope is documented in `docs/demo-order-test-plan.md`; this is preparation, not activation or authorization.
