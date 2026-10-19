@@ -88,3 +88,27 @@ def collect(session,probe,now):
         reports[name]={'capability':report.model_dump(mode='json'),'execution_blockers':report.blockers(now(),account,name),'observed_metadata':observed,'candle_samples':samples,'read_only_basis':basis}
     if session.generation!=generation or not session.ready:raise ValueError('audit connection changed')
     return dict(account_id=account,observed_at=at.isoformat(),symbols=reports,orders_enabled=False,qualification_complete=False,evidence_hash=digest(reports))
+
+
+@defer.inlineCallbacks
+def collect_margins(session,probe,now):
+    """Observe exact-volume expected margins; does not certify contract sizing."""
+    from .costs import expected_margin
+    generation=session.generation;results={}
+    if probe['account_id']!=str(session.account_id):raise ValueError('foreign margin probe')
+    metadata={integer(s['symbolId']):s for s in probe['metadata']['symbol']}
+    for name,symbol in probe['symbols'].items():
+        raw=metadata[symbol];minimum=integer(raw['minVolume']);step=integer(raw['stepVolume']);maximum=integer(raw['maxVolume'])
+        if minimum<=0 or step<=0 or maximum<minimum:raise ValueError('invalid margin grid')
+        volumes=[minimum+n*step for n in range(3) if minimum+n*step<=maximum]
+        request=dict(ctidTraderAccountId=session.account_id,symbolId=symbol,volume=volumes)
+        at=now()
+        response=yield session.read('ProtoOAExpectedMarginReq',symbolId=symbol,volume=volumes)
+        if not session.ready or session.generation!=generation:raise ValueError('margin connection changed')
+        normalized=dict(ctidTraderAccountId=integer(response['ctidTraderAccountId']),moneyDigits=integer(response['moneyDigits']),margin=[{k:integer(row[k]) for k in ('volume','buyMargin','sellMargin')} for row in response['margin']])
+        checked=now();rows=[]
+        for volume in volumes:
+            values={side.lower():str(expected_margin(normalized,request=request,account=session.account_id,symbol_id=symbol,volume=volume,side=side,observed_at=at,now=checked)) for side in ('BUY','SELL')}
+            rows.append(dict(quantity=str(units(volume)),**values))
+        results[name]=dict(observed_at=at.isoformat(),checked_at=checked.isoformat(),currency=probe['economics']['account']['currency'],rows=rows,evidence_hash=digest(dict(request=request,response=response)),classification='demo_observed',scope='exact_sampled_volumes_only')
+    return dict(symbols=results,orders_enabled=False,qualification_complete=False)
