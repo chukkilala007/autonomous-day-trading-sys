@@ -53,3 +53,25 @@ def test_quote_open_preserves_observed_unchanged_side():
     assert quote_ohlc(sides,60000,65999)=={'bid':[100,101,99,101],'ask':[104,105,104,105]}
     with pytest.raises(ValueError,match='preceding'):quote_ohlc({'bid':[(62000,99)],'ask':sides['ask']},60000,65999)
     with pytest.raises(ValueError,match='ambiguous'):quote_ohlc({'bid':[(59000,100),(59000,101)],'ask':sides['ask']},60000,65999)
+
+
+def test_margin_audit_exact_volumes_and_staleness():
+    from datetime import datetime,timezone,timedelta
+    from types import SimpleNamespace
+    from twisted.internet.defer import succeed
+    from trading_platform.gateways.ctrader.audit import collect_margins
+    at=datetime(2026,10,19,tzinfo=timezone.utc);clock=[at];calls=[]
+    probe={'account_id':'12','symbols':{'X':1},'metadata':{'symbol':[dict(symbolId='1',minVolume='100',stepVolume='100',maxVolume='200')]},'economics':{'account':{'currency':'GBP'}}}
+    def read(name,**fields):
+        calls.append((name,fields))
+        return succeed(dict(ctidTraderAccountId='12',moneyDigits=2,margin=[dict(volume=str(v),buyMargin=str(v),sellMargin=str(v+1)) for v in fields['volume']]))
+    session=SimpleNamespace(account_id=12,generation=1,ready=True,read=read);values=[]
+    collect_margins(session,probe,lambda:clock[0]).addCallback(values.append)
+    assert calls==[('ProtoOAExpectedMarginReq',{'symbolId':1,'volume':[100,200]})]
+    assert values[0]['symbols']['X']['rows']==[{'quantity':'1','buy':'1','sell':'1.01'},{'quantity':'2','buy':'2','sell':'2.01'}]
+    assert not values[0]['qualification_complete']
+    def slow(name,**fields):
+        response=read(name,**fields);clock[0]+=timedelta(seconds=3);return response
+    session.read=slow;errors=[]
+    collect_margins(session,probe,lambda:clock[0]).addErrback(errors.append)
+    assert errors and 'stale' in str(errors[0].value)
