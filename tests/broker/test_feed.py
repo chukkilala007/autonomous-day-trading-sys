@@ -189,3 +189,20 @@ def test_bad_quote_blocks_use_without_discarding_repaired_history(tmp_path):
         feed.invalidate_quote('X')
         with pytest.raises(ValueError):feed.ingest_quote(Quote(instrument='X',bid='1',ask='1.01',source_time=end-timedelta(seconds=1),received_at=end))
         assert not feed.snapshot(end,stream.requirements).coverage_complete
+
+
+def test_future_partial_side_cannot_hide_behind_older_side_timestamp(tmp_path):
+    import pytest
+    pytest.importorskip('ctrader_open_api')
+    from types import SimpleNamespace
+    from trading_platform.gateways.ctrader.stream import Stream
+    base=int(T.timestamp()*1000)
+    with Database(tmp_path/'db') as db:
+        feed=Feed(db);stream=Stream(SimpleNamespace(account_id=12),feed,{'X':1},[('X','bid',1,1)],lambda:T)
+        def send(**fields):stream.on_spot(dict(ctidTraderAccountId='12',symbolId='1',**fields))
+        send(timestamp=base,bid=100000,ask=100100)
+        send(timestamp=base+1,bid=100010)
+        assert stream.spot_rejections['FUTURE_QUOTE']==1
+        assert feed.get('quote-valid:X')=={'valid':False}
+        assert not stream.quote_sides
+        assert feed.get('quote:X')['bid']=='1'

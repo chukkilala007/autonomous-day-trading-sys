@@ -68,7 +68,11 @@ class Stream:
             if 'timestamp' not in raw or not any(side in raw for side in ('bid','ask')):
                 reason='MISSING_SPOT_FIELDS'
                 raise ValueError('missing quote timestamp or side')
-            at=timestamp_ms(raw['timestamp']);sides=dict(self.quote_sides.get(symbol,{}))
+            at=timestamp_ms(raw['timestamp'])
+            if at>self.now():
+                reason='FUTURE_QUOTE'
+                raise ValueError('future quote side')
+            sides=dict(self.quote_sides.get(symbol,{}))
             for side in ('bid','ask'):
                 if side in raw:
                     if side in sides and at<sides[side][1]:
