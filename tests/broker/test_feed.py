@@ -104,3 +104,37 @@ def test_partial_spots_preserve_oldest_side_age_and_reset_on_disconnect(tmp_path
         send(timestamp=base+2000,bid=100020)
         assert utc(stream.feed.get('quote:X')['source_time'])==clock[0]
         assert not stream.feed.get('coverage:X')['repaired']
+
+
+def test_diagnostics_distinguish_history_gap_quote_age_and_repair(tmp_path):
+    end=T+timedelta(minutes=3)
+    with Database(tmp_path/'db') as db:
+        feed=Feed(db);feed.ingest_bar(bar(end));feed.repaired('X',end)
+        feed.ingest_quote(Quote(instrument='X',bid='1',ask='1.01',source_time=end,received_at=end))
+        details=[]
+        snapshot=feed.snapshot(end,[('X','bid',1,3)],diagnostics=details)
+        assert not snapshot.coverage_complete
+        history,quote=details
+        assert history['contiguous_available']==1 and history['required']==3
+        assert history['first_missing_end']==(end-timedelta(minutes=1)).isoformat()
+        assert history['repaired'] and not history['complete'] and quote['complete']
+        feed.ingest_bar(bar(end-timedelta(minutes=1)));feed.ingest_bar(bar(end-timedelta(minutes=2)))
+        details=[]
+        assert not feed.snapshot(end+timedelta(seconds=3),[('X','bid',1,3)],diagnostics=details).coverage_complete
+        assert details[0]['complete'] and details[0]['first_missing_end'] is None
+        assert details[1]['age_seconds']==3 and not details[1]['complete']
+        feed.disconnect('X');details=[]
+        assert not feed.snapshot(end,[('X','bid',1,3)],diagnostics=details).coverage_complete
+        assert details[0]['contiguous_available']==3 and not details[0]['repaired']
+        assert not details[0]['complete']
+
+
+def test_diagnostics_preserve_verified_closure_and_missing_quote(tmp_path):
+    end=T+timedelta(minutes=3)
+    with Database(tmp_path/'db') as db:
+        feed=Feed(db);feed.repaired('X',end)
+        feed.ingest_bar(bar(end));feed.ingest_bar(bar(T+timedelta(minutes=1)))
+        details=[]
+        feed.snapshot(end,[('X','bid',1,2)],closed_intervals=[('X',T+timedelta(minutes=1),T+timedelta(minutes=2))],diagnostics=details)
+        assert details[0]['complete'] and details[0]['contiguous_available']==2
+        assert not details[1]['present'] and details[1]['age_seconds'] is None

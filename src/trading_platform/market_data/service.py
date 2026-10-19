@@ -38,7 +38,7 @@ class Feed:
 
     def repaired(self,symbol,at): self.put('coverage:'+symbol,{'repaired':True,'at':at})
 
-    def snapshot(self,cutoff,requirements,*,closed_intervals=(),max_quote_age=2):
+    def snapshot(self,cutoff,requirements,*,closed_intervals=(),max_quote_age=2,diagnostics=None):
         """requirements: (symbol,basis,minutes,count); closures must be verified."""
         bars=[];quotes=[];complete=True
         all_bars=[Bar.model_validate_json(r['body']) for r in self.db.connection.execute("SELECT body FROM checkpoints WHERE id LIKE 'bar:%'")]
@@ -51,23 +51,34 @@ class Feed:
             by_end={b.end:b for b in series}
             end=cutoff.replace(second=0,microsecond=0)
             end-=timedelta(minutes=int(end.timestamp()/60)%minutes)
-            selected=[];scanned=0
+            selected=[];scanned=0;missing_end=None
             while len(selected)<count and scanned<count+10000:
                 start=end-step;scanned+=1
                 closed=any(s==symbol and a<=start and end<=z for s,a,z in closed_intervals)
                 if not closed:
-                    if end not in by_end: complete=False;break
+                    if end not in by_end: complete=False;missing_end=end;break
                     selected.append(by_end[end])
                 end=start
             if len(selected)!=count: complete=False
             bars.extend(selected)
+            if diagnostics is not None:
+                diagnostics.append(dict(kind='history',symbol=symbol,basis=basis,minutes=minutes,
+                    required=count,contiguous_available=len(selected),
+                    first_missing_end=missing_end.isoformat() if missing_end else None,
+                    repaired=bool(coverage and coverage['repaired']),
+                    complete=len(selected)==count and bool(coverage and coverage['repaired'])))
         for symbol in sorted({r[0] for r in requirements}):
-            raw=self.get('quote:'+symbol)
+            raw=self.get('quote:'+symbol);age=None;quote_ok=False
             if raw:
                 quote=Quote.model_validate_json(json.dumps(raw))
-                if quote.received_at<=cutoff and 0<=(cutoff-quote.source_time).total_seconds()<=max_quote_age: quotes.append(quote)
+                age=(cutoff-quote.source_time).total_seconds()
+                quote_ok=quote.received_at<=cutoff and 0<=age<=max_quote_age
+                if quote_ok: quotes.append(quote)
                 else: complete=False
             else: complete=False
+            if diagnostics is not None:
+                diagnostics.append(dict(kind='quote',symbol=symbol,present=bool(raw),age_seconds=age,
+                    maximum_age_seconds=max_quote_age,complete=quote_ok))
         unique={digest(b):b for b in bars}
         return Snapshot(cutoff=cutoff,bars=tuple(sorted(unique.values(),key=lambda b:(b.instrument,b.start,b.basis))),quotes=tuple(quotes),coverage_complete=complete)
 

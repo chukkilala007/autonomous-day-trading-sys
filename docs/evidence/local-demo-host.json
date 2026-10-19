@@ -47,5 +47,15 @@
     "active_risk": 0
   },
   "scope": "local demo prerequisites and synthetic paper workload; no actual orders",
-  "host_sleep_enabled": true
+  "host_sleep_enabled": true,
+  "recovery": {
+    "passed": true,
+    "rpo_events": 0,
+    "recovery_seconds": 0.02007775000000578,
+    "maximum_recovery_seconds": 10,
+    "orders": 2,
+    "remaining_positions": 0,
+    "restore_halt_preserved": true,
+    "scope": "isolated local paper restore"
+  }
 }
