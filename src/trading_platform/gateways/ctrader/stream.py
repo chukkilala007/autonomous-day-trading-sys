@@ -1,5 +1,6 @@
 """Read-only SDK stream bridge. Reconnect history must complete before coverage."""
 from datetime import timedelta
+from collections import Counter
 from twisted.internet import defer
 from .normalization import spot,trendbar
 from .history import complete_range
@@ -10,6 +11,7 @@ PERIODS={1:1,5:5,15:7,30:8,60:9,240:10,1440:12}
 class Stream:
     def __init__(self,session,feed,symbols,requirements,now):
         self.session=session;self.feed=feed;self.symbols=symbols;self.requirements=requirements;self.now=now
+        self.spot_rejections=Counter()
         self.failures={};self.busy=False;self.subscribed_generation=None;self.last_complete={};self.quote_sides={}
         for symbol,basis,minutes,count in requirements:
             if minutes not in PERIODS or count<=0 or count>1000: raise ValueError('unsupported history request')
@@ -58,20 +60,29 @@ class Stream:
         if str(raw.get('ctidTraderAccountId'))!=str(self.session.account_id): raise ValueError('foreign account feed')
         symbol=next((s for s,id in self.symbols.items() if str(id)==str(raw.get('symbolId'))),None)
         if symbol is None: raise ValueError('unknown symbol')
+        reason='INVALID_SPOT'
         try:
             from .normalization import timestamp_ms,relative_price
             from trading_platform.contracts.events import Quote
             if 'timestamp' not in raw or not any(side in raw for side in ('bid','ask')):
+                reason='MISSING_SPOT_FIELDS'
                 raise ValueError('missing quote timestamp or side')
             at=timestamp_ms(raw['timestamp']);sides=dict(self.quote_sides.get(symbol,{}))
             for side in ('bid','ask'):
                 if side in raw:
-                    if side in sides and at<sides[side][1]:raise ValueError('out-of-order quote side')
+                    if side in sides and at<sides[side][1]:
+                        reason='OUT_OF_ORDER_SIDE'
+                        raise ValueError('out-of-order quote side')
                     sides[side]=(relative_price(raw[side]),at)
             self.quote_sides[symbol]=sides
             if len(sides)<2:return
             # Never make an unchanged side look newer than its actual observation.
-            quote=Quote(instrument=symbol,bid=sides['bid'][0],ask=sides['ask'][0],source_time=min(v[1] for v in sides.values()),received_at=self.now())
+            received=self.now();source=min(v[1] for v in sides.values())
+            if sides['bid'][0]>sides['ask'][0]:reason='CROSSED_QUOTE'
+            elif received<source:reason='FUTURE_QUOTE'
+            quote=Quote(instrument=symbol,bid=sides['bid'][0],ask=sides['ask'][0],source_time=source,received_at=received)
             self.feed.ingest_quote(quote)
-        except ValueError:
+        except ValueError as error:
+            if str(error)=='old quote':reason='OUT_OF_ORDER_QUOTE'
+            self.spot_rejections[reason]+=1
             self.feed.disconnect(symbol);self.failures[symbol]='INCOMPLETE_OR_STALE_SPOT'

@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 remain partially complete; S8 unstarted |
-| Latest features | Observed quote-basis reconstruction; side-aware streaming; fresh timer shadow/reconnect acceptance; actual Chrome dashboard check; exact-volume margin audit runner |
+| Latest features | Local demo host/image pinning, coverage and quote rejection diagnostics, full-history shadow evidence and bounded first-order test plan |
 | Account state | User-selected demo account authenticated; rotated tokens remain private; no orders enabled or sent |
 | Actual qualification | Fresh empty-account economics collected; three completed M1 bid/ask comparisons per symbol establish sampled bid basis; metadata and historical bars retrieved |
 | Actual shadow result | XAUUSD timer fixture: 287 spot events, 12 reconciliations, 6 complete snapshots, generations 1/3, 14 decisions; zero commands, reservations or order writes |
-| Current blocker | Shared fresh-data shadow/reconnect and sampled margin checks passed. TPR still requires its full contiguous history; execution capability gates remain open |
-| Next concrete action | Run both strategies once every manifest history interval is complete; qualify explicit tick/value/cost/conversion policies. Next unused probe path: probe-014.json. Preserve rotated tokens; keep orders disabled |
+| Current blocker | Full TPR history is now present. Full shadow blocked by future-dated quotes: host clock lag measured; administrator clock synchronization required. Execution capability gates remain open |
+| Next concrete action | After administrator clock synchronization, verify host/container time and repeat full shadow with new report/state paths (006 next). Qualify tick/value/cost/conversion policies. Preserve rotated tokens; keep orders disabled |
 | Capability blockers | Assembly and nonlinear sizing implemented offline. Actual tick grid, multiplier/cost policy, conversion and proposal-time margin evidence beyond sampled quantities, protection/order/expiry behavior and session state remain unqualified |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 229 passed + 4 subtests in 18.68 seconds, network disabled. Bounded actual timer shadow/reconnect and sampled margins passed |
+| Latest tests | Installed gateway: 234 passed + 4 subtests in 6.20 seconds, network disabled. Local paper soak/recovery passed; full strategy shadow is clock-blocked |
 | External inputs | This Mac/Docker Desktop selected for demo; local image IDs remove the demo registry dependency. Off-host backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
 | Publication | Published fresh-data baseline ab1d6c1 passed CI 39222216267 |
 
@@ -880,3 +880,13 @@ Then obtain explicit authorization for the concrete demo-only test scope (accoun
 DONE for diagnostics on `feature/shadow_coverage_diagnostics`; 14 targeted Docker feed/session tests passed. Shadow reports now retain the last exact per-symbol/timeframe contiguous count, required count and first missing bar, independently from quote age and reconnect repair status. Diagnostics use the same selection as the readiness gate; no extra closures, old quotes or fabricated bars are accepted. This makes the TPR warm-up blocker inspectable rather than reporting only a false coverage flag.
 
 First actual order qualification scope is documented in `docs/demo-order-test-plan.md`; this is preparation, not activation or authorization.
+
+### Delivery F5.3d — full-history shadow and quote clock diagnosis (2026-10-19)
+
+Branch `feature/full_strategy_shadow_acceptance`. Installed Docker regression before quote instrumentation: **233 passed, 4 subtests passed**. Full XAUUSD TPR/timer run-004 collected all 400 M1, 80 M5, 24 M15 and 16 H1 required contiguous bars, 441 spots and 12 account reconciliations; forced reconnect passed. Zero core decisions/commands/reservations/positions: repair gate remained blocked. Evidence: `docs/evidence/full-shadow-004.json`. This supersedes the warm-up blocker, but does not establish full strategy acceptance.
+
+Added bounded fixed-label quote rejection counters without exposing raw payloads or relaxing validation; **15 targeted feed/session tests passed**. Read-only run-005 identified **123 FUTURE_QUOTE rejections out of 140 spot events**. Host SNTP reported +0.062964 +/-0.026129 seconds against time.apple.com. A noninteractive synchronization attempt could not run because administrator authentication is required; the user has been asked to synchronize locally without sharing a password. Evidence: `docs/evidence/quote-clock-diagnostics.json`. Recheck host and Docker guest clocks and repeat full strategy acceptance after correction; no future-time tolerance was added.
+
+The actual broker was identified from the selected-account profile. Public specification review is in `docs/evidence/broker-specification-review.md`; it corroborates some fields but leaves account-specific tick/fee/protection/expiry policy unresolved, including the displayed gold volume-step discrepancy. No credentials or account balances are in public evidence. Both diagnostic runs have ended; orders remain disabled.
+
+Final installed regression including quote diagnostics: **234 passed, 4 subtests passed in 6.20 seconds**, networking disabled. Five Docker guest/host receive-time samples were within 2.1–2.9ms (including stdout delay), so no material additional guest drift was observed; this is not a clock synchronization proof. The host administrator synchronization request remains pending. No broker connection is left running. Tested changes are merged/published under the existing per-feature workflow; inspect the new develop CI separately from local results.
