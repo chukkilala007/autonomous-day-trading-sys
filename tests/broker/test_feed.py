@@ -138,3 +138,19 @@ def test_diagnostics_preserve_verified_closure_and_missing_quote(tmp_path):
         feed.snapshot(end,[('X','bid',1,2)],closed_intervals=[('X',T+timedelta(minutes=1),T+timedelta(minutes=2))],diagnostics=details)
         assert details[0]['complete'] and details[0]['contiguous_available']==2
         assert not details[1]['present'] and details[1]['age_seconds'] is None
+
+
+def test_spot_rejection_diagnostics_do_not_relax_validation(tmp_path):
+    from types import SimpleNamespace
+    from trading_platform.gateways.ctrader.stream import Stream
+    base=int(T.timestamp()*1000)
+    with Database(tmp_path/'db') as db:
+        stream=Stream(SimpleNamespace(account_id=12),Feed(db),{'X':1},[('X','bid',1,1)],lambda:T)
+        def send(**fields):stream.on_spot(dict(ctidTraderAccountId='12',symbolId='1',**fields))
+        send(timestamp=base)
+        send(timestamp=base,bid=100100,ask=100000)
+        send(timestamp=base+1000,bid=100000,ask=100100)
+        send(timestamp=base,bid=100000)
+        assert stream.spot_rejections=={'MISSING_SPOT_FIELDS':1,'CROSSED_QUOTE':1,'FUTURE_QUOTE':1,'OUT_OF_ORDER_SIDE':1}
+        assert stream.feed.get('quote:X') is None
+        assert not stream.feed.get('coverage:X')['repaired']

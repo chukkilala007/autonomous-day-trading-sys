@@ -1,0 +1,108 @@
+{
+  "cached_bars": 526,
+  "complete_snapshots": 0,
+  "disconnects": 1,
+  "ended_at": "2026-10-19T14:07:03.659467+00:00",
+  "failures": 0,
+  "generation": 1,
+  "latest_coverage": [
+    {
+      "basis": "bid",
+      "complete": false,
+      "contiguous_available": 0,
+      "first_missing_end": "2026-10-19T14:07:00+00:00",
+      "kind": "history",
+      "minutes": 1,
+      "repaired": false,
+      "required": 400,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": false,
+      "contiguous_available": 80,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 5,
+      "repaired": false,
+      "required": 80,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": false,
+      "contiguous_available": 24,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 15,
+      "repaired": false,
+      "required": 24,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": false,
+      "contiguous_available": 16,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 60,
+      "repaired": false,
+      "required": 16,
+      "symbol": "XAUUSD"
+    },
+    {
+      "age_seconds": 9.620598,
+      "complete": false,
+      "kind": "quote",
+      "maximum_age_seconds": 2,
+      "present": true,
+      "symbol": "XAUUSD"
+    }
+  ],
+  "mode": "shadow",
+  "order_writes": 0,
+  "orders_enabled": false,
+  "quote_sources": {
+    "XAUUSD": "2026-10-19T14:07:02.613000+00:00"
+  },
+  "reconciled_generations": [
+    1
+  ],
+  "reconciliations": 4,
+  "reconnect_requested": false,
+  "reconnect_status": "NOT_REQUESTED",
+  "rejected_writes": 0,
+  "requests": {
+    "ProtoOAAccountAuthReq": 1,
+    "ProtoOAApplicationAuthReq": 1,
+    "ProtoOADealListReq": 4,
+    "ProtoOAGetAccountListByAccessTokenReq": 1,
+    "ProtoOAGetTrendbarsReq": 16,
+    "ProtoOAReconcileReq": 4,
+    "ProtoOASubscribeSpotsReq": 1,
+    "ProtoOATraderReq": 4
+  },
+  "spot_events": 140,
+  "spot_rejections": {
+    "FUTURE_QUOTE": 123
+  },
+  "started_at": "2026-10-19T14:06:18.557448+00:00",
+  "status": "BLOCKED_FRESH_COVERAGE",
+  "scope": "read-only quote diagnostics; future timestamps rejected without tolerance",
+  "host_ntp_observation": {
+    "source": "time.apple.com",
+    "offset_seconds": 0.062964,
+    "uncertainty_seconds": 0.026129,
+    "clock_adjusted": false,
+    "synchronization_blocker": "administrator authentication required"
+  },
+  "guest_clock_check": {
+    "samples": 5,
+    "guest_minus_host_receive_seconds_range": [
+      -0.002889,
+      -0.002123
+    ],
+    "includes_stdout_delay": true,
+    "synchronization_proof": false
+  }
+}
