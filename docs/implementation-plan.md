@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-17. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-19. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -9,17 +9,17 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 remain partially complete; S8 unstarted |
-| Latest features | Exact-quantity nonlinear sizing; audited contract assembly; proposal quoting RPC; revision-aware read-only margin collector |
+| Latest features | Observed quote-basis reconstruction; side-aware streaming; fresh timer shadow/reconnect acceptance; actual Chrome dashboard check; exact-volume margin audit runner |
 | Account state | User-selected demo account authenticated; rotated tokens remain private; no orders enabled or sent |
 | Actual qualification | Fresh empty-account economics collected; three completed M1 bid/ask comparisons per symbol establish sampled bid basis; metadata and historical bars retrieved |
-| Actual shadow result | 9 reconciliations across generations 1 and 3; 2 subscriptions; 744 cached bars; both isolated workers healthy; zero commands/reservations/decisions |
-| Current blocker | Last EURUSD/XAUUSD quotes were around 20:59 UTC while run ended 23:03 UTC on Friday 16 October (Saturday locally); no fresh coverage, so analysis correctly blocked |
-| Next concrete action | After fresh quotes return, repeat the bounded shadow run with a new exclusive report path and sufficient complete warm-up history; verify actual updates, repaired coverage, recorded strategy decisions and zero writes |
-| Capability blockers | Assembly and nonlinear sizing implemented offline. Actual tick grid, multiplier/cost policy, conversion and margin evidence, protection/order/expiry behavior and session state remain unqualified |
+| Actual shadow result | XAUUSD timer fixture: 287 spot events, 12 reconciliations, 6 complete snapshots, generations 1/3, 14 decisions; zero commands, reservations or order writes |
+| Current blocker | Shared fresh-data shadow/reconnect and sampled margin checks passed. TPR still requires its full contiguous history; execution capability gates remain open |
+| Next concrete action | Run both strategies once every manifest history interval is complete; qualify explicit tick/value/cost/conversion policies. Next unused probe path: probe-014.json. Preserve rotated tokens; keep orders disabled |
+| Capability blockers | Assembly and nonlinear sizing implemented offline. Actual tick grid, multiplier/cost policy, conversion and proposal-time margin evidence beyond sampled quantities, protection/order/expiry behavior and session state remain unqualified |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 225 passed + 4 subtests, network disabled. Fresh-market acceptance intentionally NOT claimed |
+| Latest tests | Installed gateway: 229 passed + 4 subtests in 18.68 seconds, network disabled. Bounded actual timer shadow/reconnect and sampled margins passed |
 | External inputs | Registry/Linux host/backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
-| Publication | Prior baseline CI 38979408055 passed. Follow-up publication/CI is recorded in the delivery handoff below |
+| Publication | Published baseline 054e24c passed CI 39076098251. Fresh-data work publication/CI checked separately |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -33,7 +33,7 @@ Future handoffs must name the active feature, changes already made, exact failin
 | F5.4 | Separate gateway/core/workers, authenticated read-only snapshot RPC, zero order path | Actual shadow run with complete required history and evidence/lag checks |
 | F6.1–F6.3 | Fencing, uncertain-send persistence, order/position ledger, owned cancel/close/protect, recovery supervisor | Offline core/outbox adapter, TCP controller, service loop and settlement-gated reconciliation implemented. Strict valuation input exporter and disabled lifecycle assembly now delivered (F5.2a/F6.3b/c). Raw broker economics/history mapping, authorized activation and broker acceptance still required |
 | F6.4 | Fail-closed qualification report and deterministic faults | Explicit demo-test authorization plus actual lifecycle, cancellation-race, protection and reconnect evidence |
-| F7.1 | Authenticated API, dashboard proxy, stale labels, evidence links | Fresh actual broker panel acceptance; Chrome paper/synthetic visual checks passed |
+| F7.1 | Authenticated API, dashboard proxy, stale labels, evidence links | Actual read-only Chrome broker panel and decision evidence passed; order execution acceptance remains under F6 |
 | F7.2 | Tested paper pause/resume/owned flatten, deduplicated local alerts | DONE for delivered paper controls; demo wiring belongs to pending F6 service integration |
 | F7.3 | Slim Docker targets, isolation audit, resource/log limits, immutable release helper, native-architecture CI | Prior develop CI observed passing on native AMD64/ARM64; immutable publication and clean intended-host qualification remain outside offline scope |
 | F7.4 | Quiesced paired paper archive, isolated halted restore, measured local soak/recovery | Encrypted secret recovery tooling tested offline; actual off-host/key recovery, intended-host soak and real-account restore reconciliation remain outside offline scope |
@@ -48,7 +48,7 @@ Offline subfeatures delivered under that mandate:
 - **F6.3a DONE:** core service cycle, authenticated TCP boundary, reactor dispatch factory and recovery-supervisor calls, exercised offline. No real-order launcher enabled.
 - **F7.4a DONE:** encrypted secret archive/restore with synthetic-secret tamper, wrong-key, private-file and overwrite-refusal tests.
 
-Parent stages remain open because their original acceptance gates include actual broker/host evidence. Chrome visual acceptance passed on 2026-10-17 for paper and synthetic shadow fixtures; the in-app browser native dependency failure persists. Fresh actual broker-panel acceptance remains pending.
+Parent stages remain open because their original acceptance gates include actual broker/host evidence. Chrome visual acceptance passed on 2026-10-17 for paper and synthetic shadow fixtures; the in-app browser native dependency failure persists. Actual read-only broker-panel acceptance passed with fresh XAUUSD data on 2026-10-19; execution-panel acceptance still follows the order lifecycle gates.
 
 ## Resume procedure
 
@@ -854,3 +854,13 @@ This completes bounded shared streaming/reconnect and timer shadow acceptance, n
 ### Delivery F5.2j — exact-volume margin qualification runner (2026-10-19)
 
 Branch: `feature/observed_margin_qualification`. Added `probe --margin-audit` to request BUY/SELL expected margins at up to three explicit volume-grid candidates per symbol, normalize exact money scales, bind correlated requests and enforce the unchanged two-second observation window. No order calls, extrapolation or automatic capability promotion. **16 targeted Docker tests passed** (host overload stretched runtime to 369.64 seconds). Actual probe-012 failed closed during account economics with STALE_ACCOUNT_ECONOMICS before margin qualification. Margin observations are therefore still unqualified. Preserve the rotated token store and failed report; retry only when host latency is healthy. No broker orders enabled.
+
+### Delivery handoff — fresh-market acceptance (2026-10-19)
+
+Branches `feature/fresh_market_acceptance`, `feature/selective_shadow_acceptance` and `feature/observed_margin_qualification` were tested and merged separately into develop. Final installed Docker regression: **229 passed, 4 subtests passed in 18.68 seconds**, network disabled.
+
+Read-only probe-013 succeeded after host latency recovered: EURUSD quantities 1,000/2,000/3,000 and XAUUSD quantities 1/2/3, with BUY/SELL margin observations in USD. Request-to-check latency was approximately 0.110s and 0.505s respectively, inside the unchanged two-second gate. Sanitized evidence: `docs/evidence/observed-margin-audit.json`. This establishes sampled expected-margin behavior only; observations expire and cannot substitute for fresh proposal-bound quotes or certify untested quantities, cost policy or order capabilities. Private probe-012 retains the earlier overload failure.
+
+Actual shared-runtime shadow acceptance remains bounded to the timer fixture: 287 spot events, 12 reconciliations, six complete snapshots, forced reconnect, 14 decisions and zero order writes. Chrome evidence is in `docs/evidence/live-shadow-status.png` and `live-shadow-dashboard.png`. Acceptance containers have been removed; no ongoing shadow process is implied.
+
+Remaining: full contiguous TPR history and strategy shadow acceptance; audited tick grid, multiplier, complete fee/conversion policies and session/protection/order/expiry capabilities; explicitly authorized demo order lifecycle acceptance; intended Linux host, registry and encrypted off-host recovery qualification. S5–S7 remain partial and S8 unstarted. No order activation. Next: check all manifest history windows before a new both-strategy shadow run; use exclusive report paths and preserve rotated tokens.
