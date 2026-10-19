@@ -141,6 +141,8 @@ def test_diagnostics_preserve_verified_closure_and_missing_quote(tmp_path):
 
 
 def test_spot_rejection_diagnostics_do_not_relax_validation(tmp_path):
+    import pytest
+    pytest.importorskip('ctrader_open_api')
     from types import SimpleNamespace
     from trading_platform.gateways.ctrader.stream import Stream
     base=int(T.timestamp()*1000)
