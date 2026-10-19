@@ -19,7 +19,8 @@ class Stream:
 
     def disconnected(self):
         self.subscribed_generation=None;self.last_complete={};self.quote_sides={}
-        for symbol in self.symbols: self.feed.disconnect(symbol)
+        for symbol in self.symbols:
+            self.feed.disconnect(symbol);self.feed.invalidate_quote(symbol)
 
     @defer.inlineCallbacks
     def repair(self):
@@ -82,7 +83,9 @@ class Stream:
             elif received<source:reason='FUTURE_QUOTE'
             quote=Quote(instrument=symbol,bid=sides['bid'][0],ask=sides['ask'][0],source_time=source,received_at=received)
             self.feed.ingest_quote(quote)
+            self.failures.pop(symbol,None)
         except ValueError as error:
             if str(error)=='old quote':reason='OUT_OF_ORDER_QUOTE'
             self.spot_rejections[reason]+=1
-            self.feed.disconnect(symbol);self.failures[symbol]='INCOMPLETE_OR_STALE_SPOT'
+            self.quote_sides.pop(symbol,None)
+            self.feed.invalidate_quote(symbol);self.failures[symbol]='INCOMPLETE_OR_STALE_SPOT'

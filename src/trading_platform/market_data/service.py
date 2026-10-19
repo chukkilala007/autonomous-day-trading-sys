@@ -32,7 +32,13 @@ class Feed:
     def ingest_quote(self,quote):
         old=self.get('quote:'+quote.instrument)
         if old and Quote.model_validate_json(json.dumps(old)).source_time>quote.source_time: raise ValueError('old quote')
-        self.put('quote:'+quote.instrument,quote)
+        with self.db.transaction() as c:
+            c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('quote:'+quote.instrument,canonical(quote)))
+            c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('quote-valid:'+quote.instrument,canonical({'valid':True})))
+
+    def invalidate_quote(self,symbol):
+        # Retain the last accepted timestamp for monotonicity checks, but block use.
+        self.put('quote-valid:'+symbol,{'valid':False})
 
     def disconnect(self,symbol): self.put('coverage:'+symbol,{'repaired':False})
 
@@ -69,15 +75,17 @@ class Feed:
                     complete=len(selected)==count and bool(coverage and coverage['repaired'])))
         for symbol in sorted({r[0] for r in requirements}):
             raw=self.get('quote:'+symbol);age=None;quote_ok=False
+            validity=self.get('quote-valid:'+symbol)
+            valid=validity is None or validity.get('valid') is True
             if raw:
                 quote=Quote.model_validate_json(json.dumps(raw))
                 age=(cutoff-quote.source_time).total_seconds()
-                quote_ok=quote.received_at<=cutoff and 0<=age<=max_quote_age
+                quote_ok=valid and quote.received_at<=cutoff and 0<=age<=max_quote_age
                 if quote_ok: quotes.append(quote)
                 else: complete=False
             else: complete=False
             if diagnostics is not None:
-                diagnostics.append(dict(kind='quote',symbol=symbol,present=bool(raw),age_seconds=age,
+                diagnostics.append(dict(kind='quote',symbol=symbol,present=bool(raw),valid=valid,age_seconds=age,
                     maximum_age_seconds=max_quote_age,complete=quote_ok))
         unique={digest(b):b for b in bars}
         return Snapshot(cutoff=cutoff,bars=tuple(sorted(unique.values(),key=lambda b:(b.instrument,b.start,b.basis))),quotes=tuple(quotes),coverage_complete=complete)
