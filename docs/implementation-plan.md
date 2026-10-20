@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-19. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-20. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -9,17 +9,17 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 remain partially complete; S8 unstarted |
-| Latest features | Local demo host/image pinning, coverage and quote rejection diagnostics, full-history shadow evidence and bounded first-order test plan |
+| Latest features | Independent quote/history recovery; per-side future timestamp checks; optional-SDK CI correction; bounded both-strategy shadow acceptance |
 | Account state | User-selected demo account authenticated; rotated tokens remain private; no orders enabled or sent |
 | Actual qualification | Fresh empty-account economics collected; three completed M1 bid/ask comparisons per symbol establish sampled bid basis; metadata and historical bars retrieved |
-| Actual shadow result | XAUUSD timer fixture: 287 spot events, 12 reconciliations, 6 complete snapshots, generations 1/3, 14 decisions; zero commands, reservations or order writes |
-| Current blocker | Full TPR history is now present. Full shadow blocked by future-dated quotes: host clock lag measured; administrator clock synchronization required. Execution capability gates remain open |
-| Next concrete action | After administrator clock synchronization, verify host/container time and repeat full shadow with new report/state paths (006 next). Qualify tick/value/cost/conversion policies. Preserve rotated tokens; keep orders disabled |
+| Actual shadow result | Run-007 XAUUSD: both strategies evaluated 6 events/12 decisions, including after reconnect; 409 spots, 12 reconciliations, 1 complete polled snapshot; zero commands/reservations/positions |
+| Current blocker | Bounded both-strategy shadow passed after recovery fixes, but 370/409 future quotes were rejected. Sustained clock/feed health and account-specific execution capability qualification remain open |
+| Next concrete action | Investigate residual host/broker timestamp mismatch and demonstrate sustained valid quotes; verify selected-account tick/value/cost/protection/expiry policy. Refresh expired feed evidence before another run (008 next; probe-014 next). Preserve rotated tokens; keep orders disabled |
 | Capability blockers | Assembly and nonlinear sizing implemented offline. Actual tick grid, multiplier/cost policy, conversion and proposal-time margin evidence beyond sampled quantities, protection/order/expiry behavior and session state remain unqualified |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 234 passed + 4 subtests in 6.20 seconds, network disabled. Local paper soak/recovery passed; full strategy shadow is clock-blocked |
+| Latest tests | Installed gateway: 236 passed + 4 subtests; paper-only: 163 passed, 20 optional-SDK skips + 4 subtests. Local soak/recovery and bounded both-strategy shadow passed; sustained feed health remains open |
 | External inputs | This Mac/Docker Desktop selected for demo; local image IDs remove the demo registry dependency. Off-host backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
-| Publication | Published fresh-data baseline ab1d6c1 passed CI 39222216267 |
+| Publication | Baseline a35d89d CI 39266453830 failed on optional-SDK test import; correction verified in both local images. Inspect new develop CI after publication |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -29,8 +29,8 @@ Future handoffs must name the active feature, changes already made, exact failin
 |---|---|---|
 | F5.1 | Verified TLS, demo binding, rotated private tokens, terminal refresh failure | DONE: actual auth, token rotation and forced reconnect/re-auth observed; no order permission |
 | F5.2 | Exact unit normalization, expiring account-bound evidence, hedged-account gate | Broker-specific tick/basis/session/fees/conversion/margin/protection and account-type audit |
-| F5.3 | Durable causal feed, gap/revision checks, bounded history pagination | Actual streaming/backfill checks (incremental overlap and generation-scoped subscription implemented offline) |
-| F5.4 | Separate gateway/core/workers, authenticated read-only snapshot RPC, zero order path | Actual shadow run with complete required history and evidence/lag checks |
+| F5.3 | Durable causal feed, gap/revision checks, bounded history pagination | Actual full history and forced reconnect observed; sustained quote validity remains unqualified |
+| F5.4 | Separate gateway/core/workers, authenticated read-only snapshot RPC, zero order path | Bounded both-strategy full-history run passed; sustained feed availability and remaining account capability gates stay open |
 | F6.1–F6.3 | Fencing, uncertain-send persistence, order/position ledger, owned cancel/close/protect, recovery supervisor | Offline core/outbox adapter, TCP controller, service loop and settlement-gated reconciliation implemented. Strict valuation input exporter and disabled lifecycle assembly now delivered (F5.2a/F6.3b/c). Raw broker economics/history mapping, authorized activation and broker acceptance still required |
 | F6.4 | Fail-closed qualification report and deterministic faults | Explicit demo-test authorization plus actual lifecycle, cancellation-race, protection and reconnect evidence |
 | F7.1 | Authenticated API, dashboard proxy, stale labels, evidence links | Actual read-only Chrome broker panel and decision evidence passed; order execution acceptance remains under F6 |
@@ -904,3 +904,13 @@ Validation: 19 targeted feed/session/shadow integration tests passed. Installed 
 ### F5.3f — per-side future timestamp boundary (2026-10-19)
 
 DONE on `feature/quote_timestamp_bounds`; 20 targeted Docker feed/session/shadow tests passed. Review of partial quote recovery found that validating only the combined oldest timestamp could hide a future-dated update on the newer side. Reject each incoming side's timestamp before caching it. This tightens the existing future-time rule; no clock tolerance is introduced. Add a regression for a future bid arriving alongside an older valid ask.
+
+### Delivery handoff — post-sync shadow acceptance (recorded 2026-10-20)
+
+Branch `feature/post_sync_shadow_acceptance`. User confirmed clock synchronization; this supersedes the earlier outstanding administrator request. On 2026-10-19 run-007, the corrected stack produced **6 events and 12 decisions**: TPR **6 WATCH**, timer fixture **1 ENTRY and 5 NO_ACTION**. Both instances evaluated three events after the forced-disconnect time, and the gateway confirmed reauthentication/reconciliation across generations 1 and 3. Commands, reservations, positions and actual order writes were all zero. Evidence: `docs/evidence/full-strategy-shadow-007.json`. A fixture ENTRY is a recorded decision only.
+
+The gateway's bounded report status is PASS, with 409 spot events, 12 reconciliations and one complete polled snapshot. **370 future quote rejections remain**; this is not sustained operational readiness or proof that clock mismatch is resolved. History warm-up and the quote/history recovery bug no longer block the bounded functional path. Future events, incomplete side observations, regressing timestamps and stale quotes remain rejected. Parent S5–S7 stages remain partial.
+
+Final installed regression: **236 gateway tests + 4 subtests** in 5.98s; **163 paper tests, 20 optional-SDK skips + 4 subtests** in 2.80s. The prior CI failure was corrected on `feature/optional_sdk_test_guard`; recovery and per-side timestamp fixes were separately tested, committed and merged from develop. The completed run-007 containers/networks were removed on 2026-10-20, retaining private evidence and rotated tokens. Other workloads were untouched.
+
+Next: inspect new CI, resolve residual timestamp mismatch with measured evidence and qualify sustained quote availability, then finish selected-account execution policy audit. Existing feed audits expire: refresh through a new private probe before another actual run. First demo order testing still awaits these gates, the bounded deployment's final validation and explicit authorization of the prepared test scope in `docs/demo-order-test-plan.md`. No orders have been enabled.
