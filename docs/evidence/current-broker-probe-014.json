@@ -1,0 +1,73 @@
+{
+  "status": "COLLECTED",
+  "collected_at": "2026-10-20T00:48:14.546641+00:00",
+  "orders_enabled": false,
+  "qualification_complete": false,
+  "candle_basis": {
+    "EURUSD": {
+      "basis": "bid",
+      "samples": 3
+    },
+    "XAUUSD": {
+      "basis": "bid",
+      "samples": 3
+    }
+  },
+  "margin_audit": {
+    "orders_enabled": false,
+    "qualification_complete": false,
+    "symbols": {
+      "EURUSD": {
+        "checked_at": "2026-10-20T00:48:17.845934+00:00",
+        "classification": "demo_observed",
+        "currency": "USD",
+        "evidence_hash": "2bf3a965e119e5d9cfd1112e38fe24533225907a41a7d90bb8989dee9f87e0f8",
+        "observed_at": "2026-10-20T00:48:17.693035+00:00",
+        "rows": [
+          {
+            "buy": "37.39",
+            "quantity": "1000",
+            "sell": "37.39"
+          },
+          {
+            "buy": "74.79",
+            "quantity": "2000",
+            "sell": "74.78"
+          },
+          {
+            "buy": "112.18",
+            "quantity": "3000",
+            "sell": "112.18"
+          }
+        ],
+        "scope": "exact_sampled_volumes_only"
+      },
+      "XAUUSD": {
+        "checked_at": "2026-10-20T00:48:18.110776+00:00",
+        "classification": "demo_observed",
+        "currency": "USD",
+        "evidence_hash": "0cabbd038b6af2c6dba3d62323e37d470c8e0f4632c30d951df40cabe67c7ef4",
+        "observed_at": "2026-10-20T00:48:17.846045+00:00",
+        "rows": [
+          {
+            "buy": "137.76",
+            "quantity": "1",
+            "sell": "137.76"
+          },
+          {
+            "buy": "275.53",
+            "quantity": "2",
+            "sell": "275.52"
+          },
+          {
+            "buy": "413.29",
+            "quantity": "3",
+            "sell": "413.28"
+          }
+        ],
+        "scope": "exact_sampled_volumes_only"
+      }
+    }
+  },
+  "scope": "renewed read-only observations; not execution qualification; evidence expires"
+}
