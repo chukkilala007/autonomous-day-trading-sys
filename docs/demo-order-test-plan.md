@@ -23,3 +23,7 @@ One EURUSD entry at the broker's verified minimum quantity (currently observed a
 5. End with no owned pending orders or positions and no unresolved submissions. Stop the isolated executor and retain state/evidence. If disconnection prevents cleanup, report unresolved exposure immediately and retain recovery state; stopping a container is not closure.
 
 The first test validates a narrow entry/protect/exit path. Partial-fill, cancellation-race, disconnect-under-exposure, restart and nonempty-account valuation acceptance remain separate bounded test cases. Deterministic fault tests do not substitute for required actual broker evidence. Autonomous demo operation requires the complete qualification report; live trading remains outside scope.
+
+## Current specification findings (2026-10-20)
+
+The user-supplied FxPro pages corroborate EURUSD's 1,000-unit minimum/step and both symbols' USD 35/million/side commission. Account metadata reports zero minimum commission and zero P&L conversion fee rate for the selected USD account. Gold's published step conflicts with account metadata; it remains outside the first EURUSD-only test. The EURUSD page does not establish the tradable tick; exact per-fill rounding, settlement cash conventions and the limit/GTD protection profile still need account-specific qualification. Public sources are recorded in `docs/evidence/broker-specification-review.md`. These are concrete remaining evidence requirements, not a request to resupply application credentials.

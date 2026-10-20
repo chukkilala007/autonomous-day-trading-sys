@@ -100,6 +100,9 @@ def run(reactor,args):
         if getattr(args,'margin_audit',False):
             from .audit import collect_margins
             result['margin_audit']=yield collect_margins(session,result,lambda:datetime.now(timezone.utc))
+        if getattr(args,'gap_start',None):
+            from .gap_audit import collect as collect_gap
+            result['gap_audit']=yield collect_gap(session,result['symbols'][args.gap_symbol],args.gap_start,lambda:datetime.now(timezone.utc))
         report=dict(result,status='COLLECTED')
     except Exception as error:
         # Only fixed local classifications are allowed into reports.
@@ -123,7 +126,17 @@ def main():
     p.add_argument('--account');p.add_argument('--symbols',nargs='+',default=['EURUSD','XAUUSD'])
     p.add_argument('--audit',action='store_true')
     p.add_argument('--margin-audit',action='store_true')
+    p.add_argument('--gap-start',help='Completed UTC minute to diagnose; no candle is synthesized')
+    p.add_argument('--gap-symbol',choices=['EURUSD','XAUUSD'])
     args=p.parse_args()
+    if bool(args.gap_start)!=bool(args.gap_symbol) or (args.gap_symbol and args.gap_symbol not in args.symbols):
+        p.error('gap-start and gap-symbol must be supplied together for a selected symbol')
+    if args.gap_start:
+        from trading_platform.contracts.values import utc
+        try:
+            start=utc(args.gap_start);age=datetime.now(timezone.utc)-start
+            if start.second or start.microsecond or not timedelta(minutes=1)<=age<=timedelta(days=7):raise ValueError()
+        except (ValueError,TypeError):p.error('gap-start must identify a recent completed aligned minute')
     # Startup validation errors are intentionally generic.
     try: TokenStore(args.credentials,args.tokens).read()
     except Exception: raise SystemExit('Private application credentials and tokens are required.') from None
