@@ -19,7 +19,9 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed gateway: 271 passed + 4 subtests (6.37s). Paper-only: 190 passed, 22 optional-SDK skips + 4 subtests (2.98s). Closure targeted: 45 passed |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
-| Publication | Four feature branches tested; publication and new CI result recorded below after merge |
+| Publication | All four feature branches and develop merge `74b6ed1` pushed. [CI 39424940895](https://github.com/chukkilala007/autonomous-day-trading-sys/actions/runs/39424940895) PASS: AMD64, ARM64, container tests, recovery/soak and open-exposure restart. Subsequent handoff change is documentation only |
+
+Publication handoff (2026-10-20): implementation commits `3e1ed3c`, `572ae00`, `3d1345d` and `b58ca47` are merged into develop. Completed shadow drill containers were removed; private evidence and rotated tokens retained. This publication does not enable broker orders or close the remaining acceptance gates above.
 
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
