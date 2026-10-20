@@ -75,3 +75,30 @@ def test_margin_audit_exact_volumes_and_staleness():
     session.read=slow;errors=[]
     collect_margins(session,probe,lambda:clock[0]).addErrback(errors.append)
     assert errors and 'stale' in str(errors[0].value)
+
+
+def test_audited_volume_grid_is_consumable_by_fenced_order_boundary(tmp_path):
+    import runpy
+    from types import SimpleNamespace
+    from trading_platform.gateways.ctrader.audit import collect
+    from trading_platform.gateways.ctrader.orders import DemoTransport
+    from trading_platform.persistence.database import Database
+    fixture=runpy.run_path('tests/broker/test_demo_transport.py')
+    command,report,quote=fixture['fixture']();at=fixture['T']
+    session=SimpleNamespace(account_id=12,generation=1,ready=True)
+    probe={'account_id':'12','symbols':{'X':1},'metadata':{'symbol':[dict(symbolId='1',minVolume='100',maxVolume='10000',stepVolume='100')]},'economics':{'trader':{'accountType':'HEDGED'}},'trendbars':{'X':[]}}
+    values=[];errors=[]
+    collect(session,probe,lambda:at).addCallback(values.append).addErrback(errors.append)
+    assert not errors
+    audit=values[0]['symbols']['X']
+    assert not values[0]['qualification_complete'] and audit['execution_blockers']
+    grid=next(e['value'] for e in audit['capability']['evidence'] if e['field']=='volume_grid')
+    # Only copy the observed value into the offline synthetic qualification fixture.
+    report=report.model_copy(update={'evidence':tuple(e.model_copy(update={'value':grid}) if e.field=='volume_grid' else e for e in report.evidence)})
+    with Database(tmp_path/'db') as db:
+        transport=DemoTransport(db,session,authorized=True);epoch=transport.fence.acquire('test')
+        fields=transport.prepare(command,'test',epoch,report,quote,at,at)
+        assert fields['volume']==200
+        command['body']['size']['quantity']='2.5'
+        with pytest.raises(ValueError,match='volume outside verified grid'):
+            transport.prepare(command,'test',epoch,report,quote,at,at)
