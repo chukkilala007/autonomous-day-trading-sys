@@ -1,0 +1,115 @@
+{
+  "cached_bars": 529,
+  "complete_snapshots": 1,
+  "disconnects": 2,
+  "ended_at": "2026-10-20T18:43:01.343274+00:00",
+  "failures": 0,
+  "future_quote_lead_us": {
+    "EURUSD": {
+      "count": 13,
+      "max": 18802,
+      "min": 10912,
+      "total": 190380
+    }
+  },
+  "generation": 3,
+  "latest_coverage": [
+    {
+      "basis": "bid",
+      "complete": false,
+      "contiguous_available": 0,
+      "first_missing_end": "2026-10-20T18:43:00+00:00",
+      "kind": "history",
+      "minutes": 1,
+      "repaired": true,
+      "required": 400,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 80,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 5,
+      "repaired": true,
+      "required": 80,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 24,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 15,
+      "repaired": true,
+      "required": 24,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 16,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 60,
+      "repaired": true,
+      "required": 16,
+      "symbol": "EURUSD"
+    },
+    {
+      "age_seconds": 5.16167,
+      "complete": false,
+      "kind": "quote",
+      "maximum_age_seconds": 2,
+      "present": true,
+      "symbol": "EURUSD",
+      "valid": false
+    }
+  ],
+  "mode": "shadow",
+  "order_writes": 0,
+  "orders_enabled": false,
+  "quote_sources": {
+    "EURUSD": "2026-10-20T18:42:55.666000+00:00"
+  },
+  "reconciled_generations": [
+    1,
+    3
+  ],
+  "reconciliations": 9,
+  "reconnect_requested": true,
+  "reconnect_status": "PASS",
+  "rejected_writes": 0,
+  "requests": {
+    "ProtoOAAccountAuthReq": 2,
+    "ProtoOAApplicationAuthReq": 2,
+    "ProtoOADealListReq": 9,
+    "ProtoOAGetAccountListByAccessTokenReq": 2,
+    "ProtoOAGetTrendbarsReq": 36,
+    "ProtoOAReconcileReq": 9,
+    "ProtoOASubscribeSpotsReq": 2,
+    "ProtoOATraderReq": 9
+  },
+  "spot_events": 18,
+  "spot_rejections": {
+    "FUTURE_QUOTE": 13
+  },
+  "started_at": "2026-10-20T18:41:29.208512+00:00",
+  "status": "PASS",
+  "core_counts": {
+    "events": 3,
+    "decisions": 6,
+    "commands": 0,
+    "reservations": 0,
+    "positions": 0
+  },
+  "operational_readiness": false,
+  "host_ntp_observation": {
+    "offset_seconds": 0.021315,
+    "uncertainty_seconds": 0.006964,
+    "source": "time.apple.com",
+    "scope": "read-only host measurement during diagnostic"
+  }
+}
