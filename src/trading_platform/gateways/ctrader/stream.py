@@ -15,6 +15,7 @@ class Stream:
         # Bounded aggregates only: source timestamp lead over local receipt time,
         # not an NTP offset estimate or permission to accept future quotes.
         self.future_quote_lead_us={}
+        self.on_disconnect=None
         self.failures={};self.busy=False;self.subscribed_generation=None;self.last_complete={};self.quote_sides={}
         for symbol,basis,minutes,count in requirements:
             if minutes not in PERIODS or count<=0 or count>1000: raise ValueError('unsupported history request')
@@ -22,8 +23,10 @@ class Stream:
 
     def disconnected(self):
         self.subscribed_generation=None;self.last_complete={};self.quote_sides={}
+        if self.on_disconnect is not None:self.on_disconnect()
         for symbol in self.symbols:
             self.feed.disconnect(symbol);self.feed.invalidate_quote(symbol)
+            self.feed.put('quote-buffer-pending:'+symbol,{'pending':False})
 
     @defer.inlineCallbacks
     def repair(self):
@@ -89,7 +92,7 @@ class Stream:
                         raise ValueError('out-of-order quote side')
                     sides[side]=(relative_price(raw[side]),at)
             self.quote_sides[symbol]=sides
-            if len(sides)<2:return
+            if len(sides)<2:return True
             # Never make an unchanged side look newer than its actual observation.
             received=self.now();source=min(v[1] for v in sides.values())
             if sides['bid'][0]>sides['ask'][0]:reason='CROSSED_QUOTE'
@@ -97,8 +100,13 @@ class Stream:
             quote=Quote(instrument=symbol,bid=sides['bid'][0],ask=sides['ask'][0],source_time=source,received_at=received)
             self.feed.ingest_quote(quote)
             self.failures.pop(symbol,None)
+            return True
         except ValueError as error:
             if str(error)=='old quote':reason='OUT_OF_ORDER_QUOTE'
-            self.spot_rejections[reason]+=1
-            self.quote_sides.pop(symbol,None)
-            self.feed.invalidate_quote(symbol);self.failures[symbol]='INCOMPLETE_OR_STALE_SPOT'
+            self.reject_spot(symbol,reason)
+            return False
+
+    def reject_spot(self,symbol,reason):
+        self.spot_rejections[reason]+=1
+        self.quote_sides.pop(symbol,None)
+        self.feed.invalidate_quote(symbol);self.failures[symbol]='INCOMPLETE_OR_STALE_SPOT'

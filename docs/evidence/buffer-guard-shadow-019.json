@@ -1,0 +1,180 @@
+{
+  "cached_bars": 1060,
+  "complete_snapshots": 0,
+  "disconnects": 1,
+  "ended_at": "2026-10-20T19:05:15.560758+00:00",
+  "failures": 0,
+  "future_quote_lead_us": {},
+  "generation": 1,
+  "latest_coverage": [
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 400,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 1,
+      "repaired": true,
+      "required": 400,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 80,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 5,
+      "repaired": true,
+      "required": 80,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 24,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 15,
+      "repaired": true,
+      "required": 24,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 16,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 60,
+      "repaired": true,
+      "required": 16,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 400,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 1,
+      "repaired": true,
+      "required": 400,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 80,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 5,
+      "repaired": true,
+      "required": 80,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 24,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 15,
+      "repaired": true,
+      "required": 24,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 16,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 60,
+      "repaired": true,
+      "required": 16,
+      "symbol": "XAUUSD"
+    },
+    {
+      "age_seconds": 7.136691,
+      "complete": false,
+      "kind": "quote",
+      "maximum_age_seconds": 2,
+      "present": true,
+      "symbol": "EURUSD",
+      "valid": false
+    },
+    {
+      "age_seconds": 7.648691,
+      "complete": false,
+      "kind": "quote",
+      "maximum_age_seconds": 2,
+      "present": true,
+      "symbol": "XAUUSD",
+      "valid": false
+    }
+  ],
+  "mode": "shadow",
+  "order_writes": 0,
+  "orders_enabled": false,
+  "quote_buffer": {
+    "counts": {
+      "BUFFER_EXCESSIVE_SKEW": 75,
+      "buffered": 11,
+      "dropped": 75,
+      "peak_pending": 1,
+      "released": 11
+    },
+    "enabled": true,
+    "max_lead_ms": 100,
+    "max_pending": 64,
+    "max_residence_ms": 250,
+    "pending": 0
+  },
+  "quote_sources": {
+    "EURUSD": "2026-10-20T19:05:06.867000+00:00",
+    "XAUUSD": "2026-10-20T19:05:06.355000+00:00"
+  },
+  "reconciled_generations": [
+    1
+  ],
+  "reconciliations": 4,
+  "reconnect_requested": false,
+  "reconnect_status": "INCOMPLETE",
+  "rejected_writes": 0,
+  "requests": {
+    "ProtoOAAccountAuthReq": 1,
+    "ProtoOAApplicationAuthReq": 1,
+    "ProtoOADealListReq": 4,
+    "ProtoOAGetAccountListByAccessTokenReq": 1,
+    "ProtoOAGetTrendbarsReq": 32,
+    "ProtoOAReconcileReq": 4,
+    "ProtoOASubscribeSpotsReq": 1,
+    "ProtoOATraderReq": 4
+  },
+  "spot_events": 90,
+  "spot_rejections": {
+    "BUFFER_EXCESSIVE_SKEW": 75
+  },
+  "started_at": "2026-10-20T19:04:31.248805+00:00",
+  "status": "BLOCKED_RECONNECT",
+  "core_counts": {
+    "events": 0,
+    "decisions": 0,
+    "commands": 0,
+    "reservations": 0,
+    "positions": 0
+  },
+  "acceptance": "ABORTED_HOST_SKEW_EXCEEDS_PROFILE",
+  "operational_readiness": false,
+  "clock_observations": {
+    "time.euro.apple.com": {
+      "offset_seconds": 0.130155,
+      "uncertainty_seconds": 0.007208
+    },
+    "time.cloudflare.com": {
+      "offset_seconds": 0.128014,
+      "uncertainty_seconds": 0.017421
+    }
+  }
+}

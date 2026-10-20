@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | FxPro specification reconciliation, broker schedules/holiday zones, exact gap diagnosis, verified daily-closure integration |
-| Account state | Selected demo account authenticated; private rotated tokens preserved; no orders enabled or sent |
-| Actual qualification | Probe-021 collected; EURUSD bid basis verified, XAUUSD current candle/tick reconstruction mismatched and remains blocked |
-| Actual shadow result | Ten-minute EURUSD run-017: full history, 58 reconciliations, reconnect PASS, 166 decisions, zero orders; sustained acceptance FAIL |
-| Current blocker | 466/596 updates future-dated despite clock correction; host lag grew from ~3.5ms to ~21.7ms. XAUUSD also lacks current candle-basis qualification |
-| Next concrete action | Operator provides read-only automatic-time settings (admin required). Diagnose persistent host lag before repeating acceptance. Diagnostic-018 measured 10.912–18.802ms quote lead against ~21.315ms host lag. Next probe 022; shadow 019 |
-| Capability blockers | Execution blockers and bounded demo approval remain. See online matrix and synchronized acceptance evidence; no orders authorized |
+| Latest features | Opt-in bounded quote buffering for the read-only gateway; strict release validation and pending-snapshot inhibition |
+| Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
+| Actual qualification | Probe-022 freshly verified bid candle basis for EURUSD and XAUUSD; previous gold mismatch retained as historical evidence |
+| Actual shadow result | Buffer guard run-019: 11 buffered/released updates, 75 excessive-skew rejections, zero orders. Stopped after 44 seconds; not sustained acceptance |
+| Current blocker | Host lag ~128–130ms exceeds the explicit 100ms profile. Automatic time is On, server time.euro.apple.com. Awaiting operator clock correction; no limit widened |
+| Next concrete action | Verify clock after requested local correction, then run 600-second buffered acceptance with forced reconnect. Next probe 023; shadow 020 |
+| Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Quote-clock diagnostic installed gateway: 272 passed + 4 subtests (6.69s). Prior paper-only: 190 passed, 22 optional-SDK skips + 4 subtests. Actual diagnostic export verified |
+| Latest tests | Installed gateway: 290 passed + 4 subtests (6.74s), including causal queue bounds, clock jumps, stale callbacks and restart tests |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | All four feature branches and develop merge `74b6ed1` pushed. [CI 39424940895](https://github.com/chukkilala007/autonomous-day-trading-sys/actions/runs/39424940895) PASS: AMD64, ARM64, container tests, recovery/soak and open-exposure restart. Subsequent handoff change is documentation only |
 
@@ -979,3 +979,9 @@ Branch `feature/synchronized_shadow_acceptance`, evidence only. Ten-minute EURUS
 Branch `feature/quote_clock_diagnostics`. Add bounded per-symbol count/min/max/total microseconds for source timestamps ahead of gateway receipt time, retained across reconnect and exported in the private run report. No raw messages, prices or credentials added; no timestamp tolerance or gate change. The metric is source timestamp lead, not a measured broker/NTP offset. Test exact microseconds, per-symbol separation, partial-side rejection, reconnect preservation and valid-message exclusion. Actual read-only diagnostic follows installed-image regression.
 
 Diagnostic acceptance: installed gateway **272 passed +4 subtests in6.69s**. Local-host-008 pinned new gateway image and passed host prerequisites. Actual90-second EURUSD run-018:18 spots,13 FUTURE_QUOTE; source lead min10,912us,max18,802us,total190,380us (mean14,644.6us). Concurrent host measurement +0.021315 +/-0.006964s. These observations are consistent with remaining host lag, not proof of broker clock offset. Reconnect PASS;3events/6decisions; zero commands/reservations/positions/order writes. Report `docs/evidence/quote-clock-diagnostic-018.json`. All drill containers/networks removed; evidence/tokens preserved. User asked for read-only administrator time-setting outputs; no password requested or settings changed. No new timestamp tolerance.
+
+### Bounded read-only quote buffer — BLOCKED (implementation complete; sustained online acceptance pending) (2026-10-20)
+
+Branch `feature/bounded_quote_buffer`. User explicitly approved causal buffering. Opt-in100ms lead/250ms monotonic residence/64 updates per symbol; pending snapshot inhibition, strict unchanged release validation, generation/reset/overflow/order guards. Default remains unbuffered; execution unchanged and disabled. Decision record `docs/decisions/0003-bounded-shadow-quote-buffer.md`. Installed gateway suite:288 passed+4subtests in6.47s. Actual600s read-only acceptance follows using pinned local-host-009 images and fresh probe-022.
+
+Final buffer regression: **290 passed + 4 subtests in 6.74s**. Fresh probe-022 passed three-sample bid-basis checks for both symbols. Run-019 used both symbols, both workers and pinned local-host-009 images. Host lag measured +130.155ms (Apple) / +128.014ms (Cloudflare), beyond the declared profile. Stopped after44seconds:11 buffered/released updates,75 BUFFER_EXCESSIVE_SKEW rejections, no strict future-release rejection, zero broker writes. Forced reconnect was not reached, so report correctly records INCOMPLETE reconnect. This demonstrates bounds enforcement, not sustained acceptance. All drill containers/networks removed. Evidence: `buffer-guard-shadow-019.json`, `buffer-capability-audit-022.json`. User asked to correct clock locally before repeating; no automatic clock modification or order authorization inferred.
