@@ -1,0 +1,40 @@
+# Proposed first attended demo-order test
+
+Status: PREPARED, NOT AUTHORIZED FOR SUBMISSION. User requested preparation on 2026-10-20. This document is not executable configuration and does not enable the gateway.
+
+## Scope and hard bounds
+
+- Account: selected cTrader demo account 48232468, confirmed `isLive=false` immediately before testing.
+- Host: this Mac, Docker Desktop; one fenced gateway writer and one attended test controller.
+- Instrument: EURUSD only. Exclude XAUUSD until its volume-step discrepancy is resolved.
+- Initial test: one BUY LIMIT submission, 1,000 EUR units (the previously observed minimum), with attached absolute stop and target and GTD expiry 60 seconds after submission.
+- Maximum one order attempt, one pending order or owned position, and 1,000 EUR gross quantity. No second submission after rejection, timeout, reconnect or ambiguous acknowledgement.
+- Proposed planned-loss ceiling: USD 5 including verified fees and modeled exit costs, additionally capped at 0.1% of freshly reconciled equity. Reject if the minimum size cannot fit both limits. This is a pre-trade bound, not a guarantee against gaps or slippage.
+- Prices are not chosen from stale data. Immediately before the attended test, produce a timestamped preview with grid-aligned entry, stop, target, current bid/ask, spread, fees, margin, expiry and worst modeled loss. All must pass the existing validators. A valid proposal may be unavailable; do not widen limits to force a test.
+- No autonomous strategy entries. This tests transport/lifecycle, not TPR performance or its stop-limit semantics.
+
+## Preconditions
+
+1. Obtain exact account tick, contract/economics, protection-side and limit/GTD capability evidence. Where execution behavior requires observation, record protocol/broker support separately from actual demo acceptance. Do not fabricate `demo_observed` evidence to pass the capability gate. If the current gate cannot represent that distinction, implement and test a narrowly scoped qualification path first.
+2. Resolve host/guest/broker timestamp alignment and demonstrate a 10-minute read-only interval including one forced reconnect, complete required histories and post-repair fresh quotes, with zero future-quote rejections. Normal missing/stale updates must inhibit decisions. This is a proposed prospective acceptance criterion, not a claim about previous runs.
+3. Confirm no unknown outstanding commands and reconcile all broker exposure. Never cancel, amend or close unrelated orders or positions. Abort if existing exposure prevents the test limits from being established.
+4. Pin tested images, exact source and policy hashes. Validate current account/quote freshness and proposal-specific economics at send time.
+5. Prepare durable event capture, owned cancel/close/protection recovery and an operator monitoring window. Verify the disabled assembly offline using the exact proposed limits.
+6. Present the final timestamped preview and obtain explicit authorization for that bounded submission. Preparation authorization alone does not override the earlier orders-disabled instruction.
+
+## Sequence and outcomes
+
+1. Submit once through the durable outbox and fenced transport; capture intent hash and broker correlation.
+2. If accepted and still pending at 20 seconds, request one owned cancellation. Confirm terminal cancellation or server expiry through reconciliation; a cancellation request is not terminal evidence.
+3. If filled at any time, confirm all filled quantity has the specified broker protection. Halt new entries. Apply the tested owned protection-repair/close policy if protection is absent; reconcile actual outcome.
+4. Close any remaining test-owned position by 120 seconds when connectivity permits. Record inability to close honestly and retain halt/uncertainty until broker evidence resolves it. Never report a local timeout as flat.
+5. Reconcile deals, fees, cash settlement, remaining quantity and reservations. Finish only with verified zero test-owned exposure and no unresolved command, or an explicit failed/halted incident record.
+6. Stop the controller. No unattended retry or promotion to autonomous execution.
+
+A nonfilled cancellation test does not qualify fill economics or protection. A filled test does not qualify cancellation races, partial fills or ambiguous-send recovery. Subsequent separately bounded cases must cover those paths, using deterministic transport fault tests where a broker event cannot safely or reliably be induced. Record actual versus simulated evidence separately.
+
+## Later qualification cases
+
+After the first result is reviewed: expiry without manual cancellation; protected fill/owned exit; partial-fill handling when observed; cancellation/fill race; reconnect and process restart with owned exposure; accepted-but-unacknowledged recovery without duplicate submission; controls/dashboard/alerts; isolated backup restore and broker reconciliation; representative host soak and graceful upgrade. Each needs its own explicit limits and acceptance record.
+
+Remaining blockers and current evidence: [online validation matrix](../docs/evidence/online-validation-2026-10-20.md).
