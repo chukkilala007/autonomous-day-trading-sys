@@ -11,11 +11,11 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
 | Latest features | FxPro specification reconciliation, broker schedules/holiday zones, exact gap diagnosis, verified daily-closure integration |
 | Account state | Selected demo account authenticated; private rotated tokens preserved; no orders enabled or sent |
-| Actual qualification | Probe-019 COLLECTED for both symbols; nine execution capability fields remain unqualified. See complete online blocker matrix below |
-| Actual shadow result | Runs 013 EURUSD and 014 XAUUSD: full 400/80/24/16 histories, 16 reconciliations each, forced reconnect PASS; zero decisions and zero orders |
-| Current blocker | Post-sync diagnostic run-015 rejected 98/100 EURUSD quotes as future-dated. Apple/Cloudflare independently measure ~132ms host lag. macOS manual shows prior `sntp -s` instruction insufficient above 50ms; runbook corrected to `-sS` |
-| Next concrete action | Operator corrects clock with `sudo sntp -sS time.apple.com`; verify offset before ten-minute acceptance. Probe-020 collected, diagnostic-015 stopped/removed, zero orders. Next probe 021; shadow 016 |
-| Capability blockers | Full list in [online validation matrix](evidence/online-validation-2026-10-20.md). User authorized preparation of [bounded demo test](../deploy/bounded-demo-test-plan.md); no actual order submission authorized |
+| Actual qualification | Probe-021 collected; EURUSD bid basis verified, XAUUSD current candle/tick reconstruction mismatched and remains blocked |
+| Actual shadow result | Ten-minute EURUSD run-017: full history, 58 reconciliations, reconnect PASS, 166 decisions, zero orders; sustained acceptance FAIL |
+| Current blocker | 466/596 updates future-dated despite clock correction; host lag grew from ~3.5ms to ~21.7ms. XAUUSD also lacks current candle-basis qualification |
+| Next concrete action | Measure future timestamp lead in read-only gateway diagnostics. Automatic time settings require local administrator inspection. Next probe 022; shadow 018 |
+| Capability blockers | Execution blockers and bounded demo approval remain. See online matrix and synchronized acceptance evidence; no orders authorized |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed gateway: 271 passed + 4 subtests (6.37s). Paper-only: 190 passed, 22 optional-SDK skips + 4 subtests (2.98s). Closure targeted: 45 passed |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
@@ -969,3 +969,7 @@ Branch `feature/online_validation_round`, evidence-only. Fresh probe-019 and sep
 Branch `feature/post_sync_validation`. User reported synchronization done. Read-only Apple measurement +0.131878 +/-0.009694s and Cloudflare +0.132161 +/-0.016897s still show host lag. Docker guest samples fall within host request/response windows; these coarse samples do not prove submillisecond alignment. Installed macOS `sntp(1)` manual specifies `-s` only slews offsets below 50ms, while `-S` enables stepping larger offsets. Corrected operations instructions to `sudo sntp -sS time.apple.com`, with qualification stopped first. Reading network-time settings requires administrator access; no settings or clocks changed by the agent.
 
 Fresh probe-020 COLLECTED. Diagnostic EURUSD shadow-015 (90 seconds, reconnect at35s) rejected98/100 quotes, zero complete snapshots,9 reconciliations, reconnect PASS, zero decisions/commands/reservations/positions/order writes. Evidence: `docs/evidence/post-sync-shadow-015.json`. Ten-minute acceptance was not attempted because the clock prerequisite failed. All diagnostic containers/networks removed; private token/evidence state preserved. Documentation/evidence only; `git diff --check` passed, no runtime source changed.
+
+### Synchronized sustained acceptance (2026-10-20)
+
+Branch `feature/synchronized_shadow_acceptance`, evidence only. Ten-minute EURUSD run-017 completed with full history, forced reconnect and 166 decisions but 466/596 FUTURE_QUOTE rejections: sustained acceptance FAIL. Post-correction host lag initially ~3.5ms, then ~17.8ms, finally ~21.7ms. Probe-021 could not qualify XAUUSD candle basis because a reconstructed bid close differed from its bar. Aborted setup run-016 is retained privately, not acceptance evidence. All drill containers removed. Detailed evidence: `docs/evidence/synchronized-shadow-acceptance.md`. `git diff --check` passed; no runtime changes or order writes.

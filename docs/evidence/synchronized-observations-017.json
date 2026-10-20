@@ -1,0 +1,1548 @@
+{
+  "sampling_seconds": 5,
+  "samples": 110,
+  "fresh_valid_samples": 17,
+  "scope": "Quote-only sampled availability; not full snapshot acceptance",
+  "observations": [
+    {
+      "observed_at": "2026-10-20T15:18:23.104647+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.298647,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 16,
+        "decisions": 32,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:18:28.113153+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 1.156153,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 20,
+        "decisions": 40,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:18:33.119914+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.621914,
+      "provider_coverage_complete": true,
+      "generation": 1,
+      "core_counts": {
+        "events": 23,
+        "decisions": 46,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:18:38.128050+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.82705,
+      "provider_coverage_complete": true,
+      "generation": 1,
+      "core_counts": {
+        "events": 25,
+        "decisions": 50,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:18:43.136685+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.610685,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 26,
+        "decisions": 52,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:18:48.144754+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 5.618754,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 27,
+        "decisions": 54,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:18:53.152384+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.079384,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 29,
+        "decisions": 58,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:18:58.163784+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 0.430784,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 30,
+        "decisions": 60,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:03.175533+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 5.442533,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 30,
+        "decisions": 60,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:08.181823+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.456823,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 31,
+        "decisions": 60,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:13.190046+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 5.465046,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 31,
+        "decisions": 62,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:18.201889+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 10.476889,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 31,
+        "decisions": 62,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:23.212801+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 15.487801,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 31,
+        "decisions": 62,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:28.222929+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 20.497929,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 31,
+        "decisions": 62,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:33.232150+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.40015,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:38.242273+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 6.410273,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:43.256208+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 11.424208,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:48.263887+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 16.431887,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:53.274962+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.028962,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:19:58.285257+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 4.933257,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:03.299928+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 9.947928,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:08.310039+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.906039,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:13.319976+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.731976,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 32,
+        "decisions": 64,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:18.334534+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.966534,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 33,
+        "decisions": 66,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:23.345660+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.77866,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 35,
+        "decisions": 70,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:28.358601+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.997601,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 35,
+        "decisions": 70,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:33.368605+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 3.835605,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 35,
+        "decisions": 70,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:38.378054+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.526054,
+      "provider_coverage_complete": true,
+      "generation": 1,
+      "core_counts": {
+        "events": 35,
+        "decisions": 70,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:43.384775+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.895775,
+      "provider_coverage_complete": true,
+      "generation": 1,
+      "core_counts": {
+        "events": 36,
+        "decisions": 72,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:48.393620+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 0.51062,
+      "provider_coverage_complete": true,
+      "generation": 1,
+      "core_counts": {
+        "events": 37,
+        "decisions": 74,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:53.402864+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.401864,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 37,
+        "decisions": 74,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:20:58.414298+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 7.413298,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 37,
+        "decisions": 74,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:03.423818+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 12.422818,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 37,
+        "decisions": 74,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:08.432629+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 17.431629,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 37,
+        "decisions": 74,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:13.441167+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.441167,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 38,
+        "decisions": 76,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:18.450043+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 6.450043,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 38,
+        "decisions": 76,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:23.459280+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.99428,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 39,
+        "decisions": 78,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:28.467119+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.880119,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 39,
+        "decisions": 78,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:33.477094+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 7.890094,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 39,
+        "decisions": 78,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:38.484182+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 12.897182,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 39,
+        "decisions": 78,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:43.494651+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 17.907651,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 39,
+        "decisions": 78,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:48.504339+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 2.322339,
+      "provider_coverage_complete": false,
+      "generation": 1,
+      "core_counts": {
+        "events": 39,
+        "decisions": 78,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:53.512875+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 1.715875,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 41,
+        "decisions": 82,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:21:58.523175+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.554175,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 43,
+        "decisions": 86,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:03.533854+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.186854,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 43,
+        "decisions": 86,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:08.545428+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 5.198428,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 43,
+        "decisions": 86,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:13.553698+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 3.357698,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 44,
+        "decisions": 88,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:18.560042+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 8.364042,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 44,
+        "decisions": 88,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:23.565463+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.384463,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 44,
+        "decisions": 88,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:28.577936+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 4.766936,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 46,
+        "decisions": 92,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:33.586192+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 9.775192,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 46,
+        "decisions": 92,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:38.595711+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.620711,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 46,
+        "decisions": 92,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:43.606296+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 5.631296,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 47,
+        "decisions": 94,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:48.615164+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 10.640164,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 47,
+        "decisions": 94,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:53.626382+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 15.651382,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 47,
+        "decisions": 94,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:22:58.635378+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 0.248378,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 47,
+        "decisions": 94,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:03.649778+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 5.262778,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 47,
+        "decisions": 94,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:08.657382+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 4.500382,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 47,
+        "decisions": 94,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:13.665856+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.044856,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 47,
+        "decisions": 94,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:18.676702+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 5.055702,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 48,
+        "decisions": 96,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:23.684756+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.783756,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 51,
+        "decisions": 102,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:28.690964+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 7.789964,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 51,
+        "decisions": 102,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:33.698597+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 0.698597,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 51,
+        "decisions": 102,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:38.707525+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 1.485525,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 53,
+        "decisions": 106,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:43.717783+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 3.880783,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 55,
+        "decisions": 110,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:48.728458+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 8.891458,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 55,
+        "decisions": 110,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:53.739896+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 13.902896,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 55,
+        "decisions": 110,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:23:58.747588+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 4.778588,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 56,
+        "decisions": 112,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:03.757838+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.341838,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 56,
+        "decisions": 112,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:08.769773+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 3.769773,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 56,
+        "decisions": 112,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:13.779788+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.796788,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 57,
+        "decisions": 114,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:18.791651+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 0.686651,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 58,
+        "decisions": 116,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:23.801418+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 2.531418,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 60,
+        "decisions": 120,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:28.810339+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 0.249339,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 60,
+        "decisions": 120,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:33.818960+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 5.25796,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 60,
+        "decisions": 120,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:38.827675+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 4.476675,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 61,
+        "decisions": 122,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:43.836695+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 9.485695,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 61,
+        "decisions": 122,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:48.845437+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 4.580437,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 63,
+        "decisions": 126,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:53.856302+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 9.591302,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 63,
+        "decisions": 126,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:24:58.867827+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 14.602827,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 63,
+        "decisions": 126,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:03.877288+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 4.877288,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 64,
+        "decisions": 128,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:08.886539+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 9.886539,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 64,
+        "decisions": 128,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:13.894667+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.680667,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 67,
+        "decisions": 134,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:18.899798+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 3.693798,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 70,
+        "decisions": 140,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:23.907469+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.287469,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 71,
+        "decisions": 142,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:28.913320+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 6.29332,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 71,
+        "decisions": 142,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:33.923413+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 0.368413,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 71,
+        "decisions": 142,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:38.932000+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 3.779,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 74,
+        "decisions": 148,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:43.939088+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 8.786088,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 74,
+        "decisions": 148,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:48.947420+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 3.30942,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 74,
+        "decisions": 148,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:53.960191+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 8.322191,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 74,
+        "decisions": 148,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:25:58.968008+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 13.330008,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 74,
+        "decisions": 148,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:03.976596+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 18.338596,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 74,
+        "decisions": 148,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:08.982960+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 23.34496,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 74,
+        "decisions": 148,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:13.994627+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 4.993627,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 74,
+        "decisions": 148,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:19.004884+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 0.845884,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 75,
+        "decisions": 150,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:24.015579+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 3.212579,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 77,
+        "decisions": 154,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:29.022591+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.471591,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 77,
+        "decisions": 154,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:34.032430+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 3.80543,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 77,
+        "decisions": 154,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:39.041324+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 0.458324,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 80,
+        "decisions": 160,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:44.050558+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 1.745558,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 80,
+        "decisions": 160,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:49.060907+00:00",
+      "quote_valid": true,
+      "quote_age_seconds": 1.059907,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 81,
+        "decisions": 162,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:54.070257+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 6.069257,
+      "provider_coverage_complete": true,
+      "generation": 3,
+      "core_counts": {
+        "events": 82,
+        "decisions": 164,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:26:59.080435+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 11.079435,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 82,
+        "decisions": 164,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:27:04.098288+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 16.097288,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 82,
+        "decisions": 164,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:27:09.110381+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 21.109381,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 82,
+        "decisions": 164,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:27:14.122313+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 26.121313,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 82,
+        "decisions": 164,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:27:19.134711+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.761711,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 83,
+        "decisions": 166,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:27:24.146012+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 2.544012,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 83,
+        "decisions": 166,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    },
+    {
+      "observed_at": "2026-10-20T15:27:29.153948+00:00",
+      "quote_valid": false,
+      "quote_age_seconds": 7.551948,
+      "provider_coverage_complete": false,
+      "generation": 3,
+      "core_counts": {
+        "events": 83,
+        "decisions": 166,
+        "commands": 0,
+        "reservations": 0,
+        "positions": 0
+      }
+    }
+  ]
+}
