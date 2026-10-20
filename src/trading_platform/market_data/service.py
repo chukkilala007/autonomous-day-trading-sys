@@ -7,7 +7,12 @@ from trading_platform.contracts.values import canonical,digest
 
 
 class Feed:
-    def __init__(self,db): self.db=db
+    def __init__(self,db,closure_provider=None):
+        self.db=db
+        self.closure_provider=closure_provider or (lambda cutoff:())
+
+    def closures(self,cutoff):
+        return tuple(self.closure_provider(cutoff))
 
     def put(self,key,value):
         with self.db.transaction() as c: c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',(key,canonical(value)))
@@ -44,8 +49,9 @@ class Feed:
 
     def repaired(self,symbol,at): self.put('coverage:'+symbol,{'repaired':True,'at':at})
 
-    def snapshot(self,cutoff,requirements,*,closed_intervals=(),max_quote_age=2,diagnostics=None):
+    def snapshot(self,cutoff,requirements,*,closed_intervals=None,max_quote_age=2,diagnostics=None):
         """requirements: (symbol,basis,minutes,count); closures must be verified."""
+        closed_intervals=self.closures(cutoff) if closed_intervals is None else closed_intervals
         bars=[];quotes=[];complete=True
         all_bars=[Bar.model_validate_json(r['body']) for r in self.db.connection.execute("SELECT body FROM checkpoints WHERE id LIKE 'bar:%'")]
         for symbol,basis,minutes,count in requirements:

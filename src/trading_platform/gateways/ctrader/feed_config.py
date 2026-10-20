@@ -31,11 +31,15 @@ def derive(instances,manifests,reports,account,now):
     return dict(symbols=symbols,requirements=[[*key,count] for key,count in sorted(requirements.items())])
 
 
-def build(instances,manifests,reports,account,now):
+def build(instances,manifests,reports,account,now,*,closures=()):
     result=derive(instances,manifests,reports,account,now)
     result.update(account_id=str(account),instances=[i.model_dump(mode='json') for i in instances],
                   manifests=[m.model_dump(mode='json') for m in manifests.values()],
                   reports={s:r.model_dump(mode='json') for s,r in reports.items()},history_hours=24)
+    if closures:
+        from .closures import intervals
+        result['verified_closures']=list(closures)
+        intervals(result,account,now)
     result['evidence_hash']=digest(result)
     return result
 
@@ -49,4 +53,6 @@ def validate(config,account,now):
     reports={s:CapabilityReport.model_validate_json(json.dumps(r)) for s,r in config['reports'].items()}
     expected=derive(instances,{m.package:m for m in rows},reports,account,now)
     if any(config[k]!=v for k,v in expected.items()):raise ValueError('feed requirements differ from strategies')
+    from .closures import intervals
+    intervals(config,account,now)
     return expected

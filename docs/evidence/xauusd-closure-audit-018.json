@@ -1,0 +1,21 @@
+{
+  "bar_count": 0,
+  "end": "2026-10-19T22:00:00+00:00",
+  "observed_at": "2026-10-20T07:40:03.852068+00:00",
+  "orders_enabled": false,
+  "repaired": false,
+  "response_hashes": {
+    "ask": "311888b07fbf58500733286140f6af7154de6fbcedbfa5f2f1ea0164b24f0d3a",
+    "bars": "84f34e7c780131ba705d20f99818a270424ee5cbaa62b5210b1f70dee99ccbee",
+    "bid": "311888b07fbf58500733286140f6af7154de6fbcedbfa5f2f1ea0164b24f0d3a"
+  },
+  "start": "2026-10-19T21:00:00+00:00",
+  "status": "NO_TICKS_REPORTED",
+  "tick_counts": {
+    "ask": 0,
+    "bid": 0
+  },
+  "symbol": "XAUUSD",
+  "weekly_schedule_corroborated": true,
+  "scope": "historical_regular_closure_only"
+}

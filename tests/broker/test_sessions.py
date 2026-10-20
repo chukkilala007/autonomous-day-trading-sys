@@ -43,3 +43,14 @@ def test_nonrecurring_holiday_does_not_recur_and_missing_mode_is_unknown():
     assert scheduled_state(raw, now) == 'SCHEDULED_OPEN'
     del raw['tradingMode']
     assert scheduled_state(raw, now) == 'UNKNOWN'
+
+
+def test_holiday_uses_its_own_timezone_and_date():
+    raw = symbol()
+    now = datetime(2026, 10, 19, 21, 30, tzinfo=timezone.utc)
+    day = (datetime(2026, 10, 20, tzinfo=timezone.utc)-datetime(1970, 1, 1, tzinfo=timezone.utc)).days
+    raw['holiday'] = [dict(scheduleTimeZone='Europe/Moscow', isRecurring=False,
+                           holidayDate=day, startSecond=0, endSecond=3600)]
+    assert scheduled_state(raw, now) == 'HOLIDAY_CLOSED'
+    raw['holiday'][0]['holidayDate'] = day-30
+    assert scheduled_state(raw, now) == 'SCHEDULED_OPEN'

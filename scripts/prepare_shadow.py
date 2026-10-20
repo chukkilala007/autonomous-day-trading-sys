@@ -9,7 +9,7 @@ from trading_platform.gateways.ctrader.feed_config import build
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--probe',required=True);p.add_argument('--account',required=True);p.add_argument('--symbol',required=True);p.add_argument('--destination',default='var/shadow-analysis');p.add_argument('--instances',nargs='+',choices=['tpr1','timer_fixture'],default=['tpr1','timer_fixture']);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--probe',required=True);p.add_argument('--account',required=True);p.add_argument('--symbol',required=True);p.add_argument('--destination',default='var/shadow-analysis');p.add_argument('--instances',nargs='+',choices=['tpr1','timer_fixture'],default=['tpr1','timer_fixture']);p.add_argument('--closure-probe');a=p.parse_args()
     if len(set(a.instances))!=len(a.instances):raise ValueError('unique instances required')
     if not a.account.isdigit() or int(a.account)<=0: raise ValueError('explicit demo account ID required')
     probe=json.loads(Path(a.probe).read_text())
@@ -22,7 +22,11 @@ def main():
         data['account'].update(alias='demo-shadow',environment='demo',broker_account=a.account,currency=probe['economics']['account']['currency'])
         instances.append(Instance.model_validate_json(json.dumps(data)))
     active=[i for i in instances if i.instance_id in a.instances]
-    feed=build(active,manifests,reports,a.account,datetime.now(timezone.utc))
+    closures=[]
+    if a.closure_probe:
+        from trading_platform.gateways.ctrader.closures import certify
+        closures=[certify(json.loads(Path(a.closure_probe).read_text()),a.symbol,datetime.now(timezone.utc))]
+    feed=build(active,manifests,reports,a.account,datetime.now(timezone.utc),closures=closures)
     root=Path(a.destination);root.mkdir(parents=True,mode=0o700,exist_ok=False)
     for name in ('gateway','tpr1','timer_fixture','reader'):
         file=root/(name+'.token');file.write_text(secrets.token_urlsafe(48)+'\n');file.chmod(0o600)
