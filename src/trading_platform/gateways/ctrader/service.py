@@ -94,7 +94,8 @@ def main():
         server.shutdown();server.server_close();thread.join(5)
         metrics['cached_bars']=db.connection.execute("SELECT count(*) FROM checkpoints WHERE id LIKE 'bar:%'").fetchone()[0]
         metrics['quote_sources']={symbol:(feed.get('quote:'+symbol) or {}).get('source_time') for symbol in config['symbols']}
-        metrics.update(ended_at=now().isoformat(),generation=session.generation,spot_rejections=dict(stream.spot_rejections))
+        metrics.update(ended_at=now().isoformat(),generation=session.generation,spot_rejections=dict(stream.spot_rejections),
+                       future_quote_lead_us=stream.future_quote_lead_us)
         metrics.update(summarize(metrics,session.requests,session.rejected_writes,reconnect_required=bool(args.reconnect_after)))
         yield defer.maybeDeferred(client.stopService)
         if report_fd is not None:

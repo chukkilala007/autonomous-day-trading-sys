@@ -206,3 +206,33 @@ def test_future_partial_side_cannot_hide_behind_older_side_timestamp(tmp_path):
         assert feed.get('quote-valid:X')=={'valid':False}
         assert not stream.quote_sides
         assert feed.get('quote:X')['bid']=='1'
+
+
+def test_future_lead_metrics_preserve_rejection_and_survive_reconnect(tmp_path):
+    import pytest
+    pytest.importorskip('ctrader_open_api')
+    from types import SimpleNamespace
+    from trading_platform.gateways.ctrader.stream import Stream
+    base=int(T.timestamp()*1000);clock=[T+timedelta(microseconds=250)]
+    with Database(tmp_path/'db') as db:
+        feed=Feed(db);stream=Stream(SimpleNamespace(account_id=12),feed,{'X':1,'Y':2},[],lambda:clock[0])
+        def send(symbol,offset,**fields):
+            stream.on_spot(dict(ctidTraderAccountId='12',symbolId=str(symbol),timestamp=base+offset,**fields))
+        send(1,0,bid=100000,ask=100100)
+        assert stream.future_quote_lead_us=={}
+        send(1,1,bid=100010)
+        assert not feed.get('quote-valid:X')['valid'] and not stream.quote_sides
+        stream.disconnected()
+        send(1,20,bid=100010,ask=100100)
+        send(2,1000,bid=200000)
+        assert stream.future_quote_lead_us=={
+            'X':{'count':2,'min':750,'max':19750,'total':20500},
+            'Y':{'count':1,'min':999750,'max':999750,'total':999750}}
+        assert stream.spot_rejections['FUTURE_QUOTE']==3
+        assert not feed.get('quote-valid:X')['valid'] and not feed.get('quote-valid:Y')['valid']
+        assert not stream.quote_sides
+        # Incomplete unrelated messages and valid quotes do not contaminate offsets.
+        send(1,0)
+        send(1,0,bid=100000,ask=100100)
+        assert stream.future_quote_lead_us['X']['count']==2
+        assert feed.get('quote-valid:X')['valid']

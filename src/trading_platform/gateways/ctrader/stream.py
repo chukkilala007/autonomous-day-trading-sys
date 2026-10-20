@@ -12,6 +12,9 @@ class Stream:
     def __init__(self,session,feed,symbols,requirements,now):
         self.session=session;self.feed=feed;self.symbols=symbols;self.requirements=requirements;self.now=now
         self.spot_rejections=Counter()
+        # Bounded aggregates only: source timestamp lead over local receipt time,
+        # not an NTP offset estimate or permission to accept future quotes.
+        self.future_quote_lead_us={}
         self.failures={};self.busy=False;self.subscribed_generation=None;self.last_complete={};self.quote_sides={}
         for symbol,basis,minutes,count in requirements:
             if minutes not in PERIODS or count<=0 or count>1000: raise ValueError('unsupported history request')
@@ -70,7 +73,12 @@ class Stream:
                 reason='MISSING_SPOT_FIELDS'
                 raise ValueError('missing quote timestamp or side')
             at=timestamp_ms(raw['timestamp'])
-            if at>self.now():
+            observed=self.now()
+            if at>observed:
+                lead=(at-observed)//timedelta(microseconds=1)
+                stats=self.future_quote_lead_us.setdefault(symbol,dict(count=0,min=lead,max=lead,total=0))
+                stats.update(count=stats['count']+1,min=min(stats['min'],lead),
+                             max=max(stats['max'],lead),total=stats['total']+lead)
                 reason='FUTURE_QUOTE'
                 raise ValueError('future quote side')
             sides=dict(self.quote_sides.get(symbol,{}))

@@ -14,10 +14,10 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Actual qualification | Probe-021 collected; EURUSD bid basis verified, XAUUSD current candle/tick reconstruction mismatched and remains blocked |
 | Actual shadow result | Ten-minute EURUSD run-017: full history, 58 reconciliations, reconnect PASS, 166 decisions, zero orders; sustained acceptance FAIL |
 | Current blocker | 466/596 updates future-dated despite clock correction; host lag grew from ~3.5ms to ~21.7ms. XAUUSD also lacks current candle-basis qualification |
-| Next concrete action | Measure future timestamp lead in read-only gateway diagnostics. Automatic time settings require local administrator inspection. Next probe 022; shadow 018 |
+| Next concrete action | Operator provides read-only automatic-time settings (admin required). Diagnose persistent host lag before repeating acceptance. Diagnostic-018 measured 10.912–18.802ms quote lead against ~21.315ms host lag. Next probe 022; shadow 019 |
 | Capability blockers | Execution blockers and bounded demo approval remain. See online matrix and synchronized acceptance evidence; no orders authorized |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 271 passed + 4 subtests (6.37s). Paper-only: 190 passed, 22 optional-SDK skips + 4 subtests (2.98s). Closure targeted: 45 passed |
+| Latest tests | Quote-clock diagnostic installed gateway: 272 passed + 4 subtests (6.69s). Prior paper-only: 190 passed, 22 optional-SDK skips + 4 subtests. Actual diagnostic export verified |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | All four feature branches and develop merge `74b6ed1` pushed. [CI 39424940895](https://github.com/chukkilala007/autonomous-day-trading-sys/actions/runs/39424940895) PASS: AMD64, ARM64, container tests, recovery/soak and open-exposure restart. Subsequent handoff change is documentation only |
 
@@ -973,3 +973,9 @@ Fresh probe-020 COLLECTED. Diagnostic EURUSD shadow-015 (90 seconds, reconnect a
 ### Synchronized sustained acceptance (2026-10-20)
 
 Branch `feature/synchronized_shadow_acceptance`, evidence only. Ten-minute EURUSD run-017 completed with full history, forced reconnect and 166 decisions but 466/596 FUTURE_QUOTE rejections: sustained acceptance FAIL. Post-correction host lag initially ~3.5ms, then ~17.8ms, finally ~21.7ms. Probe-021 could not qualify XAUUSD candle basis because a reconstructed bid close differed from its bar. Aborted setup run-016 is retained privately, not acceptance evidence. All drill containers removed. Detailed evidence: `docs/evidence/synchronized-shadow-acceptance.md`. `git diff --check` passed; no runtime changes or order writes.
+
+### Quote-clock diagnostic aggregates — DONE (implementation) (2026-10-20)
+
+Branch `feature/quote_clock_diagnostics`. Add bounded per-symbol count/min/max/total microseconds for source timestamps ahead of gateway receipt time, retained across reconnect and exported in the private run report. No raw messages, prices or credentials added; no timestamp tolerance or gate change. The metric is source timestamp lead, not a measured broker/NTP offset. Test exact microseconds, per-symbol separation, partial-side rejection, reconnect preservation and valid-message exclusion. Actual read-only diagnostic follows installed-image regression.
+
+Diagnostic acceptance: installed gateway **272 passed +4 subtests in6.69s**. Local-host-008 pinned new gateway image and passed host prerequisites. Actual90-second EURUSD run-018:18 spots,13 FUTURE_QUOTE; source lead min10,912us,max18,802us,total190,380us (mean14,644.6us). Concurrent host measurement +0.021315 +/-0.006964s. These observations are consistent with remaining host lag, not proof of broker clock offset. Reconnect PASS;3events/6decisions; zero commands/reservations/positions/order writes. Report `docs/evidence/quote-clock-diagnostic-018.json`. All drill containers/networks removed; evidence/tokens preserved. User asked for read-only administrator time-setting outputs; no password requested or settings changed. No new timestamp tolerance.
