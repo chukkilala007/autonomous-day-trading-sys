@@ -9,17 +9,17 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 remain partially complete; S8 unstarted |
-| Latest features | Independent quote/history recovery; per-side future timestamp checks; optional-SDK CI correction; bounded both-strategy shadow acceptance |
+| Latest features | Independent quote/history recovery, per-side timestamp checks, normalized volume evidence and current-day clock/feed verification |
 | Account state | User-selected demo account authenticated; rotated tokens remain private; no orders enabled or sent |
 | Actual qualification | Fresh empty-account economics collected; three completed M1 bid/ask comparisons per symbol establish sampled bid basis; metadata and historical bars retrieved |
-| Actual shadow result | Run-007 XAUUSD: both strategies evaluated 6 events/12 decisions, including after reconnect; 409 spots, 12 reconciliations, 1 complete polled snapshot; zero commands/reservations/positions |
-| Current blocker | Bounded both-strategy shadow passed after recovery fixes, but 370/409 future quotes were rejected. Sustained clock/feed health and account-specific execution capability qualification remain open |
-| Next concrete action | Investigate residual host/broker timestamp mismatch and demonstrate sustained valid quotes; verify selected-account tick/value/cost/protection/expiry policy. Refresh expired feed evidence before another run (008 next; probe-014 next). Preserve rotated tokens; keep orders disabled |
+| Actual shadow result | Oct 19 XAUUSD bounded full-strategy pass: 6 events/12 decisions. Oct 20 EURUSD run-008: no timestamp rejections, reconnect passed, M1 history gap blocked evaluation. Zero orders in both |
+| Current blocker | Clock issue not reproduced on Oct 20: 36 spots, zero timestamp rejections, fresh final quote. Current EURUSD history is blocked by missing M1 bar ending Oct 19 23:38 UTC (73/400 contiguous bars). Execution policies remain unqualified |
+| Next concrete action | Investigate/resolve provider M1 coverage without fabricated bars, then repeat current full-strategy acceptance; verify selected-account tick/value/cost/protection/expiry policy. Next run 009; probe-015 refreshes normalized grid evidence. Preserve rotated tokens; keep orders disabled |
 | Capability blockers | Assembly and nonlinear sizing implemented offline. Actual tick grid, multiplier/cost policy, conversion and proposal-time margin evidence beyond sampled quantities, protection/order/expiry behavior and session state remain unqualified |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 236 passed + 4 subtests; paper-only: 163 passed, 20 optional-SDK skips + 4 subtests. Local soak/recovery and bounded both-strategy shadow passed; sustained feed health remains open |
+| Latest tests | Installed gateway: 237 passed + 4 subtests in 4.48s. Prior paper-only: 163 passed, 20 optional-SDK skips + 4 subtests. Current-day full shadow blocks correctly on provider M1 gap |
 | External inputs | This Mac/Docker Desktop selected for demo; local image IDs remove the demo registry dependency. Off-host backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
-| Publication | Baseline a35d89d CI 39266453830 failed on optional-SDK test import; correction verified in both local images. Inspect new develop CI after publication |
+| Publication | d24675b passed GitHub CI 39349709656, including the SDK guard and quote fixes. Current grid/evidence publication CI is checked separately |
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -918,3 +918,11 @@ Next: inspect new CI, resolve residual timestamp mismatch with measured evidence
 ### F5.2k — normalized volume evidence interoperability (2026-10-20)
 
 DONE on `feature/normalized_volume_evidence`; 24 targeted Docker tests and the installed gateway suite (237 passed, 4 subtests passed in 4.48s) passed. A new offline integration regression reproduced an audit/transport mismatch: the audit emitted Python repr with protocol field names, while fenced preparation requires JSON min/max/step in normalized units. Emit canonical JSON in the existing consumer schema. The test passes audited quantities through order preparation using an otherwise synthetic qualification fixture and rejects off-step quantity; it sends no order and does not promote actual capabilities. Historical reports remain unchanged; regenerate expired/new qualification evidence rather than rewriting its hash.
+
+### Current-day acceptance — clock correction confirmed by observations (2026-10-20)
+
+Branch `feature/current_clock_feed_acceptance`. Host SNTP measured +0.001946 +/-0.009614 seconds. Probe-014 renewed sampled bid candle basis (three comparisons each for EURUSD/XAUUSD), account economics and exact-volume margin observations; no capability promotion or order calls. Sanitized summary: `docs/evidence/current-broker-probe-014.json`. Its volume-grid format predates F5.2k; retain the immutable private report and use a new probe for execution-policy inputs.
+
+EURUSD full-strategy run-008 collected 36 spot events with **zero spot/timestamp rejections**; the final quote was valid and 0.289 seconds old, and forced reconnect passed. **Full coverage did not pass**: M1 had 73 of 400 required contiguous bars, first missing end 2026-10-19 23:38 UTC. The same 23:37–23:38 interval is absent from independent probe-014 history. M5/M15/H1 counts were complete and repaired. Do not classify the missing minute as a closure or fabricate a candle without evidence. Core made zero decisions and zero commands/positions/reservations. Evidence: `docs/evidence/current-clock-shadow-008.json`.
+
+The Oct 19 bounded XAUUSD functional pass remains historical evidence, not a substitute for today's feed checks. The observed clock problem is no longer the immediate blocker; complete current history and selected-account execution policies remain required before preparing an actual demo order. All run-008 containers/networks were removed, private state/tokens retained. Source regression after grid fix: **237 passed, 4 subtests passed**. Published predecessor d24675b passed CI 39349709656. Keep demo orders disabled until the specific bounded test scope is ready and explicitly authorized.
