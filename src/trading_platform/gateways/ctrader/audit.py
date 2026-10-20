@@ -2,7 +2,7 @@
 from datetime import timedelta
 from decimal import Decimal
 from twisted.internet import defer
-from trading_platform.contracts.values import digest,utc
+from trading_platform.contracts.values import digest,utc,canonical
 from .metadata import CapabilityReport,Evidence
 from .normalization import integer,units
 
@@ -59,9 +59,9 @@ def collect(session,probe,now):
         def add(field,value):
             evidence.append(Evidence(field=field,value=value,source='demo_metadata_and_tick_audit',observed_at=at,valid_until=at+timedelta(hours=24),classification='demo_observed'))
         add('account_type',probe['economics']['trader']['accountType']);add('symbol_id',str(sid))
-        grid={key:str(units(raw[key])) for key in ('minVolume','maxVolume','stepVolume')}
-        if Decimal(grid['minVolume'])>Decimal(grid['maxVolume']):raise ValueError('invalid volume grid')
-        add('volume_grid',str(grid))
+        grid={key:str(units(raw[field])) for key,field in (('min','minVolume'),('max','maxVolume'),('step','stepVolume'))}
+        if Decimal(grid['min'])>Decimal(grid['max']):raise ValueError('invalid volume grid')
+        add('volume_grid',canonical(grid))
         samples=[]
         bars=sorted((b for b in probe['trendbars'][name] if integer(b['utcTimestampInMinutes'])*60+60<=at.timestamp()),key=lambda b:integer(b['utcTimestampInMinutes']))[-3:]
         for bar in bars:
