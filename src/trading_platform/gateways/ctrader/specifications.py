@@ -12,6 +12,7 @@ from pathlib import Path
 
 from trading_platform.contracts.values import digest, utc
 from .normalization import integer, units
+from .sessions import scheduled_state
 
 SOURCES = {
     'EURUSD': 'https://www.fxpro.com/trading/forex/eurusd',
@@ -69,6 +70,7 @@ def reconcile(probe, account, now):
             'conflicts': conflicts, 'normalized_grid': actual,
             'published_tick': public['tick'],
             'price_display_digits': integer(raw['digits']),
+            'schedule_state_at_review': scheduled_state(raw, now),
             'minimum_commission': str(minimum_fee),
             'minimum_commission_type': raw['minCommissionType'],
             'minimum_commission_asset': raw.get('minCommissionAsset'),
