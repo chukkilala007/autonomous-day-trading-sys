@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "observed_at": "2026-10-20T01:07:09.540308+00:00",
+  "reviewed_at": "2026-10-20T01:09:03.081667+00:00",
+  "public_review_date": "2026-10-20",
+  "sources": {
+    "EURUSD": "https://www.fxpro.com/trading/forex/eurusd",
+    "XAUUSD": "https://www.fxpro.com/trading/metals/gold",
+    "commission": "https://www.fxpro.com/commissions-swap-charges"
+  },
+  "symbols": {
+    "EURUSD": {
+      "account_currency": "USD",
+      "comparisons": {
+        "commission_usd_per_million_per_side": {
+          "account": "35.00000000",
+          "matches": true,
+          "public": "35"
+        },
+        "lot": {
+          "account": "100000",
+          "matches": true,
+          "public": "100000"
+        },
+        "minimum": {
+          "account": "1000",
+          "matches": true,
+          "public": "1000"
+        },
+        "step": {
+          "account": "1000",
+          "matches": true,
+          "public": "1000"
+        }
+      },
+      "conflicts": [],
+      "minimum_commission": "0E-8",
+      "minimum_commission_asset": "USD",
+      "minimum_commission_type": "CURRENCY",
+      "normalized_grid": {
+        "lot": "100000",
+        "maximum": "50000000",
+        "minimum": "1000",
+        "step": "1000"
+      },
+      "pnl_conversion_fee_rate": 0,
+      "price_display_digits": 5,
+      "published_tick": null,
+      "source": "https://www.fxpro.com/trading/forex/eurusd",
+      "unresolved": [
+        "tradable_tick_account_binding",
+        "complete_cost_rounding_and_settlement",
+        "current_session",
+        "limit_gtd_protection_acceptance"
+      ]
+    },
+    "XAUUSD": {
+      "account_currency": "USD",
+      "comparisons": {
+        "commission_usd_per_million_per_side": {
+          "account": "35.00000000",
+          "matches": true,
+          "public": "35"
+        },
+        "lot": {
+          "account": "100",
+          "matches": true,
+          "public": "100"
+        },
+        "minimum": {
+          "account": "1",
+          "matches": true,
+          "public": "1"
+        },
+        "step": {
+          "account": "1",
+          "matches": false,
+          "public": "100"
+        }
+      },
+      "conflicts": [
+        "step"
+      ],
+      "minimum_commission": "0E-8",
+      "minimum_commission_asset": "USD",
+      "minimum_commission_type": "CURRENCY",
+      "normalized_grid": {
+        "lot": "100",
+        "maximum": "50000",
+        "minimum": "1",
+        "step": "1"
+      },
+      "pnl_conversion_fee_rate": 0,
+      "price_display_digits": 2,
+      "published_tick": "0.01",
+      "source": "https://www.fxpro.com/trading/metals/gold",
+      "unresolved": [
+        "tradable_tick_account_binding",
+        "complete_cost_rounding_and_settlement",
+        "current_session",
+        "limit_gtd_protection_acceptance"
+      ]
+    }
+  },
+  "orders_enabled": false,
+  "qualification_complete": false
+}
