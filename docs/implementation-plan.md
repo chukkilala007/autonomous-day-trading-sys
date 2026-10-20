@@ -8,18 +8,19 @@ This is the go-to document for **what exists, what comes next, how to implement 
 
 | Item | Current value |
 |---|---|
-| Verified baseline | S1–S4 complete; S5–S7 remain partially complete; S8 unstarted |
-| Latest features | Independent quote/history recovery, per-side timestamp checks, normalized volume evidence and current-day clock/feed verification |
-| Account state | User-selected demo account authenticated; rotated tokens remain private; no orders enabled or sent |
-| Actual qualification | Fresh empty-account economics collected; three completed M1 bid/ask comparisons per symbol establish sampled bid basis; metadata and historical bars retrieved |
-| Actual shadow result | Oct 19 XAUUSD bounded full-strategy pass: 6 events/12 decisions. Oct 20 EURUSD run-008: no timestamp rejections, reconnect passed, M1 history gap blocked evaluation. Zero orders in both |
-| Current blocker | Clock issue not reproduced on Oct 20: 36 spots, zero timestamp rejections, fresh final quote. Current EURUSD history is blocked by missing M1 bar ending Oct 19 23:38 UTC (73/400 contiguous bars). Execution policies remain unqualified |
-| Next concrete action | Investigate/resolve provider M1 coverage without fabricated bars, then repeat current full-strategy acceptance; verify selected-account tick/value/cost/protection/expiry policy. Next run 009; probe-015 refreshes normalized grid evidence. Preserve rotated tokens; keep orders disabled |
-| Capability blockers | Assembly and nonlinear sizing implemented offline. Actual tick grid, multiplier/cost policy, conversion and proposal-time margin evidence beyond sampled quantities, protection/order/expiry behavior and session state remain unqualified |
+| Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
+| Latest features | FxPro specification reconciliation, broker schedules/holiday zones, exact gap diagnosis, verified daily-closure integration |
+| Account state | Selected demo account authenticated; private rotated tokens preserved; no orders enabled or sent |
+| Actual qualification | Probe-018 refreshed symbol/bid-basis/expected-margin evidence. EURUSD grids and both commission rates match public sources; gold public step conflicts with API |
+| Actual shadow result | EURUSD run-011: full history, 14 events/28 decisions, reconnect PASS. XAUUSD run-012: full history across verified daily closure, 20 events/40 decisions, reconnect PASS. Zero orders in both |
+| Current blocker | Sustained quote validity: 73/93 EURUSD and 380/452 XAUUSD updates rejected as future-dated. Latest host SNTP measured +23.302ms behind network time. No tolerance added |
+| Next concrete action | Stabilize host clock/quote timestamp alignment and repeat sustained read-only acceptance. Finish account-bound tick/rounding/settlement/order/protection audit before bounded demo deployment. Next probe 019; next shadow run 013 |
+| Capability blockers | EURUSD tradable tick not stated on supplied page; complete rounding/settlement and order/expiry/protection behavior remain unqualified. Gold step discrepancy remains. No public fact automatically enables execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 237 passed + 4 subtests in 4.48s. Prior paper-only: 163 passed, 20 optional-SDK skips + 4 subtests. Current-day full shadow blocks correctly on provider M1 gap |
-| External inputs | This Mac/Docker Desktop selected for demo; local image IDs remove the demo registry dependency. Off-host backup destination unspecified. Demo order tests still require explicit authorization overriding disabled orders |
-| Publication | d24675b passed GitHub CI 39349709656, including the SDK guard and quote fixes. Current grid/evidence publication CI is checked separately |
+| Latest tests | Installed gateway: 271 passed + 4 subtests (6.37s). Paper-only: 190 passed, 22 optional-SDK skips + 4 subtests (2.98s). Closure targeted: 45 passed |
+| External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
+| Publication | Four feature branches tested; publication and new CI result recorded below after merge |
+
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
 
@@ -933,7 +934,7 @@ Branch `feature/fxpro_specification_reconciliation`. Adds account-bound, expirin
 
 ### F5.2m — exact broker session schedule interpretation (2026-10-20)
 
-Branch `feature/broker_session_schedule`. Interprets the selected account's UTC weekly intervals with Sunday origin and exclusive endpoints, trading-mode restrictions and dated/recurring holiday intervals. Unknown zones or applicable holiday boundaries remain UNKNOWN. Public rounded opening hours do not replace exact broker schedules. The report deliberately says SCHEDULED_OPEN, never an executable OPEN capability: current quotes/account state are separate. Seven boundary/holiday tests and nine specification tests pass (16 total). Both actual symbol schedules evaluated as SCHEDULED_OPEN in private specifications-session-015. Source: https://help.ctrader.com/open-api/model-messages/ . No order capability promoted.
+Branch `feature/broker_session_schedule`. Interprets the selected account's UTC weekly intervals with Sunday origin and exclusive endpoints, trading-mode restrictions and dated/recurring holiday intervals. Unknown zones or applicable holiday boundaries remain UNKNOWN. Public rounded opening hours do not replace exact broker schedules. The report deliberately says SCHEDULED_OPEN, never an executable OPEN capability: current quotes/account state are separate. Seven boundary/holiday tests and nine specification tests pass (16 total). The private specifications-session-015 report retains the actual schedule review result; the later closure integration corrected handling of dated holidays in another time zone. Source: https://help.ctrader.com/open-api/model-messages/ . No order capability promoted.
 
 ### F5.3g — current-symbol shadow and targeted gap diagnosis (2026-10-20)
 
@@ -944,3 +945,15 @@ EURUSD run-009: 63 spots, zero quote rejections, 16 account reconciliations, for
 XAUUSD run-010: 615 spots, zero quote rejections, 16 reconciliations and forced reconnect PASS. Final quote age 0.540s; history stops at the daily break ending 22:00 UTC (M1 194/400, M5 38/80, M15 12/24, H1 3/16). One collection failure; zero core events/decisions/orders. This identifies an additional integration limitation: exact UTC schedule interpretation is implemented, but verified historical closures are not yet wired through warm-up fetching and every snapshot consumer. Do not mark a closure from absence alone. Evidence: `docs/evidence/current-xauusd-shadow-010.json`.
 
 Probe-016 gap diagnosis rejected because the pinned SDK's trendbar response has no `hasMore` field. Corrected the bounded one-minute audit to accept that verified response shape while rejecting explicit truncation and more than one M1 bar; tick responses still require explicit completeness. Eight targeted tests pass after correction. Probe-017 then succeeded: no bar and zero bid/ask ticks for 23:37–23:38 UTC, reported as NO_TICKS_REPORTED, not a market closure or repaired candle. Evidence: `docs/evidence/eurusd-gap-audit-017.json`. The previous Docker command was blocked by approval-review usage exhaustion; user resumed and the same normal approval path succeeded. No bypass was used.
+
+### F5.3h — verified scheduled-closure integration (2026-10-20, DONE for implementation)
+
+Branch `feature/verified_session_closures`. The bounded gap audit now supports up to 60 minutes. A closure needs both complete empty bar/bid/ask history and an exact account-symbol UTC weekly schedule with no overlap with an open interval. Evidence expires, remains bounded to recent historical intervals, and never promotes live session/order capabilities. The feed uses the same closure callback for repair and RPC snapshots, extending cold history lookback by the evidenced duration and counting only real bars. Unexplained gaps and partly open bars stay blocked. Holiday closures are not inferred; dated holiday checks now use their own time zone.
+
+Probe-018 collected fresh candle/margin audits plus zero bars/ticks for XAUUSD 21:00–22:00 UTC on Oct 19. Initial certification rejected the presence of a historical Moscow-time holiday; regular weekly closures do not become open because of an additional holiday, so that overly broad rejection was removed and covered by regression. No timeframe counts or price freshness limits changed.
+
+EURUSD run-011 now has complete history (400 M1, 80 M5, 24 M15, 16 H1), a bounded gateway PASS and reconnect PASS, 14 core events/28 decisions with zero commands/reservations/positions. However 73/93 spots were rejected as future-dated, only one complete polled snapshot occurred, and the last quote was invalid/stale. Host SNTP +0.023302 +/-0.009115s; continuous quote availability remains unqualified. Evidence `docs/evidence/current-eurusd-shadow-011.json`.
+
+Final F5.3h acceptance: **45 targeted tests passed**; installed gateway **271 passed + 4 subtests in 6.37s**; paper-only **190 passed, 22 skipped + 4 subtests in 2.98s**. Actual XAUUSD run-012 verified all manifest histories (400/80/24/16), 16 reconciliations and forced reconnect across generations 1/3. Core recorded 20 events/40 decisions and zero commands/reservations/positions. History closure integration is accepted. Quote acceptance is NOT: 380/452 spots rejected as FUTURE_QUOTE, zero complete gateway polling snapshots, one collection failure; core briefly obtained valid snapshots between polls. Status remains BLOCKED_FRESH_COVERAGE. Public evidence: `docs/evidence/verified-closure-shadow-012.json` and `xauusd-closure-audit-018.json`. Local-host-007 pinned the exact runtime/gateway images and passed prerequisites.
+
+Remaining execution distinction: the current TPR adapter emits executable proposals only in paper and uses stop-limit, while the first broker transport profile is protected limit/GTD. Autonomous TPR demo activation needs a separately qualified compatible execution profile and adapter integration; a first attended EURUSD limit test does not establish that strategy's autonomous execution. Do not silently convert a stop-limit strategy into a limit strategy. S5–S7 and S8 remain open as described above.

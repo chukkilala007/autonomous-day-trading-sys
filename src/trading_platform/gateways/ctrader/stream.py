@@ -36,7 +36,8 @@ class Stream:
                 key=(symbol,basis,minutes,count)
                 previous=self.last_complete.get(key)
                 if previous and at<previous: raise ValueError('feed clock regression')
-                start=(previous-timedelta(minutes=minutes*2)) if previous else (at-timedelta(minutes=minutes*(count+2)))
+                closure_duration=sum((end-start for name,start,end in self.feed.closures(at) if name==symbol),timedelta())
+                start=(previous-timedelta(minutes=minutes*2)) if previous else (at-timedelta(minutes=minutes*(count+2))-closure_duration)
                 rows=yield complete_range(self.session,'ProtoOAGetTrendbarsReq','trendbar',int(start.timestamp()*1000),int(at.timestamp()*1000),symbolId=self.symbols[symbol],period=PERIODS[minutes])
                 received=self.now()
                 for raw in rows:

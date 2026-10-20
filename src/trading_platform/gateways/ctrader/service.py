@@ -30,7 +30,8 @@ def main():
     config=json.loads(Path(args.feed_config).read_text())
     validate_feed(config,args.account,now())
     db=Database(args.state);client=VerifiedClient();session=Session(client,TokenStore(args.credentials,args.tokens),args.account)
-    feed=Feed(db);stream=Stream(session,feed,config['symbols'],config['requirements'],now);collector=Collector(session,db,now)
+    from .closures import intervals
+    feed=Feed(db,closure_provider=lambda cutoff:intervals(config,args.account,cutoff));stream=Stream(session,feed,config['symbols'],config['requirements'],now);collector=Collector(session,db,now)
     server=Server(("0.0.0.0",9100),Path(args.rpc_token).read_text().strip(),session,feed,config["requirements"])
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     busy=False;active=None

@@ -4,6 +4,7 @@ The supported broker profile uses UTC schedules. Unknown time zones, holiday
 boundaries or trading modes fail closed instead of using public marketing hours.
 """
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from .normalization import integer
 
 
@@ -32,10 +33,14 @@ def scheduled_state(symbol, now):
     if not any(start <= seconds < end for start, end in intervals):
         return 'SCHEDULED_CLOSED'
     for holiday in symbol.get('holiday', []):
-        if holiday.get('scheduleTimeZone') != 'UTC' or type(holiday.get('isRecurring')) is not bool:
+        if type(holiday.get('isRecurring')) is not bool:
+            return 'UNKNOWN'
+        try:
+            holiday_now = now.astimezone(ZoneInfo(holiday['scheduleTimeZone']))
+        except (KeyError, ValueError, ZoneInfoNotFoundError):
             return 'UNKNOWN'
         day = (datetime(1970, 1, 1, tzinfo=timezone.utc) + timedelta(days=integer(holiday['holidayDate']))).date()
-        applies = (day.month, day.day) == (now.month, now.day) if holiday['isRecurring'] else day == now.date()
+        applies = (day.month, day.day) == (holiday_now.month, holiday_now.day) if holiday['isRecurring'] else day == holiday_now.date()
         if not applies:
             continue
         if 'startSecond' not in holiday or 'endSecond' not in holiday:
@@ -43,6 +48,7 @@ def scheduled_state(symbol, now):
         start, end = integer(holiday['startSecond']), integer(holiday['endSecond'])
         if not 0 <= start < end <= 86400:
             raise ValueError('invalid holiday interval')
-        if start <= seconds % 86400 < end:
+        local_seconds = holiday_now.hour * 3600 + holiday_now.minute * 60 + holiday_now.second + holiday_now.microsecond / 1e6
+        if start <= local_seconds < end:
             return 'HOLIDAY_CLOSED'
     return 'SCHEDULED_OPEN'
