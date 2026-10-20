@@ -13,8 +13,8 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Account state | Selected demo account authenticated; private rotated tokens preserved; no orders enabled or sent |
 | Actual qualification | Probe-019 COLLECTED for both symbols; nine execution capability fields remain unqualified. See complete online blocker matrix below |
 | Actual shadow result | Runs 013 EURUSD and 014 XAUUSD: full 400/80/24/16 histories, 16 reconciliations each, forced reconnect PASS; zero decisions and zero orders |
-| Current blocker | FUTURE_QUOTE: 213/215 EURUSD and 665/668 XAUUSD updates. Host SNTP +105.867ms behind network time. No tolerance added; local admin clock synchronization requested |
-| Next concrete action | After clock synchronization, repeat prospective 10-minute read-only acceptance. Resolve account capability gaps and assemble bounded demo policy. Next probe 020; shadow 015 |
+| Current blocker | Post-sync diagnostic run-015 rejected 98/100 EURUSD quotes as future-dated. Apple/Cloudflare independently measure ~132ms host lag. macOS manual shows prior `sntp -s` instruction insufficient above 50ms; runbook corrected to `-sS` |
+| Next concrete action | Operator corrects clock with `sudo sntp -sS time.apple.com`; verify offset before ten-minute acceptance. Probe-020 collected, diagnostic-015 stopped/removed, zero orders. Next probe 021; shadow 016 |
 | Capability blockers | Full list in [online validation matrix](evidence/online-validation-2026-10-20.md). User authorized preparation of [bounded demo test](../deploy/bounded-demo-test-plan.md); no actual order submission authorized |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed gateway: 271 passed + 4 subtests (6.37s). Paper-only: 190 passed, 22 optional-SDK skips + 4 subtests (2.98s). Closure targeted: 45 passed |
@@ -963,3 +963,9 @@ Remaining execution distinction: the current TPR adapter emits executable propos
 ### Online validation round and bounded demo preparation (2026-10-20)
 
 Branch `feature/online_validation_round`, evidence-only. Fresh probe-019 and separate 180-second both-worker shadow runs 013/014 completed with zero order writes. Full history and forced reconnect passed for both symbols; quote validity failed, correctly suppressing decisions. Installed gateway regression rerun: 271 passed + 4 subtests in 5.23s. Public sanitized evidence and comprehensive blocker matrix saved under `docs/evidence/online-*`. Prepared one-attempt EURUSD 1,000-unit protected limit/GTD test with proposed USD5/0.1%-equity planned-loss ceilings, final-price preview and explicit approval still required. No strategy or safety validator modified. This round does not close S5–S8.
+
+### Post-sync diagnostic and macOS clock command correction (2026-10-20)
+
+Branch `feature/post_sync_validation`. User reported synchronization done. Read-only Apple measurement +0.131878 +/-0.009694s and Cloudflare +0.132161 +/-0.016897s still show host lag. Docker guest samples fall within host request/response windows; these coarse samples do not prove submillisecond alignment. Installed macOS `sntp(1)` manual specifies `-s` only slews offsets below 50ms, while `-S` enables stepping larger offsets. Corrected operations instructions to `sudo sntp -sS time.apple.com`, with qualification stopped first. Reading network-time settings requires administrator access; no settings or clocks changed by the agent.
+
+Fresh probe-020 COLLECTED. Diagnostic EURUSD shadow-015 (90 seconds, reconnect at35s) rejected98/100 quotes, zero complete snapshots,9 reconciliations, reconnect PASS, zero decisions/commands/reservations/positions/order writes. Evidence: `docs/evidence/post-sync-shadow-015.json`. Ten-minute acceptance was not attempted because the clock prerequisite failed. All diagnostic containers/networks removed; private token/evidence state preserved. Documentation/evidence only; `git diff --check` passed, no runtime source changed.
