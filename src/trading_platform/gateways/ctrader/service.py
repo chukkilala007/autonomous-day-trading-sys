@@ -1,5 +1,5 @@
 """Demo read-only collector process. No order transport is imported."""
-import argparse,json,threading,os
+import argparse,json,threading,os,time
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
 from twisted.internet import reactor,task,defer
@@ -23,6 +23,7 @@ def main():
     parser.add_argument('--run-seconds',type=int,default=0)
     parser.add_argument('--reconnect-after',type=int,default=0)
     parser.add_argument('--report')
+    parser.add_argument('--quote-buffer-ms',type=int,choices=(0,100),default=0)
     args=parser.parse_args();now=lambda:datetime.now(timezone.utc)
     if args.run_seconds<0 or args.reconnect_after<0 or (args.reconnect_after and not 0<args.reconnect_after<args.run_seconds):
         parser.error('reconnect drill requires a bounded run')
@@ -32,6 +33,10 @@ def main():
     db=Database(args.state);client=VerifiedClient();session=Session(client,TokenStore(args.credentials,args.tokens),args.account)
     from .closures import intervals
     feed=Feed(db,closure_provider=lambda cutoff:intervals(config,args.account,cutoff));stream=Stream(session,feed,config['symbols'],config['requirements'],now);collector=Collector(session,db,now)
+    buffer=None
+    if args.quote_buffer_ms:
+        from .spot_buffer import SpotBuffer
+        buffer=SpotBuffer(stream,reactor,time.monotonic)
     server=Server(("0.0.0.0",9100),Path(args.rpc_token).read_text().strip(),session,feed,config["requirements"])
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     busy=False;active=None
@@ -43,7 +48,7 @@ def main():
         payload=Protobuf.extract(message)
         if payload.DESCRIPTOR.name=='ProtoOASpotEvent' and session.ready:
             metrics['spot_events']+=1
-            try: stream.on_spot(MessageToDict(payload,preserving_proto_field_name=True))
+            try: (buffer or stream).on_spot(MessageToDict(payload,preserving_proto_field_name=True))
             except ValueError: stream.disconnected()
     client.setMessageReceivedCallback(received)
     @defer.inlineCallbacks
@@ -92,10 +97,12 @@ def main():
             except Exception:metrics['failures']+=1
         # Snapshot server is read-only, and its thread is joined before database close.
         server.shutdown();server.server_close();thread.join(5)
+        stream.disconnected()
         metrics['cached_bars']=db.connection.execute("SELECT count(*) FROM checkpoints WHERE id LIKE 'bar:%'").fetchone()[0]
         metrics['quote_sources']={symbol:(feed.get('quote:'+symbol) or {}).get('source_time') for symbol in config['symbols']}
         metrics.update(ended_at=now().isoformat(),generation=session.generation,spot_rejections=dict(stream.spot_rejections),
                        future_quote_lead_us=stream.future_quote_lead_us)
+        metrics['quote_buffer']=buffer.report() if buffer else {'enabled':False}
         metrics.update(summarize(metrics,session.requests,session.rejected_writes,reconnect_required=bool(args.reconnect_after)))
         yield defer.maybeDeferred(client.stopService)
         if report_fd is not None:

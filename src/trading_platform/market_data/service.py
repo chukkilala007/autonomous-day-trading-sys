@@ -83,6 +83,8 @@ class Feed:
             raw=self.get('quote:'+symbol);age=None;quote_ok=False
             validity=self.get('quote-valid:'+symbol)
             valid=validity is None or validity.get('valid') is True
+            pending=self.get('quote-buffer-pending:'+symbol)
+            valid=valid and not (pending and pending.get('pending'))
             if raw:
                 quote=Quote.model_validate_json(json.dumps(raw))
                 age=(cutoff-quote.source_time).total_seconds()
