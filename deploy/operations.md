@@ -110,3 +110,5 @@ Quote validity is durable and separate from historical repair. Rejection blocks 
 ## FxPro public specification reconciliation
 
 Run `python -m trading_platform.gateways.ctrader.specifications --probe PRIVATE_PROBE --account ACCOUNT --output NEW_PRIVATE_REPORT` in the gateway image. This offline review binds the reviewed public EURUSD/GOLD facts to fresh selected-account metadata, preserves discrepancies, and interprets UTC session/holiday schedules. Output is not an executable capability policy. Gold's public increment currently conflicts with account metadata. SCHEDULED_OPEN does not certify current execution availability; no rounded website schedule overrides broker intervals. New public facts require an explicit reviewed source update and tests.
+
+A probe can diagnose one missing completed minute using `--gap-symbol EURUSD --gap-start 2026-10-19T23:37:00Z`. It queries the exact bar interval and both tick sides, requires complete account-bound responses, and reports BAR_PRESENT, TICKS_WITHOUT_BAR or NO_TICKS_REPORTED. It never inserts candles or treats empty ticks as a verified market closure. Use a new private report and one broker session at a time.
