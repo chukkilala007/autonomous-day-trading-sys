@@ -1,0 +1,113 @@
+{
+  "cached_bars": 534,
+  "complete_snapshots": 0,
+  "disconnects": 2,
+  "ended_at": "2026-10-21T05:14:03.126401+00:00",
+  "failures": 1,
+  "future_quote_lead_us": {},
+  "generation": 3,
+  "latest_coverage": [
+    {
+      "basis": "bid",
+      "complete": false,
+      "contiguous_available": 329,
+      "first_missing_end": "2026-10-20T23:44:00+00:00",
+      "kind": "history",
+      "minutes": 1,
+      "repaired": true,
+      "required": 400,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 80,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 5,
+      "repaired": true,
+      "required": 80,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 24,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 15,
+      "repaired": true,
+      "required": 24,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 16,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 60,
+      "repaired": true,
+      "required": 16,
+      "symbol": "EURUSD"
+    },
+    {
+      "age_seconds": 9.421176,
+      "complete": false,
+      "kind": "quote",
+      "maximum_age_seconds": 2,
+      "present": true,
+      "symbol": "EURUSD",
+      "valid": true
+    }
+  ],
+  "mode": "shadow",
+  "order_writes": 0,
+  "orders_enabled": false,
+  "quote_buffer": {
+    "counts": {
+      "buffered": 56,
+      "peak_pending": 1,
+      "released": 56
+    },
+    "enabled": true,
+    "max_lead_ms": 100,
+    "max_pending": 64,
+    "max_residence_ms": 250,
+    "pending": 0
+  },
+  "quote_sources": {
+    "EURUSD": "2026-10-21T05:13:50.573000+00:00"
+  },
+  "reconciled_generations": [
+    1,
+    3
+  ],
+  "reconciliations": 39,
+  "reconnect_requested": true,
+  "reconnect_status": "PASS",
+  "rejected_writes": 0,
+  "requests": {
+    "ProtoOAAccountAuthReq": 2,
+    "ProtoOAApplicationAuthReq": 2,
+    "ProtoOADealListReq": 39,
+    "ProtoOAGetAccountListByAccessTokenReq": 2,
+    "ProtoOAGetTrendbarsReq": 157,
+    "ProtoOAReconcileReq": 39,
+    "ProtoOASubscribeSpotsReq": 2,
+    "ProtoOATraderReq": 39
+  },
+  "spot_events": 70,
+  "spot_rejections": {},
+  "started_at": "2026-10-21T05:07:08.145122+00:00",
+  "status": "BLOCKED_FRESH_COVERAGE",
+  "core_counts": {
+    "events": 0,
+    "decisions": 0,
+    "commands": 0,
+    "reservations": 0,
+    "positions": 0
+  },
+  "acceptance": "STOPPED_BLOCKED_EURUSD_HISTORY",
+  "operational_readiness": false
+}
