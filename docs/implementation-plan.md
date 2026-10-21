@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | Opt-in bounded quote buffering for the read-only gateway; strict release validation and pending-snapshot inhibition |
+| Latest features | F5.2n read-only execution-profile review: installed SDK mapping, explicit account/symbol restrictions and separate unresolved broker facts |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
-| Actual qualification | Fresh probe029; EURUSD025 full400/80/24/16 history and forced reconnect PASS |
+| Actual qualification | Probe030 and execution-review030: EURUSD has no observed profile restrictions; LIMIT/GTD SDK mapping matches. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
-| Current blocker | Bounded read-only checks passed; continuous freshness/host soak and broker execution capabilities remain unqualified. Prior EURUSD024 failed excessive skew; retained as evidence |
-| Next concrete action | Continue broker capability qualification and bounded demo-order preparation; orders disabled pending explicit approval. Next fresh probe030/shadow026 if needed |
+| Current blocker | Exact account tick, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance; see unsent broker evidence request |
+| Next concrete action | Obtain account-bound broker facts in deploy/broker-execution-evidence-request.md; bind reviewed policies and complete disabled bounded controller/preview before explicit order approval. Next probe031/shadow026 |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway: 290 passed + 4 subtests (6.74s), including causal queue bounds, clock jumps, stale callbacks and restart tests |
+| Latest tests | Installed gateway image:306passed+4subtests in6.64s;28targeted review/transport/specification tests passed |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Buffer implementation merged at 8e3472d; CI 39480736712 SUCCESS. Fresh evidence commit 0bd2899 and develop merge 6bc47b3 pushed successfully; this handoff update is documentation only |
 
@@ -1013,3 +1013,13 @@ Branch `feature/eurusd_synced_buffer_acceptance`. After operator correction, ini
 Restart used fresh probe029 and new single-symbol state after plugin preflight. Current Apple offsets were-9.725ms initially,-12.040ms and-13.525ms during the run. Coarse Docker clock sample fell within host request/response bounds; it does not prove precise clock equivalence. Run025 completed601.814seconds:326spots,zero quote rejections,full400/80/24/16 history,reconnect PASS across generations1/3,530decisions from265events. TPR265WATCH; timer1ENTRY/264NO_ACTION. No commands,reservations,positions or order writes. Container-local samples show activity before and after reconnect without sampling errors. Both databases passed integrity checks.
 
 Scope: buffer enabled100ms/250ms/64, but no update needed holding, so this passes the bounded enabled-buffer feed/reconnect check and does NOT add EURUSD sustained holding/release evidence. XAUUSD022 remains the actual buffering evidence.35complete polling snapshots,58reconciliations,one collection failure and final quote age3.934seconds are preserved; no continuous-freshness percentage or operational readiness claim. No alternate symbol needed for this bounded pass. Evidence: `eurusd-restarted-shadow-025.json`, `eurusd-restarted-audit-029.json`; failed024 and audit028 retained separately. All test containers/networks removed, private tokens preserved. No runtime source changes; prior290tests+4subtests remain the implementation baseline. JSON/privacy/result assertions and diff checks precede feature commit/merge/push.
+
+### F5.2n — execution-profile preparation review — DONE for read-only tooling (2026-10-21)
+
+Branch `feature/execution_profile_review`. Added `gateways/ctrader/execution_review.py` CLI that binds an under24h collected read-only probe to the selected account/symbol, checks installed protobuf fields/enums against the existing absolute protected LIMIT/GTD transport, and reports explicit account/symbol restrictions. Missing metadata stays unknown; limited-risk/NETTED/restricted accounts, disabled symbols and SDK mismatches remain restrictions. Display digits do not become tick-grid evidence. Protocol support is separate from broker acceptance, with no capability/policy generation, broker client, order call or qualification promotion.
+
+Reviewed official cTrader request/model references on2026-10-21. New-order stopTriggerMethod applies to pending STOP/STOP_LIMIT, so it is not treated as attached LIMIT protection-side proof. Limited-risk accounts require relative protection; this report flags them as incompatible with the current absolute profile rather than changing execution behavior.
+
+Fresh read-only probe030 COLLECTED. EURUSD execution-review030 observes HEDGED,FULL_ACCESS,isLimitedRisk=false,tradingMode=ENABLED,SL/TP minimum distances0inPOINTS. SDK LIMIT=2,GTD=1,BUY=1,SELL=2 mapping matches. No observed profile restrictions; eight remaining preparation/acceptance categories are still explicit. Metadata fields and protocol compatibility do not qualify tick/economics/session/protection/order execution. Public sanitized report `docs/evidence/execution-profile-review-030.json`; private source retained. Drafted `deploy/broker-execution-evidence-request.md` for exact account-specific external facts; it was not sent. Bounded order plan updated; orders remain disabled.
+
+Validation:28targeted tests passed. Newly built installed gateway-check image passed306tests+4subtests in6.64s without network/credentials. JSON/privacy and diff checks passed before commit. User workflow: feature commit, no-fast-forward merge todevelop and push. Parent F5.2/S6 remain open; this is a preparation review, not executable approval or broker acceptance. Next work requires reviewed broker facts, compatible executable policy/controller and explicit bounded submission authorization.

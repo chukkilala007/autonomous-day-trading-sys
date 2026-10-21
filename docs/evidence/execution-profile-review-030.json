@@ -1,0 +1,56 @@
+{
+  "account_observations": {
+    "accessRights": "FULL_ACCESS",
+    "accountType": "HEDGED",
+    "isLimitedRisk": false
+  },
+  "evidence_hash": "502cc2bcb37cd8566d80532b020b7e961689f8720f9eec32ff692e40461a0d3c",
+  "format": 1,
+  "input_hash": "217f552cda938c092da128ab98864224fb0a64a288d710cdc792943b9d4e5513",
+  "note": "Metadata review only; no quote, executable session, authorization or capability promotion. Absent optional fields remain unknown; display digits are not a tradable tick.",
+  "observed_at": "2026-10-21T10:49:55.304176+00:00",
+  "orders_enabled": false,
+  "profile_restrictions": [],
+  "protocol": {
+    "broker_acceptance_observed": false,
+    "classification": "protocol_only",
+    "descriptor_hash": "bae9c62907134bba25bd56544d5f7f3ccce2cc98a8d1f03fe460a703428a96be",
+    "enums": {
+      "BUY": 1,
+      "GOOD_TILL_DATE": 1,
+      "LIMIT": 2,
+      "SELL": 2
+    },
+    "issues": [],
+    "profile": "absolute_protected_limit_gtd",
+    "sdk_mapping_matches_transport": true,
+    "stop_trigger_method_scope": "pending STOP/STOP_LIMIT, not attached LIMIT protection"
+  },
+  "qualification_complete": false,
+  "remaining": [
+    "account_bound_tradable_tick",
+    "complete_cost_rounding_settlement",
+    "fresh_proposal_margin_and_exposure",
+    "current_executable_session",
+    "attached_protection_trigger_and_acceptance",
+    "limit_gtd_broker_acceptance",
+    "bounded_test_controller_and_preview",
+    "explicit_submission_authorization"
+  ],
+  "reviewed_at": "2026-10-21T10:51:12.630479+00:00",
+  "sources": {
+    "request": "https://help.ctrader.com/open-api/messages/#protooaneworderreq",
+    "symbol": "https://help.ctrader.com/open-api/model-messages/#protooasymbol",
+    "trigger": "https://help.ctrader.com/open-api/model-messages/#protooaordertriggermethod"
+  },
+  "symbol": "EURUSD",
+  "symbol_observations": {
+    "digits": 5,
+    "distanceSetIn": "SYMBOL_DISTANCE_IN_POINTS",
+    "guaranteedStopLoss": false,
+    "slDistance": 0,
+    "tpDistance": 0,
+    "tradingMode": "ENABLED"
+  },
+  "valid_until": "2026-10-22T10:49:55.304176+00:00"
+}
