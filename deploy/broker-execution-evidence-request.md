@@ -11,3 +11,7 @@ Prepared for the operator; **not sent to the broker**. Scope: FxPro cTrader demo
 Protocol encoding is reviewed against [new-order messages](https://help.ctrader.com/open-api/messages/#protooaneworderreq) and [symbol metadata](https://help.ctrader.com/open-api/model-messages/#protooasymbol). Protocol support and broker statements are distinct from actual demo lifecycle observations. Neither authorizes submission. Some acceptance/settlement behavior can only be confirmed in a separately approved bounded test.
 
 After documentation is obtained, bind it to reviewed policy inputs, implement any missing protection/profile restrictions in the executable path, and test the exact disabled bounded controller. Obtain fresh quote/account/margin data and present the final order preview for explicit approval. Do not label this report or a generic protocol mapping as `demo_observed` evidence.
+
+## Research update — 2026-10-21
+
+See [item-by-item investigation](../docs/evidence/broker-evidence-items-1-to-5.md) and fresh probe031 facts. Volume/lot scaling, reported commission basis/minimum, protocol order support and documented default SL sides now have sources. Narrow remaining requests to account-bound TickSize/grid applicability, exact rounding and partial-fill/cancellation/settlement conventions, TP quote-side semantics, account expiry/entry restrictions and the GOLD/XAUUSD step contradiction. Algo TickSize offers a read-only collection route; MCP currently omits it. The guide's suggested test trade and tolerance are not authorization or verified broker policy.
