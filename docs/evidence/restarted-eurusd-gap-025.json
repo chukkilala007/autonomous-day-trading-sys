@@ -1,0 +1,19 @@
+{
+  "bar_count": 0,
+  "end": "2026-10-20T23:44:00+00:00",
+  "observed_at": "2026-10-21T05:14:18.416381+00:00",
+  "orders_enabled": false,
+  "repaired": false,
+  "response_hashes": {
+    "ask": "311888b07fbf58500733286140f6af7154de6fbcedbfa5f2f1ea0164b24f0d3a",
+    "bars": "8d417b7834141e21907d9895e4b23c3e876a365653f973513849b7fa1a87eee7",
+    "bid": "311888b07fbf58500733286140f6af7154de6fbcedbfa5f2f1ea0164b24f0d3a"
+  },
+  "source_probe_sha256": "944d23b14d4e7d727bd25ca5a717faec4a0b2dc36f4abb0a6ef7679b1da2659a",
+  "start": "2026-10-20T23:43:00+00:00",
+  "status": "NO_TICKS_REPORTED",
+  "tick_counts": {
+    "ask": 0,
+    "bid": 0
+  }
+}

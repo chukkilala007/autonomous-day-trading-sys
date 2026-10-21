@@ -1,0 +1,146 @@
+{
+  "acceptance": "PASS_BOUNDED_XAUUSD_BUFFER",
+  "cached_bars": 583,
+  "complete_snapshots": 52,
+  "core_counts": {
+    "commands": 0,
+    "decisions": 880,
+    "events": 440,
+    "positions": 0,
+    "reservations": 0
+  },
+  "decision_outcomes": [
+    {
+      "count": 440,
+      "instance": "tpr1",
+      "outcome": "WATCH"
+    },
+    {
+      "count": 1,
+      "instance": "timer_fixture",
+      "outcome": "ENTRY"
+    },
+    {
+      "count": 439,
+      "instance": "timer_fixture",
+      "outcome": "NO_ACTION"
+    }
+  ],
+  "disconnects": 2,
+  "ended_at": "2026-10-21T05:27:14.663323+00:00",
+  "failures": 1,
+  "future_quote_lead_us": {},
+  "generation": 3,
+  "latest_coverage": [
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 400,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 1,
+      "repaired": true,
+      "required": 400,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 80,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 5,
+      "repaired": true,
+      "required": 80,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 24,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 15,
+      "repaired": true,
+      "required": 24,
+      "symbol": "XAUUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 16,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 60,
+      "repaired": true,
+      "required": 16,
+      "symbol": "XAUUSD"
+    },
+    {
+      "age_seconds": 0.017949,
+      "complete": true,
+      "kind": "quote",
+      "maximum_age_seconds": 2,
+      "present": true,
+      "symbol": "XAUUSD",
+      "valid": true
+    }
+  ],
+  "mode": "shadow",
+  "operational_readiness": false,
+  "order_writes": 0,
+  "orders_enabled": false,
+  "post_shutdown_integrity": {
+    "core": "ok",
+    "gateway": "ok"
+  },
+  "quote_buffer": {
+    "counts": {
+      "buffered": 1288,
+      "peak_pending": 2,
+      "released": 1288
+    },
+    "enabled": true,
+    "max_lead_ms": 100,
+    "max_pending": 64,
+    "max_residence_ms": 250,
+    "pending": 0
+  },
+  "quote_sources": {
+    "XAUUSD": "2026-10-21T05:27:14.450000+00:00"
+  },
+  "reconciled_generations": [
+    1,
+    3
+  ],
+  "reconciliations": 58,
+  "reconnect_requested": true,
+  "reconnect_status": "PASS",
+  "rejected_writes": 0,
+  "requests": {
+    "ProtoOAAccountAuthReq": 2,
+    "ProtoOAApplicationAuthReq": 2,
+    "ProtoOADealListReq": 58,
+    "ProtoOAGetAccountListByAccessTokenReq": 2,
+    "ProtoOAGetTrendbarsReq": 233,
+    "ProtoOAReconcileReq": 58,
+    "ProtoOASubscribeSpotsReq": 2,
+    "ProtoOATraderReq": 58
+  },
+  "sampled_decision_ranges_by_generation": {
+    "1": [
+      30,
+      402
+    ],
+    "3": [
+      402,
+      880
+    ]
+  },
+  "sampling_errors": 26,
+  "sampling_limitation": "26 external host reads during container writes failed (23 malformed-database, 3 not-a-database). Successful samples demonstrate decision growth in both generations; final counts and integrity checks taken after shutdown. Cause not established.",
+  "spot_events": 1475,
+  "spot_rejections": {},
+  "started_at": "2026-10-21T05:17:12.847454+00:00",
+  "status": "PASS"
+}

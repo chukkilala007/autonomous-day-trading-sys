@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-20. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-21. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -11,17 +11,17 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
 | Latest features | Opt-in bounded quote buffering for the read-only gateway; strict release validation and pending-snapshot inhibition |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
-| Actual qualification | Probe-022 freshly verified bid candle basis for EURUSD and XAUUSD; previous gold mismatch retained as historical evidence |
-| Actual shadow result | Buffer guard run-019: 11 buffered/released updates, 75 excessive-skew rejections, zero orders. Stopped after 44 seconds; not sustained acceptance |
-| Current blocker | Host lag ~128–130ms exceeds the explicit 100ms profile. Automatic time is On, server time.euro.apple.com. Awaiting operator clock correction; no limit widened |
-| Next concrete action | Verify clock after requested local correction, then run 600-second buffered acceptance with forced reconnect. Next probe 023; shadow 020 |
+| Actual qualification | Fresh probes 024/026 renewed bid basis; probe 026 certified the Oct20 XAUUSD daily closure; probe 025 confirmed an unexplained EURUSD empty minute |
+| Actual shadow result | XAUUSD run-022 bounded buffer PASS: 601.8s, 1,475 spots, 1,288 buffered/released, zero quote rejections, reconnect PASS, 880 decisions, zero orders |
+| Current blocker | EURUSD run-021 M1 gap ending Oct20 23:44UTC; no closure inferred. XAUUSD bounded pass does not close sustained availability, capability or execution acceptance |
+| Next concrete action | Collect fresh EURUSD evidence when its required history is complete (next probe 027, shadow 023), then repeat separate 600s acceptance. Continue broker capability qualification before bounded-order approval |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed gateway: 290 passed + 4 subtests (6.74s), including causal queue bounds, clock jumps, stale callbacks and restart tests |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
-| Publication | All four feature branches and develop merge `74b6ed1` pushed. [CI 39424940895](https://github.com/chukkilala007/autonomous-day-trading-sys/actions/runs/39424940895) PASS: AMD64, ARM64, container tests, recovery/soak and open-exposure restart. Subsequent handoff change is documentation only |
+| Publication | Buffer implementation merged at 8e3472d; CI 39480736712 SUCCESS. Fresh evidence is on feature/buffered_shadow_acceptance, to be committed and merged after documentation checks |
 
-Publication handoff (2026-10-20): implementation commits `3e1ed3c`, `572ae00`, `3d1345d` and `b58ca47` are merged into develop. Completed shadow drill containers were removed; private evidence and rotated tokens retained. This publication does not enable broker orders or close the remaining acceptance gates above.
+Publication history: earlier implementation commits remain merged. Current acceptance changes are documentation/evidence only and do not enable broker orders.
 
 
 Future handoffs must name the active feature, changes already made, exact failing/passing checks, unresolved decisions, and the next action. Never leave “continue implementation” as the only next step.
@@ -980,8 +980,22 @@ Branch `feature/quote_clock_diagnostics`. Add bounded per-symbol count/min/max/t
 
 Diagnostic acceptance: installed gateway **272 passed +4 subtests in6.69s**. Local-host-008 pinned new gateway image and passed host prerequisites. Actual90-second EURUSD run-018:18 spots,13 FUTURE_QUOTE; source lead min10,912us,max18,802us,total190,380us (mean14,644.6us). Concurrent host measurement +0.021315 +/-0.006964s. These observations are consistent with remaining host lag, not proof of broker clock offset. Reconnect PASS;3events/6decisions; zero commands/reservations/positions/order writes. Report `docs/evidence/quote-clock-diagnostic-018.json`. All drill containers/networks removed; evidence/tokens preserved. User asked for read-only administrator time-setting outputs; no password requested or settings changed. No new timestamp tolerance.
 
-### Bounded read-only quote buffer — BLOCKED (implementation complete; sustained online acceptance pending) (2026-10-20)
+### Bounded read-only quote buffer — DONE for implementation and bounded XAUUSD acceptance (2026-10-21)
 
 Branch `feature/bounded_quote_buffer`. User explicitly approved causal buffering. Opt-in100ms lead/250ms monotonic residence/64 updates per symbol; pending snapshot inhibition, strict unchanged release validation, generation/reset/overflow/order guards. Default remains unbuffered; execution unchanged and disabled. Decision record `docs/decisions/0003-bounded-shadow-quote-buffer.md`. Installed gateway suite:288 passed+4subtests in6.47s. Actual600s read-only acceptance follows using pinned local-host-009 images and fresh probe-022.
 
 Final buffer regression: **290 passed + 4 subtests in 6.74s**. Fresh probe-022 passed three-sample bid-basis checks for both symbols. Run-019 used both symbols, both workers and pinned local-host-009 images. Host lag measured +130.155ms (Apple) / +128.014ms (Cloudflare), beyond the declared profile. Stopped after44seconds:11 buffered/released updates,75 BUFFER_EXCESSIVE_SKEW rejections, no strict future-release rejection, zero broker writes. Forced reconnect was not reached, so report correctly records INCOMPLETE reconnect. This demonstrates bounds enforcement, not sustained acceptance. All drill containers/networks removed. Evidence: `buffer-guard-shadow-019.json`, `buffer-capability-audit-022.json`. User asked to correct clock locally before repeating; no automatic clock modification or order authorization inferred.
+
+### Buffered shadow acceptance rerun — interrupted; fresh acceptance resumed (2026-10-21)
+
+Branch `feature/buffered_shadow_acceptance`. Operator corrected clock; independent offsets +0.000055 +/-0.009788s (Apple) and +0.001454 +/-0.013179s (Cloudflare). Probe-023 freshly qualified both bid bases. Run-020 uses both symbols/workers,600seconds,forced reconnect at240seconds,unchanged100ms/250ms/64 buffer profile, pinned local-host-009 images. Baseline8e3472d CI39480736712 verified SUCCESS. No runtime source changes or order authorization.
+
+Resume correction (2026-10-21): user reported interruption and requested fresh time-sensitive work. Run-020 gateway finished but core exited during initialization: TPR requires exactly one symbol per instance. The manual dual-universe configuration was invalid; gateway-only PASS is not end-to-end acceptance. Gateway wall timestamps span approximately41minutes rather than planned600seconds, so no sustained timing claim is made. This same manually expanded TPR universe was used in run-019; its zero-decision result cannot be attributed solely to clock skew. Queue guard observations remain valid. Fresh runs will use one symbol per instance and explicit plugin initialization preflight. Initial current host offsets +25.137ms Apple/+25.383ms Cloudflare are within the100ms profile. All prior evidence remains historical.
+
+Fresh EURUSD run-021 initialized both single-symbol plugins successfully. Over approximately415seconds it received70spots, buffered/released56, rejected none and passed forced reconnect. It remained blocked by missing M1 history ending2026-10-20T23:44UTC (329/400 available at final observation); core decisions and all order-side counts remained zero. Stopped once the history blocker was established, not counted as ten-minute acceptance. Probe-025 independently returned no bar and zero bid/ask ticks for23:43–23:44UTC. This is NO_TICKS_REPORTED during scheduled trading, not a certified closure; no candle inserted. Evidence: `restarted-eurusd-shadow-021.json`, `restarted-eurusd-gap-025.json`.
+
+Fresh probe-026 renewed bid basis and independently audited the XAUUSD21:00–22:00UTC daily closure onOct20. Configuration preparation certified the interval against the broker schedule, and both plugins passed explicit initialization. Separate single-symbol run-022 started with600seconds, forced reconnect240seconds and unchanged buffer bounds. Runtime images remain pinned to local-host-009; execution remains disabled.
+
+Run-022 completed in601.816seconds: gateway PASS, reconnect PASS (generations1/3), all400/80/24/16 real bars,1,475spots,1,288buffered and released, peak queue2, no pending/drops/quote rejections. Core440events/880decisions: TPR440WATCH; timer1ENTRY/439NO_ACTION. Shadow entry produced no command; commands/reservations/positions and broker writes allzero. Successful external samples show decision totals30–402 in generation1 and402–880 in generation3. There were52 complete gateway snapshots and58 reconciliations, one recorded collection failure; these counters are not an uninterrupted-availability percentage. Final quote age17.949ms. The ten-minute causal-buffer/reconnect acceptance passes for XAUUSD only; EURUSD, full S5/S6, long-term soak and execution qualification remain open.
+
+External host sampling encountered26 transient read errors during container writes (23malformed-database,3not-a-database); cause is unestablished, and this sampler must not be used as an authoritative continuous availability monitor. Both stopped databases passed full SQLite integrity checks, and final persisted counts were read after core shutdown. All shadow-020/021/022 containers/networks cleaned up; private rotated tokens and reports retained. Sanitized final evidence: `docs/evidence/restarted-xauusd-shadow-022.json`. No runtime source changes; prior installed regression290tests+4subtests and baseline CI remain the implementation validation. Documentation checks and publication follow below.

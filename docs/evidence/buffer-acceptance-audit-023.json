@@ -1,0 +1,357 @@
+{
+  "status": "COLLECTED",
+  "orders_enabled": false,
+  "source_probe_sha256": "3f333c45dc7b0414a446a120a90f5f399da848b265d3cd0ba6a69e786b9bb021",
+  "symbols": {
+    "EURUSD": {
+      "read_only_basis": "bid",
+      "execution_blockers": [
+        "commission",
+        "contract_value",
+        "currency_conversion",
+        "expiry",
+        "margin",
+        "order_types",
+        "protection_sides",
+        "session_state",
+        "tick_grid"
+      ],
+      "candle_samples": [
+        {
+          "bar_ohlc": [
+            112354,
+            112354,
+            112347,
+            112348
+          ],
+          "hashes": {
+            "ask": "4d143fa1feb8fb538e2693d2afa738de9daf09ca93da2f8e6156d18a3befaade",
+            "bid": "e5feb74fc639e6bb31956d085086b3600e10685c2b32665e3ec308dba391f75b"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29875392,
+          "quote_matches": {
+            "ask": false,
+            "bid": true
+          },
+          "quote_ohlc": {
+            "ask": [
+              112358,
+              112358,
+              112351,
+              112352
+            ],
+            "bid": [
+              112354,
+              112354,
+              112347,
+              112348
+            ]
+          },
+          "tick_counts": {
+            "ask": 15,
+            "bid": 15
+          },
+          "tick_ohlc": {
+            "ask": [
+              112358,
+              112358,
+              112351,
+              112352
+            ],
+            "bid": [
+              112354,
+              112354,
+              112347,
+              112348
+            ]
+          }
+        },
+        {
+          "bar_ohlc": [
+            112349,
+            112349,
+            112343,
+            112343
+          ],
+          "hashes": {
+            "ask": "b37adcdb694fc82cce813d8d80d96b6641b864d6cd339a77935ce3acf746cdce",
+            "bid": "d4c76ebe204d1d2e054f6a49acaed6b194296cf76761dd91c1e8804221fa65bb"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29875393,
+          "quote_matches": {
+            "ask": false,
+            "bid": true
+          },
+          "quote_ohlc": {
+            "ask": [
+              112353,
+              112353,
+              112347,
+              112347
+            ],
+            "bid": [
+              112349,
+              112349,
+              112343,
+              112343
+            ]
+          },
+          "tick_counts": {
+            "ask": 23,
+            "bid": 23
+          },
+          "tick_ohlc": {
+            "ask": [
+              112353,
+              112353,
+              112347,
+              112347
+            ],
+            "bid": [
+              112349,
+              112349,
+              112343,
+              112343
+            ]
+          }
+        },
+        {
+          "bar_ohlc": [
+            112344,
+            112344,
+            112339,
+            112339
+          ],
+          "hashes": {
+            "ask": "df04c6f08461347186e5c23b322dca695aaff96cee4ac4c5ff5bb731c2ebaa20",
+            "bid": "62acc2e3a58e6c1cd74908c84552d744988582feb7682e1c9aa1eb3748b0c571"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29875394,
+          "quote_matches": {
+            "ask": false,
+            "bid": true
+          },
+          "quote_ohlc": {
+            "ask": [
+              112348,
+              112348,
+              112343,
+              112343
+            ],
+            "bid": [
+              112344,
+              112344,
+              112339,
+              112339
+            ]
+          },
+          "tick_counts": {
+            "ask": 8,
+            "bid": 8
+          },
+          "tick_ohlc": {
+            "ask": [
+              112348,
+              112348,
+              112343,
+              112343
+            ],
+            "bid": [
+              112344,
+              112344,
+              112339,
+              112339
+            ]
+          }
+        }
+      ]
+    },
+    "XAUUSD": {
+      "read_only_basis": "bid",
+      "execution_blockers": [
+        "commission",
+        "contract_value",
+        "currency_conversion",
+        "expiry",
+        "margin",
+        "order_types",
+        "protection_sides",
+        "session_state",
+        "tick_grid"
+      ],
+      "candle_samples": [
+        {
+          "bar_ohlc": [
+            412349000,
+            412349000,
+            412179000,
+            412186000
+          ],
+          "hashes": {
+            "ask": "1be1c4615843a05f9cd6486acf7d92f757cb6e19566ade6473ac2a3891ce215c",
+            "bid": "3620044a1e2eaae05675b277a8dfed6597fc71297599b091a12d521d2b1eb5cd"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29875392,
+          "quote_matches": {
+            "ask": false,
+            "bid": true
+          },
+          "quote_ohlc": {
+            "ask": [
+              412369000,
+              412369000,
+              412201000,
+              412210000
+            ],
+            "bid": [
+              412349000,
+              412349000,
+              412179000,
+              412186000
+            ]
+          },
+          "tick_counts": {
+            "ask": 116,
+            "bid": 117
+          },
+          "tick_ohlc": {
+            "ask": [
+              412369000,
+              412369000,
+              412201000,
+              412210000
+            ],
+            "bid": [
+              412349000,
+              412349000,
+              412179000,
+              412186000
+            ]
+          }
+        },
+        {
+          "bar_ohlc": [
+            412181000,
+            412198000,
+            412173000,
+            412186000
+          ],
+          "hashes": {
+            "ask": "34f37bb327f97ac95f0f3a472410bd405f5638613c585cc959ec9650e6959580",
+            "bid": "7a2ff459fc40fcaf159c90315e4ffd1db5e940f8074eba1acb26d5080098e622"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29875393,
+          "quote_matches": {
+            "ask": false,
+            "bid": true
+          },
+          "quote_ohlc": {
+            "ask": [
+              412201000,
+              412216000,
+              412193000,
+              412202000
+            ],
+            "bid": [
+              412181000,
+              412198000,
+              412173000,
+              412186000
+            ]
+          },
+          "tick_counts": {
+            "ask": 102,
+            "bid": 103
+          },
+          "tick_ohlc": {
+            "ask": [
+              412201000,
+              412216000,
+              412193000,
+              412202000
+            ],
+            "bid": [
+              412181000,
+              412198000,
+              412173000,
+              412186000
+            ]
+          }
+        },
+        {
+          "bar_ohlc": [
+            412189000,
+            412236000,
+            412171000,
+            412172000
+          ],
+          "hashes": {
+            "ask": "62419b7221b26e0b8d620bcd8c860f1b17d1b90c1088d2cd00987c7b4397a6c3",
+            "bid": "0d0fa1e23aca7c4fc622b35fc26ab8935355a081652830e9faec2c552a973432"
+          },
+          "matches": {
+            "ask": false,
+            "bid": true
+          },
+          "minute": 29875394,
+          "quote_matches": {
+            "ask": false,
+            "bid": true
+          },
+          "quote_ohlc": {
+            "ask": [
+              412209000,
+              412256000,
+              412191000,
+              412192000
+            ],
+            "bid": [
+              412189000,
+              412236000,
+              412171000,
+              412172000
+            ]
+          },
+          "tick_counts": {
+            "ask": 118,
+            "bid": 118
+          },
+          "tick_ohlc": {
+            "ask": [
+              412209000,
+              412256000,
+              412191000,
+              412192000
+            ],
+            "bid": [
+              412189000,
+              412236000,
+              412171000,
+              412172000
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
