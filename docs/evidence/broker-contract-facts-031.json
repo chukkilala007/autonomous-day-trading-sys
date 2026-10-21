@@ -1,0 +1,66 @@
+{
+  "account_currency": "USD",
+  "collected_at": "2026-10-21T21:51:42.890004+00:00",
+  "money_digits": 2,
+  "orders_enabled": false,
+  "qualification_complete": false,
+  "source_probe_sha256": "d3c784a0daeec6fa7b5d8e66170e05055808acd628b6f11fcdd3ad69e1d29701",
+  "symbols": {
+    "EURUSD": {
+      "observed": {
+        "chargeSwapAtWeekends": false,
+        "commissionType": "USD_PER_MILLION_USD",
+        "digits": 5,
+        "distanceSetIn": "SYMBOL_DISTANCE_IN_POINTS",
+        "minCommissionAsset": "USD",
+        "minCommissionType": "CURRENCY",
+        "pipPosition": 4,
+        "pnlConversionFeeRate": 0,
+        "preciseMinCommission": "0",
+        "preciseTradingCommissionRate": "3500000000",
+        "slDistance": 0,
+        "swapCalculationType": "PIPS",
+        "swapLong": -0.89,
+        "swapPeriod": 24,
+        "swapRollover3Days": "WEDNESDAY",
+        "swapShort": 0.19,
+        "swapTime": 1260,
+        "tpDistance": 0
+      },
+      "volume_units": {
+        "lot": "100000",
+        "maximum": "50000000",
+        "minimum": "1000",
+        "step": "1000"
+      }
+    },
+    "XAUUSD": {
+      "observed": {
+        "chargeSwapAtWeekends": false,
+        "commissionType": "USD_PER_MILLION_USD",
+        "digits": 2,
+        "distanceSetIn": "SYMBOL_DISTANCE_IN_POINTS",
+        "minCommissionAsset": "USD",
+        "minCommissionType": "CURRENCY",
+        "pipPosition": 2,
+        "pnlConversionFeeRate": 0,
+        "preciseMinCommission": "0",
+        "preciseTradingCommissionRate": "3500000000",
+        "slDistance": 0,
+        "swapCalculationType": "PIPS",
+        "swapLong": -69.25,
+        "swapPeriod": 24,
+        "swapRollover3Days": "WEDNESDAY",
+        "swapShort": 17.15,
+        "swapTime": 1260,
+        "tpDistance": 0
+      },
+      "volume_units": {
+        "lot": "100",
+        "maximum": "50000",
+        "minimum": "1",
+        "step": "1"
+      }
+    }
+  }
+}
