@@ -44,3 +44,9 @@ Remaining blockers and current evidence: [online validation matrix](../docs/evid
 EURUSD run025 completed the ten-minute full-history/reconnect check with zero quote rejections and530shadow decisions; ordinary stale quotes remained blocked. No quote needed causal holding in that run; XAUUSD022 separately exercised actual buffer releases. These historical bounded checks do not replace fresh send-time data or a host soak.
 
 Execution review030 verifies installed LIMIT/GTD/absolute-protection protobuf encoding and explicit account metadata (HEDGED, FULL_ACCESS, not limited-risk; EURUSD ENABLED). It does not qualify attached protection triggers, executable tick size, full economics or actual order acceptance. Limited-risk accounts require a different protection profile. See the [unsent broker evidence request](broker-execution-evidence-request.md). No order authorization or submission has occurred.
+
+## Disabled controller delivery — 2026-10-21
+
+`execution.bounded_demo.Controller` implements durable offline rehearsal of one submission,20second cancellation,60second expiry observation, immediate unprotected-position closure and120second owned cleanup. It never writes executable commands or connects to a broker. State survives restart; expiry/cancel/close requests do not establish flat or release settlement. Tests include partial fill, stale/disconnected/foreign observations, clock rollback, plan replacement and contradictory post-completion exposure.
+
+The real attended adapter/qualification gate is still required. See [evidence-stage decision](../docs/decisions/0004-bounded-demo-evidence-stages.md). This separates pre-trade documentation/policy facts from observations the first test must produce, without weakening production DemoTransport.
