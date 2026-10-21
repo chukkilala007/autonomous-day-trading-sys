@@ -9,17 +9,17 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | F5.2n read-only execution-profile review: installed SDK mapping, explicit account/symbol restrictions and separate unresolved broker facts |
+| Latest features | F5.2o compiled read-only Algo exporter/importer; F6.4a durable disabled bounded-test rehearsal and evidence-stage decision |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | Probe030 and execution-review030: EURUSD has no observed profile restrictions; LIMIT/GTD SDK mapping matches. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Exact account tick, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance; see unsent broker evidence request |
-| Next concrete action | Use docs/evidence/broker-evidence-items-1-to-5.md: capture selected-account Algo TickSize and obtain remaining rounding/TP/expiry/gold clarifications. Then complete disabled controller/preview. Next probe032/shadow026 |
+| Next concrete action | Await action-time confirmation to install/run local exporter on demo broker login10645472; refresh challenge if expired and import actual capture. Then reviewed broker inputs and attended adapter/preview; no order authorization |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway image:306passed+4subtests in6.64s;28targeted review/transport/specification tests passed |
+| Latest tests | Installed gateway-check:341passed+4subtests in5.44s; exporter compiled against locked SDK with0warnings/errors |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
-| Publication | Buffer implementation merged at 8e3472d; CI 39480736712 SUCCESS. Fresh evidence commit 0bd2899 and develop merge 6bc47b3 pushed successfully; this handoff update is documentation only |
+| Publication | Algo exporter feature4c48d3d/merge dbb125e pushed. Disabled rehearsal feature follows tests and prescribed merge/push; runtime order gates unchanged |
 
 Publication history: earlier implementation commits remain merged. Current acceptance changes are documentation/evidence only and do not enable broker orders.
 
@@ -1033,3 +1033,11 @@ Confirmed observed EURUSD100000units/lot,1000minimum/step,USD35/million commissi
 ### F5.2o — read-only Algo contract exporter — implementation tested (2026-10-21)
 
 Branch `feature/algo_contract_exporter`. One-shot EURUSD cBot emits TickSize and contract fields only; refuses live/backtest/foreign login/broker/currency. Python challenge/importer binds Algo broker login through Open API traderLogin (not account ID), probe hash, nonce, bounded time and matching contract geometry. Operator JSON remains pending provenance review; no capability promotion or trading calls. Pinned cTrader.Automate1.0.21, locked package, compiled using .NET6 Docker SDK:0warnings/errors.18importer tests passed. Initial named rebuild without restore failed because a new disposable container lacked NuGet cache; locked restore/build succeeded. Linux SDK emitted `.algo`; copied to private named artifact. Actual cTrader capture awaits action-time computer-use confirmation; app login10645472 matches selected account48232468. Continue offline bounded controller while pending.
+
+### F6.4a — durable disabled bounded-test rehearsal — DONE for offline slice (2026-10-21)
+
+Branch `feature/bounded_demo_rehearsal`. Plan fixed to EURUSD1000unit protected BUY LIMIT,60second expiry,USD5AND0.1%equity modeled-loss ceiling. Checkpoint journal plans one submission, owned cancellation20seconds/partial-fill remainder, immediate unprotected closure and120second cleanup. It persists uncertainty before returning non-executable instructions, never resubmits after restart, requires terminal/flat/settled observations before COMPLETE and halts on contradictory late exposure. No broker client/credentials/enable flag/executable commands. Deterministic observations only; caller-provided loss is not live valuation evidence.
+
+Evidence-stage decision0004 separates mandatory pre-trade facts from first-test acceptance results; production capability gate remains unchanged. Real attended adapter, runtime evidence binding and approved preview remain open. Initial18targeted rehearsal/recovery/supervisor tests passed; added late-exposure regression and corrected a test fixture decimal-type warning. Full newly built installed image passed341tests+4subtests in5.44s. No broker orders or capability promotion.
+
+Exporter actual capture is pending computer-use action-time permission for locally built software. Source, locked package and runbook committed; private named artifact `var/algo-exporter/ContractSpecExporter.algo` SHA256e2831fdd2463e618f1546509d95ed5d234a523bfd73ded936a8cf59b93f9af16. Matching native FxPro demo login verified; no installation/run performed. Challenge001 is private and expires after1hour; refresh against a new probe when needed. No account tick has yet been inferred or accepted.
