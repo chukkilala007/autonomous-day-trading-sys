@@ -38,3 +38,9 @@ A nonfilled cancellation test does not qualify fill economics or protection. A f
 After the first result is reviewed: expiry without manual cancellation; protected fill/owned exit; partial-fill handling when observed; cancellation/fill race; reconnect and process restart with owned exposure; accepted-but-unacknowledged recovery without duplicate submission; controls/dashboard/alerts; isolated backup restore and broker reconciliation; representative host soak and graceful upgrade. Each needs its own explicit limits and acceptance record.
 
 Remaining blockers and current evidence: [online validation matrix](../docs/evidence/online-validation-2026-10-20.md).
+
+## Read-only preparation update — 2026-10-21
+
+EURUSD run025 completed the ten-minute full-history/reconnect check with zero quote rejections and530shadow decisions; ordinary stale quotes remained blocked. No quote needed causal holding in that run; XAUUSD022 separately exercised actual buffer releases. These historical bounded checks do not replace fresh send-time data or a host soak.
+
+Execution review030 verifies installed LIMIT/GTD/absolute-protection protobuf encoding and explicit account metadata (HEDGED, FULL_ACCESS, not limited-risk; EURUSD ENABLED). It does not qualify attached protection triggers, executable tick size, full economics or actual order acceptance. Limited-risk accounts require a different protection profile. See the [unsent broker evidence request](broker-execution-evidence-request.md). No order authorization or submission has occurred.
