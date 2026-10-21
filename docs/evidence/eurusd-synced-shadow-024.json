@@ -1,0 +1,119 @@
+{
+  "acceptance": "FAIL_EXCESSIVE_SKEW",
+  "cached_bars": 536,
+  "complete_snapshots": 20,
+  "core_counts": {
+    "commands": 0,
+    "decisions": 330,
+    "events": 165,
+    "positions": 0,
+    "reservations": 0
+  },
+  "core_integrity": "ok",
+  "disconnects": 2,
+  "ended_at": "2026-10-21T08:53:15.358943+00:00",
+  "failures": 23,
+  "future_quote_lead_us": {},
+  "generation": 3,
+  "interruption_note": "Gateway independently finished its 600-second run during chat interruption. Leftover core/workers cleaned up on resume. Initial and sampled clock readings were within bounds; the cause/timing of later excessive source lead is not established.",
+  "latest_coverage": [
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 400,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 1,
+      "repaired": true,
+      "required": 400,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 80,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 5,
+      "repaired": true,
+      "required": 80,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 24,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 15,
+      "repaired": true,
+      "required": 24,
+      "symbol": "EURUSD"
+    },
+    {
+      "basis": "bid",
+      "complete": true,
+      "contiguous_available": 16,
+      "first_missing_end": null,
+      "kind": "history",
+      "minutes": 60,
+      "repaired": true,
+      "required": 16,
+      "symbol": "EURUSD"
+    },
+    {
+      "age_seconds": 0.46174,
+      "complete": true,
+      "kind": "quote",
+      "maximum_age_seconds": 2,
+      "present": true,
+      "symbol": "EURUSD",
+      "valid": true
+    }
+  ],
+  "mode": "shadow",
+  "operational_readiness": false,
+  "order_writes": 0,
+  "orders_enabled": false,
+  "quote_buffer": {
+    "counts": {
+      "BUFFER_EXCESSIVE_SKEW": 57,
+      "buffered": 120,
+      "dropped": 57,
+      "peak_pending": 1,
+      "released": 120
+    },
+    "enabled": true,
+    "max_lead_ms": 100,
+    "max_pending": 64,
+    "max_residence_ms": 250,
+    "pending": 0
+  },
+  "quote_sources": {
+    "EURUSD": "2026-10-21T08:52:45.704000+00:00"
+  },
+  "reconciled_generations": [
+    1,
+    3
+  ],
+  "reconciliations": 36,
+  "reconnect_requested": true,
+  "reconnect_status": "PASS",
+  "rejected_writes": 0,
+  "requests": {
+    "ProtoOAAccountAuthReq": 2,
+    "ProtoOAApplicationAuthReq": 2,
+    "ProtoOADealListReq": 36,
+    "ProtoOAGetAccountListByAccessTokenReq": 2,
+    "ProtoOAGetTrendbarsReq": 148,
+    "ProtoOAReconcileReq": 36,
+    "ProtoOASubscribeSpotsReq": 23,
+    "ProtoOATraderReq": 36
+  },
+  "spot_events": 325,
+  "spot_rejections": {
+    "BUFFER_EXCESSIVE_SKEW": 57
+  },
+  "started_at": "2026-10-21T08:43:15.120237+00:00",
+  "status": "PASS"
+}

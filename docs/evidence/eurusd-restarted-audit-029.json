@@ -1,0 +1,35 @@
+{
+  "orders_enabled": false,
+  "source_probe_sha256": "589e75a63f23f9ca2a3548a84d4d53e7fa194c5b8ac6f058561f8b248df11628",
+  "status": "COLLECTED",
+  "symbols": {
+    "EURUSD": {
+      "execution_blockers": [
+        "commission",
+        "contract_value",
+        "currency_conversion",
+        "expiry",
+        "margin",
+        "order_types",
+        "protection_sides",
+        "session_state",
+        "tick_grid"
+      ],
+      "read_only_basis": "bid"
+    },
+    "XAUUSD": {
+      "execution_blockers": [
+        "commission",
+        "contract_value",
+        "currency_conversion",
+        "expiry",
+        "margin",
+        "order_types",
+        "protection_sides",
+        "session_state",
+        "tick_grid"
+      ],
+      "read_only_basis": "bid"
+    }
+  }
+}
