@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled adapter; F6.4e timed recovery; F6.4f first-test gate |
+| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled adapter; F6.4e timed recovery; F6.4f first-test gate; F6.4g offline launch-input preflight |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | Probe033 plus actual Algo capture003: EURUSD TickSize0.00001/pip0.0001; identity/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Account TickSize observed and importer validated; executable price-grid applicability, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance remain |
-| Next concrete action | Obtain remaining reviewed broker inputs; supply reviewed broker policy facts, then perform read-only bound-preview acceptance and present a concrete bounded approval. Timed monitor and separate first-test gate are implemented but disabled |
+| Next concrete action | Implement bounded read-only Session/Stream/Binding launcher with timeout and private output; obtain remaining reviewed broker facts before actual bound-preview acceptance. Offline launch preflight is delivered; orders remain disabled |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed first-demo gateway-check:435passed+4subtests in5.62s; timed recovery and independent qualification tested |
+| Latest tests | Installed launch-preflight gateway-check:444passed+4subtests in5.71s; network disabled, no credentials |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1097,3 +1097,11 @@ Eleven first-gate tests plus30binding tests passed initially, covering absent/cl
 Integration review also found and fixed stop-during-reconciliation behavior: the monitor now rechecks its stopped state before projecting/dispatching and between cleanup actions; an in-flight read returning after stop reports STOPPED_UNCONFIRMED and sends no new cleanup. An already-sent request remains uncertain and cannot be recalled. Added regression coverage.
 
 Final F6.4f validation: installed full Docker suite passed435tests+4subtests in5.62s, network disabled, no credentials. Eleven known SDK deprecation/cache warnings. Diff check passed. F6.4e featurebb7dbfe/merge0f15128 pushed before beginning this branch. First-test gate and monitor shutdown regression follow the same commit/merge/push workflow. No real-account reviewed bundle, approval or enabled launcher was created. Next concrete action: obtain remaining broker policy facts and prepare an actual read-only preview; actual deployment wiring/attended launch and broker acceptance remain unqualified.
+
+### F6.4g — offline attended launch-input preflight — DONE for offline slice (2026-10-22)
+
+Branch `feature/attended_launch_preflight`. Added a Docker-compatible CLI checking separately pinned ReviewedBundle and exact Entry files before credentials/network access. Validates account/contract, policy dates, bounded proposal age, supported protected BUY LIMIT geometry and price/quantity grids. Missing review is REVIEW_REQUIRED; malformed files have fixed diagnostics without echoed input. Successful output is INPUTS_VALIDATED_NOT_BROKER_READY, never broker qualification or authorization. No credential loading, network, ledger mutations or enable flag. Runbook: `deploy/attended-launch-preflight.md`.
+
+Scope is the offline composition-root prerequisite, not the full connected launcher. Remaining actual read-only lifecycle assembly, timeouts/private output and real-account reviewed facts are still outstanding. No broker policy facts were promoted and no orders sent.
+
+Validation:9targeted tests passed; newly built installed Docker gateway-check passed444tests+4subtests in5.71s with network disabled and no credentials. Eleven existing SDK/cache warnings. Full connected launcher remains pending; this feature makes its input boundary reviewable.
