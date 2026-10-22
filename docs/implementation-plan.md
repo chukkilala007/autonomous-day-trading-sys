@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding |
+| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled submission/management adapter |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | Probe033 plus actual Algo capture003: EURUSD TickSize0.00001/pip0.0001; identity/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Account TickSize observed and importer validated; executable price-grid applicability, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance remain |
-| Next concrete action | Obtain remaining reviewed broker inputs; implement fenced attended submission/management adapter. Trusted read-only binding exists; no order authorization |
+| Next concrete action | Obtain remaining reviewed broker inputs; qualify the first-test evidence path and integrate timed monitoring/recovery. Submission/management adapter exists but preserves the full capability gate; no order authorization |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed trusted-binding gateway-check:394passed+4subtests in5.23s;30new binding tests included |
+| Latest tests | Installed attended-adapter gateway-check:410passed+4subtests in5.51s;16new adapter tests included |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1071,3 +1071,13 @@ Fixed preview network-latency handling: retain original60second proposal expiry,
 Initial targeted tests exposed protocol integer-string normalization missing at the margin boundary; corrected to existing normalization conventions. Event-envelope fixture corrected to the installed SDK wrapper.30binding tests then passed, including real protobuf callback invalidation, immutable copied review data, race/fence/exposure/ledger rejection, latency and unchanged expiry. No actual broker run: remaining approved review facts are unavailable, so no valid real-account bundle or fabricated cost policy was installed. Orders remain disabled.
 
 Final verification: newly built installed `trading-gateway-check:trusted-binding` passed394tests+4subtests in5.23s without network/credentials. Eleven warnings: one SDK protobuf deprecation and ten Hypothesis read-only-cache fallbacks. Diff check passed. Tested feature committed, no-fast-forward merged and published under the prescribed workflow. Real-broker preview qualification remains blocked on reviewed policy facts; no broker connection or order submission occurred in this feature.
+
+### F6.4d — attended submission/management adapter — DONE for implementation/offline acceptance (2026-10-22)
+
+Branch `feature/attended_submission_management`. Added disabled Adapter composing trusted Binding, existing DemoTransport and ExecutionLedger/owned sender. Independently pinned Approval binds exact proposal/account/test/review/capability hashes and bounded loss/quantity/submission time. Revalidates fresh preview and production capability gate; persists account-wide attempt before transport UNKNOWN record/send. Neither new test ID, rejection, timeout nor restart permits retry. Callback projects actual execution envelopes into the ledger and invalidates preparation.
+
+Owned cancel/close requires fresh bracketed broker state matching authoritative ledger record/revision and the original submitted order/position, not owner alone. Action IDs are deterministic, uncertainty persisted before sending; acknowledgements never imply flat/settled. Original quote/account times preserved in preview/transport validation. No approval issuer, enabled launcher or actual orders.
+
+16targeted tests passed: disabled default, bounded submit, timeout/restart no-resend, approval/fence/capability mismatch, original owned cancellation/close, foreign/stale/missing/oversize cleanup rejection. Actual first-test qualification remains open because production capability requirements were preserved; no preparation fact was promoted to actual acceptance. Timed monitoring, settlement completion and recovery integration remain explicit outstanding work. See `deploy/attended-adapter.md`.
+
+Final F6.4d verification: installed `trading-gateway-check:attended-adapter` passed410tests+4subtests in5.51s without network or credentials. Eleven warnings were the SDK protobuf deprecation and Hypothesis read-only-cache fallbacks. Whitespace check passed. The usage interruption occurred after the suite finished; its completed result was recovered without restarting time-sensitive broker activity (none was running). Next: first-test qualification distinction and timed monitoring/recovery integration; no actual order authorization.
