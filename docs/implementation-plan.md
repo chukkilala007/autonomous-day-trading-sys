@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled adapter; F6.4e timed recovery; F6.4f first-test gate; F6.4g offline launch-input preflight |
+| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled adapter; F6.4e timed recovery; F6.4f first-test gate; F6.4g offline launch-input preflight; F6.4h connected read-only launcher |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | Probe033 plus actual Algo capture003: EURUSD TickSize0.00001/pip0.0001; identity/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Account TickSize observed and importer validated; executable price-grid applicability, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance remain |
-| Next concrete action | Implement bounded read-only Session/Stream/Binding launcher with timeout and private output; obtain remaining reviewed broker facts before actual bound-preview acceptance. Offline launch preflight is delivered; orders remain disabled |
+| Next concrete action | Obtain remaining reviewed broker facts and independently pinned bundle, then run connected read-only preview acceptance with a fresh proposal. Actual attended submission launcher and explicit bounded authorization remain pending; orders disabled |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed launch-preflight gateway-check:444passed+4subtests in5.71s; network disabled, no credentials |
+| Latest tests | Installed connected-preview implementation with current tests:453passed+4subtests in5.55s; network disabled, no credentials |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1105,3 +1105,11 @@ Branch `feature/attended_launch_preflight`. Added a Docker-compatible CLI checki
 Scope is the offline composition-root prerequisite, not the full connected launcher. Remaining actual read-only lifecycle assembly, timeouts/private output and real-account reviewed facts are still outstanding. No broker policy facts were promoted and no orders sent.
 
 Validation:9targeted tests passed; newly built installed Docker gateway-check passed444tests+4subtests in5.71s with network disabled and no credentials. Eleven existing SDK/cache warnings. Full connected launcher remains pending; this feature makes its input boundary reviewable.
+
+### F6.4h — connected read-only preview launcher — DONE for implementation/offline acceptance (2026-10-22)
+
+Branch `feature/connected_readonly_preview`. One-shot Docker-compatible composition of VerifiedClient, ReadOnlySession, Stream, Feed and Binding. Checks review/proposal before credentials, preserves original expiry, waits for authentication and a causal fresh quote, bounds collection30seconds and shutdown5seconds. Private exclusive0600 report with fixed failure classifications, no exception/credential echo. Retires callbacks, revokes readiness and releases database lock on completion/failure. No write transport, activation flag, proposal renewal or automatic preview retry. Runbook: `deploy/connected-readonly-preview.md`.
+
+Real broker acceptance remains blocked by missing independently reviewed policy facts/bundle. This feature does not promote synthetic evidence or authorize orders. Next: approved bundle and actual fresh read-only preview, followed by concrete bounded authorization and attended submission lifecycle wiring.
+
+Validation: initial7launcher tests passed; added quote-timeout/retired-callback and credential-redaction regressions. Full Docker suite against the installed connected-preview implementation, with current tests mounted read-only, passed453tests+4subtests in5.55s, network disabled and no credentials. Eleven existing SDK/cache warnings. No real broker connection or order was made. Feature follows commit, no-fast-forward merge and push workflow.
