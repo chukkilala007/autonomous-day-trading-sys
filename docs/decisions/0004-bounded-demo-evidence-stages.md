@@ -19,3 +19,7 @@ It records one submission instruction; never re-emits it after restart; cancels 
 ## Still required for an enabled controller
 
 An explicitly reviewed attended-test adapter must bind these instructions to the existing fenced durable transport/ownership ledger, enforce actual quote/valuation/policy/authorization at send time, and map broker evidence without caller assertions. That adapter and its independent qualification gate are **not implemented or enabled here**. Management timeout escalation and actual broker lifecycle acceptance remain open. Do not attach a generic callback to this rehearsal and call it qualified execution. Any enabled test remains subject to the bounded plan and explicit approval.
+
+## Implementation follow-up — 2026-10-22
+
+F6.4c binds actual read-only broker components; F6.4d supplies the disabled durable submission/owned-management adapter; F6.4e supplies timed reconciliation/cleanup. F6.4f adds the independent `FirstTestTransport` with an explicitly non-production Review and internally retained preview evidence. It does not invent first-fill observations or relax mandatory pre-trade facts. Production DemoTransport is unchanged. See `deploy/first-demo-qualification.md`. Reviewed real-account policy, actual bounded approval and broker lifecycle acceptance remain absent.

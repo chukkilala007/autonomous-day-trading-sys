@@ -56,7 +56,7 @@ class Binding:
         self._bundle_json=bundle.model_dump_json(); self.pin=approved_bundle_hash
         self.core_id=core_id; self.epoch=epoch; self.fence=Fence(db,session.account_id)
         self.economics=EconomicsCollector(session,now); self.revision=0; self.busy=False
-        self.failed_event=False
+        self.failed_event=False; self._preview_lease=None
         session.client.setMessageReceivedCallback(self.received)
 
     def received(self, _client, message):
@@ -105,6 +105,7 @@ class Binding:
     def preview(self, entry):
         if self.busy: raise ValueError('preview collection already running')
         self.busy=True
+        self._preview_lease=None
         try:
             entry=Entry.model_validate_json(entry.model_dump_json())
             bundle=ReviewedBundle.model_validate_json(self._bundle_json);p=bundle.policy
@@ -165,6 +166,7 @@ class Binding:
                 reconciled_flat=True,unresolved_commands=0,writer_fenced=True,connected=True)
             # Never roll an existing proposal expiry forward after network latency.
             result=prepare(entry,q,v,pre,now,proposal_created_at=entry.expires_at-timedelta(seconds=60))
+            self._preview_lease=canonical(dict(preview=result,metadata=raw,state=state,proposal_hash=digest(entry),bundle_hash=self.pin))
             return result
         finally:
             self.busy=False
