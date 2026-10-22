@@ -42,7 +42,7 @@ class Session:
     def __init__(self, client, tokens, account_id, now=time.time):
         if not str(account_id).isdigit() or int(account_id)<=0: raise ValueError('explicit account ID required')
         self.client=client; self.tokens=tokens; self.account_id=int(account_id); self.now=now
-        self.ready=False; self.error=None; self.generation=0; self.authenticated=None
+        self.ready=False; self.error=None; self.generation=0; self.authenticated=None; self.demo_binding=None
         client.setConnectedCallback(self.connected)
         client.setDisconnectedCallback(self.disconnected)
 
@@ -57,16 +57,16 @@ class Session:
         return MessageToDict(payload,preserving_proto_field_name=True)
 
     def disconnected(self, *_):
-        self.ready=False; self.generation+=1; self.error='DISCONNECTED'
+        self.ready=False; self.demo_binding=None; self.generation+=1; self.error='DISCONNECTED'
 
     def connected(self, *_):
-        self.ready=False; self.generation+=1
+        self.ready=False; self.demo_binding=None; self.generation+=1
         self.authenticated=self.authenticate(self.generation)
         self.authenticated.addErrback(self.failed)
 
     def failed(self, _failure):
         # Broker error descriptions and auth payloads can contain secrets.
-        self.ready=False; self.error='AUTHENTICATION_FAILED'
+        self.ready=False; self.demo_binding=None; self.error='AUTHENTICATION_FAILED'
         self.client.stopService()
         return None
 
@@ -79,10 +79,11 @@ class Session:
             response=yield self.wire('ProtoOARefreshTokenReq',refreshToken=credentials['refresh_token'])
             credentials=self.tokens.rotate(credentials,response,self.now())
         accounts=yield self.wire('ProtoOAGetAccountListByAccessTokenReq',accessToken=credentials['access_token'])
-        bind_demo(accounts.get('ctidTraderAccount',[]),self.account_id)
+        bound=bind_demo(accounts.get('ctidTraderAccount',[]),self.account_id)
         response=yield self.wire('ProtoOAAccountAuthReq',ctidTraderAccountId=self.account_id,accessToken=credentials['access_token'])
         if str(response.get('ctidTraderAccountId'))!=str(self.account_id): raise ValueError('account authentication mismatch')
         if generation != self.generation: raise ValueError('stale authentication')
+        self.demo_binding=dict(account_id=str(self.account_id), generation=generation, is_live=bound['isLive'])
         self.ready=True; self.error=None
 
     @defer.inlineCallbacks

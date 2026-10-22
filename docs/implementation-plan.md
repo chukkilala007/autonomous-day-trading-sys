@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary |
+| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | Probe033 plus actual Algo capture003: EURUSD TickSize0.00001/pip0.0001; identity/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Account TickSize observed and importer validated; executable price-grid applicability, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance remain |
-| Next concrete action | Obtain remaining reviewed broker inputs; implement trusted provider binding and fenced attended submission/management adapter. Read-only preview boundary exists; no order authorization |
+| Next concrete action | Obtain remaining reviewed broker inputs; implement fenced attended submission/management adapter. Trusted read-only binding exists; no order authorization |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed attended-preview gateway-check:364passed+4subtests in5.12s;23new preparation tests included |
+| Latest tests | Installed trusted-binding gateway-check:394passed+4subtests in5.23s;30new binding tests included |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1061,3 +1061,13 @@ Branch `feature/attended_demo_preview`. `execution.attended_preview.prepare` val
 Typed input claims are not authenticated evidence: trusted provider/review binding, durable one-attempt reservation, send-time revalidation, authorization and actual attended management transport remain unimplemented. This is a preparatory adapter boundary, not the completed attended submission adapter. The live preview remains blocked by incomplete reviewed pre-trade broker facts; no synthetic fixture was used as live evidence.
 
 Validation:23targeted tests passed; fixture decimal warnings corrected before installed-image verification. Fresh Docker gateway-check build passed364tests+4subtests in5.12s with network disabled and no credentials. Ten Hypothesis warnings reflect its read-only database fallback to memory; no test failed. Diff check passed. Runtime broker submission remains disabled.
+
+### F6.4c — trusted broker-data binding — DONE for implementation/offline acceptance (2026-10-22)
+
+Branch `feature/trusted_broker_preview_binding`. Added read-only Binding around the existing Session/Stream/Feed/EconomicsCollector, exact margin mapper, reviewed contract builder and preview. Its runtime method accepts only an Entry, deriving broker inputs and readiness internally. Session authentication retains generation-bound demo identity and revokes it on disconnect/failure. A deployment-pinned immutable reviewed bundle supplies approved cost/grid/protection/expiry facts; no caller-provided readiness or valuation is accepted. Fresh symbol/profile/volume checks, bracketed account money, flat reconciliation, same-generation causal quote, actual correlated1000unit margin, durable fence and empty first-test ledger checks guard the result. Non-spot broker events, malformed events and in-flight changes fail closed. No executable transport or order writes.
+
+Fixed preview network-latency handling: retain original60second proposal expiry, allow at most10seconds for collection, keep all dynamic data freshness at2seconds and expire the preview at the earliest input deadline. No expiry rolling. Runtime integration/trust-root instructions: `deploy/trusted-broker-preview.md`. Review pin integrity is not broker signature verification; deployment configuration and Python composition remain trusted. Used ledgers intentionally require a separate recovery workflow rather than inferring settlement from history.
+
+Initial targeted tests exposed protocol integer-string normalization missing at the margin boundary; corrected to existing normalization conventions. Event-envelope fixture corrected to the installed SDK wrapper.30binding tests then passed, including real protobuf callback invalidation, immutable copied review data, race/fence/exposure/ledger rejection, latency and unchanged expiry. No actual broker run: remaining approved review facts are unavailable, so no valid real-account bundle or fabricated cost policy was installed. Orders remain disabled.
+
+Final verification: newly built installed `trading-gateway-check:trusted-binding` passed394tests+4subtests in5.23s without network/credentials. Eleven warnings: one SDK protobuf deprecation and ten Hypothesis read-only-cache fallbacks. Diff check passed. Tested feature committed, no-fast-forward merged and published under the prescribed workflow. Real-broker preview qualification remains blocked on reviewed policy facts; no broker connection or order submission occurred in this feature.
