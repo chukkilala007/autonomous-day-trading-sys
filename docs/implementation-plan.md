@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | F5.2o compiled read-only Algo exporter/importer; F6.4a durable disabled bounded-test rehearsal and evidence-stage decision |
+| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | Probe033 plus actual Algo capture003: EURUSD TickSize0.00001/pip0.0001; identity/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Account TickSize observed and importer validated; executable price-grid applicability, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance remain |
-| Next concrete action | Review captured tick provenance and remaining pre-trade broker inputs, then implement attended adapter/preview under decision0004; do not promote order capabilities from metadata. No order authorization |
+| Next concrete action | Obtain remaining reviewed broker inputs; implement trusted provider binding and fenced attended submission/management adapter. Read-only preview boundary exists; no order authorization |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed gateway-check:341passed+4subtests in5.44s; exporter compiled against locked SDK with0warnings/errors |
+| Latest tests | Installed attended-preview gateway-check:364passed+4subtests in5.12s;23new preparation tests included |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1053,3 +1053,11 @@ Operator selected EURUSD after automation could not apply the native picker sele
 Remaining: independently review capture provenance before executable policy promotion, establish entry/protection grid applicability and remaining fee/settlement/protection facts; implement attended adapter and preview, then request concrete bounded-order authorization. Actual acceptance remains pending. Challenge003 is spent historical evidence; any new capture requires a fresh challenge and timely review.
 
 Validation for this evidence change:18importer regression tests passed in0.64s in Docker with network disabled. One harmless pytest cache warning occurred because the source mount was read-only. Actual capture review also passed. JSON parsed, public evidence contains no broker login/nonce/account ID or credentials, and git diff whitespace check passed. Runtime source and execution gates unchanged.
+
+### F6.4b — attended preparation boundary — DONE for read-only slice (2026-10-22)
+
+Branch `feature/attended_demo_preview`. `execution.attended_preview.prepare` validates strict demo identity, fresh two-second quote/account/reconciliation claims, fixed protected EURUSD BUY LIMIT geometry, exact60second proposed expiry, proposal-specific complete cost/margin rows and exactly1000units. Reuses existing sizing with USD5AND0.1%equity loss ceiling and a conservative10%equity free-margin reserve for this preparation slice. Returns exact prices/spread/margin/cost/loss, evidence hashes, preview hash and earliest input expiry. Missing profile/grid/protection/cost/expiry reviews, unknown exposure, unresolved commands, disconnection or missing fence are explicit blockers. It never authorizes, writes orders, creates broker requests or changes DemoTransport. Even passing inputs return PREPARED_NOT_AUTHORIZED.
+
+Typed input claims are not authenticated evidence: trusted provider/review binding, durable one-attempt reservation, send-time revalidation, authorization and actual attended management transport remain unimplemented. This is a preparatory adapter boundary, not the completed attended submission adapter. The live preview remains blocked by incomplete reviewed pre-trade broker facts; no synthetic fixture was used as live evidence.
+
+Validation:23targeted tests passed; fixture decimal warnings corrected before installed-image verification. Fresh Docker gateway-check build passed364tests+4subtests in5.12s with network disabled and no credentials. Ten Hypothesis warnings reflect its read-only database fallback to memory; no test failed. Diff check passed. Runtime broker submission remains disabled.
