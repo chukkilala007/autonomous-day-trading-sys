@@ -9,15 +9,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Item | Current value |
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
-| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled submission/management adapter |
+| Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled adapter; F6.4e timed recovery; F6.4f first-test gate |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | Probe033 plus actual Algo capture003: EURUSD TickSize0.00001/pip0.0001; identity/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Account TickSize observed and importer validated; executable price-grid applicability, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance remain |
-| Next concrete action | Obtain remaining reviewed broker inputs; qualify the first-test evidence path and integrate timed monitoring/recovery. Submission/management adapter exists but preserves the full capability gate; no order authorization |
+| Next concrete action | Obtain remaining reviewed broker inputs; supply reviewed broker policy facts, then perform read-only bound-preview acceptance and present a concrete bounded approval. Timed monitor and separate first-test gate are implemented but disabled |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed attended-adapter gateway-check:410passed+4subtests in5.51s;16new adapter tests included |
+| Latest tests | Installed first-demo gateway-check:435passed+4subtests in5.62s; timed recovery and independent qualification tested |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1087,3 +1087,13 @@ Final F6.4d verification: installed `trading-gateway-check:attended-adapter` pas
 Branch `feature/attended_timed_recovery`. Monitor never submits entries; it resumes an already-consumed account attempt using the bound Provider, full reconciled history, ledger and adapter. Cancels pending remainder at20seconds or after partial fill; closes unprotected exposure immediately and protected residual exposure by120seconds. Durable management IDs prevent retry after timeout/restart. Clock rollback latches halt; stale/foreign/incomplete/reconnect-raced observations inhibit actions. Complete requires terminal order, zero owned exposure and actual settlement evidence; an unfilled terminal result remains pending cost review and cannot qualify fills/fees. Contradictory post-completion exposure revokes completion. Optional one-second Twisted loop is disabled by default; stopping does not imply flat.
 
 Validation:13monitor tests and installed full Docker suite passed423tests+4subtests in6.27s with no network/credentials. Eleven known SDK/cache warnings. Clock, pending timeout, original cleanup, settlement completion and contradictory exposure cases passed. Monitor remains disabled; next feature is the independent first-test qualification gate.
+
+### F6.4f — independent first-demo qualification gate — DONE for offline acceptance (2026-10-22)
+
+Branch `feature/first_demo_qualification`. FirstTestTransport is a separately named narrow transport; production DemoTransport/CapabilityReport remain unchanged. Its non-production Review binds approved policy and protocol hashes and expressly says acceptance_observed=false. Binding retains an immutable serialized preview record only on successful collection, clearing it at each new attempt. Gate rechecks proposal/state/fence/identity/freshness, current quote/account time, exact1000unit geometry, reviewed grid, and broker UTC schedule/holidays through120seconds. Send requires the matching account-wide consumed Approval before inherited UNKNOWN-before-send journaling. No protocol fact is relabeled demo-observed.
+
+Eleven first-gate tests plus30binding tests passed initially, covering absent/closed schedules, cleanup-window closure, protocol mismatch, absent consumed approval, disabled state, changed review bundle, immutable returned-preview separation and rejection by production transport. Actual policy facts and human bounded approval remain external prerequisites; no enabled launcher or real broker write. Runbook: `deploy/first-demo-qualification.md`.
+
+Integration review also found and fixed stop-during-reconciliation behavior: the monitor now rechecks its stopped state before projecting/dispatching and between cleanup actions; an in-flight read returning after stop reports STOPPED_UNCONFIRMED and sends no new cleanup. An already-sent request remains uncertain and cannot be recalled. Added regression coverage.
+
+Final F6.4f validation: installed full Docker suite passed435tests+4subtests in5.62s, network disabled, no credentials. Eleven known SDK deprecation/cache warnings. Diff check passed. F6.4e featurebb7dbfe/merge0f15128 pushed before beginning this branch. First-test gate and monitor shutdown regression follow the same commit/merge/push workflow. No real-account reviewed bundle, approval or enabled launcher was created. Next concrete action: obtain remaining broker policy facts and prepare an actual read-only preview; actual deployment wiring/attended launch and broker acceptance remain unqualified.

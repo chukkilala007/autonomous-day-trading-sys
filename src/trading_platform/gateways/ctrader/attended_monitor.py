@@ -43,6 +43,8 @@ class Monitor:
             if attempt['approval_hash']!=a.approved_hash: raise ValueError('foreign consumed approval')
             a._check();generation=a.gateway.session.generation;revision=a.binding.revision
             bundle=yield self.provider.reconcile(reconnect=generation!=self.generation)
+            if not self.enabled:
+                state['status']='STOPPED_UNCONFIRMED';return self._save(state)
             a._check()
             if a.gateway.session.generation!=generation or a.binding.revision!=revision:
                 raise ValueError('broker changed during monitor reconciliation')
@@ -80,6 +82,8 @@ class Monitor:
             if pending and (elapsed>=20 or filled>0): actions.append(('cancel',send['broker_order_id']))
             if opened and (not position['protected'] or elapsed>=120): actions.append(('close',str(pid)))
             for action,target in actions:
+                if not self.enabled:
+                    state['status']='STOPPED_UNCONFIRMED';return self._save(state)
                 key=digest(dict(approval=a.approval,action=action,target=str(target)))
                 if self._read('gateway-management:'+key) is None:
                     yield a.manage(action,str(target))

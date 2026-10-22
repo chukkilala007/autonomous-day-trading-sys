@@ -27,3 +27,7 @@ Production DemoTransport capability checks are unchanged. The adapter deliberate
 ## Timed monitor integration
 
 `attended_monitor.Monitor(adapter, provider, now=clock, enabled=False)` binds the actual Provider to the adapter/session/database and monitors only an existing durable attempt. `tick()` reconciles, projects broker history, checkpoints evidenced settlements and schedules owned cleanup. `start(clock)` optionally runs a one-second Twisted loop. It never calls submit, and a restart never creates another entry. Unknown acknowledgement and cleanup outcomes remain pending. Provider failures inhibit actions; review a clock halt or contradictory completed exposure manually. An unfilled terminal order is explicitly marked TERMINAL_UNFILLED_COST_REVIEW_REQUIRED until cancellation-cost conventions are resolved. Loop stop is not flattening; shutdown with exposure must retain an attended operator/recovery path.
+
+## First-test qualification follow-up
+
+The separate [FirstTestTransport](first-demo-qualification.md) now implements the narrow evidence-stage path described above. It can be composed with this Adapter/Monitor after reviewed pre-trade facts and actual bounded authorization exist. Production DemoTransport remains unchanged; no actual approval or activation is supplied.

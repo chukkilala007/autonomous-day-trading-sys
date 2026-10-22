@@ -109,3 +109,10 @@ def test_cleanup_timeout_is_not_retried(adapter):
     x.client.send=timeout
     assert result(m.tick())['status']=='RECONCILIATION_REQUIRED'
     result(m.tick());assert len(calls)==2
+
+
+def test_stop_during_pending_read_prevents_later_cleanup_send(adapter):
+    x,a,calls,m,p,b=setup(adapter);x.clock[0]=T+timedelta(seconds=20)
+    pending=Deferred();p.reconcile=lambda **kw:pending
+    d=m.tick();m.stop();pending.callback(b())
+    assert result(d)['status']=='STOPPED_UNCONFIRMED' and len(calls)==1
