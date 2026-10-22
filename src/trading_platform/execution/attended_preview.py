@@ -43,7 +43,7 @@ class Preconditions(Record):
     connected: bool
 
 
-def prepare(entry, quote, valuation, preconditions, now):
+def prepare(entry, quote, valuation, preconditions, now, *, proposal_created_at=None):
     """Return a hash-bound, expiring preview; never permission to submit."""
     now = utc(now)
     entry = Entry.model_validate_json(entry.model_dump_json())
@@ -58,7 +58,10 @@ def prepare(entry, quote, valuation, preconditions, now):
             or entry.target is None or entry.worst_fill != entry.entry
             or not entry.stop < entry.entry < entry.target):
         raise ValueError('protected EURUSD BUY LIMIT required')
-    if entry.expires_at != now + timedelta(seconds=60):
+    created = now if proposal_created_at is None else utc(proposal_created_at)
+    if not 0 <= (now-created).total_seconds() <= 10:
+        raise ValueError('proposal collection window expired')
+    if entry.expires_at != created + timedelta(seconds=60):
         raise ValueError('fresh exact 60-second proposed expiry required')
     if not 0 <= (now-quote.observed_at).total_seconds() <= 2:
         raise ValueError('stale quote')
@@ -95,7 +98,7 @@ def prepare(entry, quote, valuation, preconditions, now):
                   contract.exact_costs.observed_at+timedelta(seconds=2), contract.verified_at+timedelta(seconds=30))
     if expires <= now:
         blockers.append('PREVIEW_ALREADY_EXPIRED')
-    body = dict(mode='attended_preparation', account_id=p.account_id, created_at=now,
+    body = dict(mode='attended_preparation', account_id=p.account_id, created_at=now, proposal_created_at=created,
                 valid_until=expires, entry=entry, quantity=result.quantity, bid=quote.bid, ask=quote.ask,
                 spread=quote.ask-quote.bid, planned_loss=result.risk, loss_ceiling=budget,
                 modeled_round_trip_costs=rows[0].costs, margin=result.margin,
