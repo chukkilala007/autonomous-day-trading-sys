@@ -60,3 +60,7 @@ The function has no broker client, database writes or submission switch. Input h
 ## Trusted binding implementation — 2026-10-22
 
 The read-only preview now has a [trusted broker-data binding](trusted-broker-preview.md), independently deriving dynamic inputs from the account-bound session/feed, bracketed economics, margin response and local fence/ledger. It requires a separately approved review-bundle digest. No real-account bundle is supplied while broker facts remain missing. Submission/management adapter and bounded authorization remain outstanding; a successful bound preview still cannot submit.
+
+## Submission/management adapter — 2026-10-22
+
+The [disabled attended adapter](attended-adapter.md) now implements pinned approval, fresh bound preview, account-wide one-attempt consumption and owned cancel/close dispatch through existing durable transports. It preserves full production capability requirements. This does not yet resolve the first-test evidence path or integrate timed monitoring/recovery; no submission authorization or real orders.

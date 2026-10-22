@@ -99,7 +99,7 @@ def prepare(entry, quote, valuation, preconditions, now, *, proposal_created_at=
     if expires <= now:
         blockers.append('PREVIEW_ALREADY_EXPIRED')
     body = dict(mode='attended_preparation', account_id=p.account_id, created_at=now, proposal_created_at=created,
-                valid_until=expires, entry=entry, quantity=result.quantity, bid=quote.bid, ask=quote.ask,
+                valid_until=expires, account_observed_at=valuation.observed_at, entry=entry, quantity=result.quantity, bid=quote.bid, ask=quote.ask,
                 spread=quote.ask-quote.bid, planned_loss=result.risk, loss_ceiling=budget,
                 modeled_round_trip_costs=rows[0].costs, margin=result.margin,
                 margin_reserve_fraction=Decimal('0.1'), blockers=blockers,
