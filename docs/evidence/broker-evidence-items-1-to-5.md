@@ -2,11 +2,11 @@
 
 Reviewed 2026-10-21 using the supplied **FxPro cTrader EURUSD Contract Spec Guide.md** as research guidance, not as authorization to trade or send messages. Fresh account-bound Open API probe031 collected at21:51:42UTC. Sanitized values and source hash: [contract facts](broker-contract-facts-031.json). Account48232468; USD; orders disabled. No capability promotion or execution policy change.
 
-## 1. Exact EURUSD price increment — still open
+## 1. Account TickSize observed; executable-grid acceptance remains open
 
 The selected account reports digits5/pipPosition4. Those are display/pip fields, not independent proof of the executable price grid. The connected MCP symbol-details response also exposes digits and pip size, but no tick-size field or account binding. It cannot close this question.
 
-There is a better route than guessing from digits: the official Algo API exposes [Symbol.TickSize](https://help.ctrader.com/ctrader-algo/references/MarketData/Symbols/Symbol/TickSize/). Capture that property on the selected demo account with account identity, symbol and timestamp. This investigation did not run a cBot or obtain that value. Pending-limit and protection-grid applicability still needs account documentation or bounded acceptance evidence.
+There is a better route than guessing from digits: the official Algo API exposes [Symbol.TickSize](https://help.ctrader.com/ctrader-algo/references/MarketData/Symbols/Symbol/TickSize/). Capture that property on the selected demo account with account identity, symbol and timestamp. The initial investigation did not obtain that value. On2026-10-22 the approved local exporter ran on the selected demo account and reported TickSize0.00001 and PipSize0.0001; identity, nonce, freshness and volume checks passed against fresh probe033. See [actual capture evidence](algo-contract-capture-003.json). The native log showed the one-shot instance stop; no orders were sent. Import classification remains operator_capture_pending_review and no executable capability was promoted. Pending-limit and protection-grid applicability still needs account documentation or bounded acceptance evidence.
 
 ## 2. Contract, fees, conversion and settlement — substantially narrowed, not complete
 
@@ -50,4 +50,4 @@ The current [FxPro GOLD page](https://www.fxpro.com/trading/metals/gold) says100
 
 ## Next evidence to obtain
 
-Capture account-bound Algo TickSize; obtain narrow broker answers on rounding/partial-fill fees, TP triggering, price/expiry restrictions and the gold contradiction. Use an explicitly authorized test later for actual order/protection/fee/settlement acceptance. No broker message or trade was sent in this investigation.
+Account-bound Algo TickSize has been captured and validated. Review its provenance and obtain narrow broker answers on rounding/partial-fill fees, TP triggering, price/expiry restrictions and the gold contradiction. Use an explicitly authorized test later for actual order/protection/fee/settlement acceptance. No broker message or trade was sent in this investigation.

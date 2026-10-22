@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-21. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-22. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -11,15 +11,15 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
 | Latest features | F5.2o compiled read-only Algo exporter/importer; F6.4a durable disabled bounded-test rehearsal and evidence-stage decision |
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
-| Actual qualification | Probe030 and execution-review030: EURUSD has no observed profile restrictions; LIMIT/GTD SDK mapping matches. No execution capability promoted |
+| Actual qualification | Probe033 plus actual Algo capture003: EURUSD TickSize0.00001/pip0.0001; identity/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
-| Current blocker | Exact account tick, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance; see unsent broker evidence request |
-| Next concrete action | Await action-time confirmation to install/run local exporter on demo broker login10645472; refresh challenge if expired and import actual capture. Then reviewed broker inputs and attended adapter/preview; no order authorization |
+| Current blocker | Account TickSize observed and importer validated; executable price-grid applicability, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance remain |
+| Next concrete action | Review captured tick provenance and remaining pre-trade broker inputs, then implement attended adapter/preview under decision0004; do not promote order capabilities from metadata. No order authorization |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed gateway-check:341passed+4subtests in5.44s; exporter compiled against locked SDK with0warnings/errors |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
-| Publication | Algo exporter feature4c48d3d/merge dbb125e pushed. Disabled rehearsal feature follows tests and prescribed merge/push; runtime order gates unchanged |
+| Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
 Publication history: earlier implementation commits remain merged. Current acceptance changes are documentation/evidence only and do not enable broker orders.
 
@@ -1041,3 +1041,15 @@ Branch `feature/bounded_demo_rehearsal`. Plan fixed to EURUSD1000unit protected 
 Evidence-stage decision0004 separates mandatory pre-trade facts from first-test acceptance results; production capability gate remains unchanged. Real attended adapter, runtime evidence binding and approved preview remain open. Initial18targeted rehearsal/recovery/supervisor tests passed; added late-exposure regression and corrected a test fixture decimal-type warning. Full newly built installed image passed341tests+4subtests in5.44s. No broker orders or capability promotion.
 
 Exporter actual capture is pending computer-use action-time permission for locally built software. Source, locked package and runbook committed; private named artifact `var/algo-exporter/ContractSpecExporter.algo` SHA256e2831fdd2463e618f1546509d95ed5d234a523bfd73ded936a8cf59b93f9af16. Matching native FxPro demo login verified; no installation/run performed. Challenge001 is private and expires after1hour; refresh against a new probe when needed. No account tick has yet been inferred or accepted.
+
+### F5.2o actual capture continuation — DONE for observation/import slice (2026-10-22)
+
+Branch `feature/algo_contract_capture_acceptance`. Operator explicitly authorized installation and execution of the read-only exporter. Approved artifact opened through Finder Open With FxPro cTrader (avoiding the unrelated default OneFunded app). The local launch dialog identifies the selected demo broker login; cloud execution/synchronization remain disabled. No Start action or capture yet. Native symbol picker filters EURUSD but ignores automated mouse and keyboard selection; operator asked to select EURUSD only and leave Start untouched. This supersedes the earlier permission-pending handoff.
+
+After the usage-limit interruption, fresh read-only probe033 returned COLLECTED with orders disabled. Private challenge003 binds probe033 and expires at2026-10-22T09:07:25.800570Z; renew if expired. Previous challenges/captures must not be reused as fresh evidence. Next: verify EURUSD and local mode, enter challenge broker login/nonce, run the approved exporter, save actual JSON and validate within five minutes. TickSize remains unknown; no capability promotion. Probe034 is next; shadow026 unchanged.
+
+Operator selected EURUSD after automation could not apply the native picker selection. Verified EURUSD, local mode and selected demo login in the launch dialog; entered fresh challenge003 parameters and ran the approved exporter. Native Logs showed start08:08:13.020Z, metadata08:08:14.1086733Z and automatic stop08:08:14.197Z. Actual TickSize1E-05 (=0.00001), pip0.0001, lot100000, minimum/step1000, maximum50000000. Private capture003 preserved exact emitted JSON. Docker importer passed within five minutes against probe033/challenge003; public sanitized evidence `docs/evidence/algo-contract-capture-003.json`. Account-bound metadata observation is now obtained; machine classification remains operator_capture_pending_review, qualification_complete=false, orders_enabled=false. This supersedes the selection-blocked intermediate status above. No actual order sent; cloud synchronization remained disabled.
+
+Remaining: independently review capture provenance before executable policy promotion, establish entry/protection grid applicability and remaining fee/settlement/protection facts; implement attended adapter and preview, then request concrete bounded-order authorization. Actual acceptance remains pending. Challenge003 is spent historical evidence; any new capture requires a fresh challenge and timely review.
+
+Validation for this evidence change:18importer regression tests passed in0.64s in Docker with network disabled. One harmless pytest cache warning occurred because the source mount was read-only. Actual capture review also passed. JSON parsed, public evidence contains no broker login/nonce/account ID or credentials, and git diff whitespace check passed. Runtime source and execution gates unchanged.

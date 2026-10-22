@@ -1,0 +1,23 @@
+{
+  "capture_hash": "e3ffb011e9d0cc018f03ee757339047c2090771ee958a69d418c06688f17e085",
+  "challenge_hash": "94b8c99c6679ae6a20e74dd7a63399f8f80bb2ce223e3bd63d55c5b26c13c1fe",
+  "classification": "operator_capture_pending_review",
+  "identity_checks_passed": true,
+  "limitation": "Local JSON is not broker-signed evidence. Verify capture provenance before policy promotion; entry/protection grid applicability and execution behavior remain separate.",
+  "observed_at": "2026-10-22T08:08:14.108673+00:00",
+  "orders_enabled": false,
+  "probe_hash": "738d60a156eaa24c4813861915141a59d051b06e75791a8dc68512c45546a32e",
+  "qualification_complete": false,
+  "symbol": "EURUSD",
+  "tick_size": "0.00001",
+  "pip_size": "0.0001",
+  "lot_size": "100000",
+  "minimum": "1000",
+  "maximum": "50000000",
+  "step": "1000",
+  "artifact_sha256": "e2831fdd2463e618f1546509d95ed5d234a523bfd73ded936a8cf59b93f9af16",
+  "provenance": "Observed directly in native FxPro cTrader 5.9.154 Logs after approved local one-shot run. Selected demo identity matched private probe033 and challenge003. Importer passed within five minutes.",
+  "started_at": "2026-10-22T08:08:13.020Z",
+  "stopped_at": "2026-10-22T08:08:14.197Z",
+  "cloud_synchronisation_enabled": false
+}
