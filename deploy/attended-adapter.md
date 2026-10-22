@@ -23,3 +23,7 @@ The entry approval deadline applies only to entry. Its explicitly scoped owned c
 ## Remaining activation boundary
 
 Production DemoTransport capability checks are unchanged. The adapter deliberately does not relabel preparation documents as actual demo evidence. Missing broker qualification still blocks submission, even with an Approval. A narrower first-test qualification path, if needed to collect first-fill evidence, requires its own implementation and review under decision0004. This feature implements transport orchestration; it does not resolve that evidence-stage distinction or authorize actual trading.
+
+## Timed monitor integration
+
+`attended_monitor.Monitor(adapter, provider, now=clock, enabled=False)` binds the actual Provider to the adapter/session/database and monitors only an existing durable attempt. `tick()` reconciles, projects broker history, checkpoints evidenced settlements and schedules owned cleanup. `start(clock)` optionally runs a one-second Twisted loop. It never calls submit, and a restart never creates another entry. Unknown acknowledgement and cleanup outcomes remain pending. Provider failures inhibit actions; review a clock halt or contradictory completed exposure manually. An unfilled terminal order is explicitly marked TERMINAL_UNFILLED_COST_REVIEW_REQUIRED until cancellation-cost conventions are resolved. Loop stop is not flattening; shutdown with exposure must retain an attended operator/recovery path.
