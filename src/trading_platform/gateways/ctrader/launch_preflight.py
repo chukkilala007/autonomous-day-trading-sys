@@ -17,6 +17,8 @@ def check(bundle, entry, *, account_id, approved_bundle_hash, now):
     if (policy.account_id != account_id
             or policy.currency != 'USD' or policy.quote_currency != 'USD'):
         blockers.append('UNSUPPORTED_ACCOUNT_CONTRACT')
+    if bundle.broker_profile is not None and not bundle.broker_profile.observed_at <= now < bundle.broker_profile.valid_until:
+        blockers.append('BROKER_PROFILE_NOT_CURRENT')
     if not policy.observed_at <= now < policy.valid_until:
         blockers.append('POLICY_NOT_CURRENT')
     if (entry.instrument != policy.instrument or entry.side != 'buy'

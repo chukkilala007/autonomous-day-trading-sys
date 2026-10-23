@@ -23,7 +23,7 @@ def test_discovery_refreshes_private_tokens_and_filters_live():
 
 def test_probe_collects_only_read_requests_without_claiming_qualification():
     trader,rec,pnl,assets=runpy.run_path('tests/broker/test_economics.py')['fixture']()
-    session=SimpleNamespace(account_id=12,generation=1,ready=True);sent=[]
+    session=SimpleNamespace(account_id=12,generation=1,ready=True,demo_binding=dict(account_id='12',generation=1,is_live=False));sent=[]
     def read(name,**fields):
         sent.append(name)
         values={'ProtoOASymbolsListReq':dict(ctidTraderAccountId='12',symbol=[dict(symbolId='1',symbolName='EURUSD')]),

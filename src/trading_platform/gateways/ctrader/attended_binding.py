@@ -20,6 +20,7 @@ from .economics import EconomicsCollector
 from .normalization import integer, units, wire_volume
 from .read_only_session import ReadOnlySession
 from .orders import Fence
+from .broker_profile import BrokerProfile, demo_identity
 
 
 class ReviewedBundle(Record):
@@ -33,6 +34,8 @@ class ReviewedBundle(Record):
     profile: Literal['EURUSD_USD_absolute_protected_buy_limit_gtd', 'USD_linear_absolute_protected_buy_limit_gtd']
     quantity: Positive = '1000'
     contract_value_review: Hash | None = None
+    broker_profile: BrokerProfile | None = None
+    broker_profile_hash: Hash | None = None
 
     @model_validator(mode='after')
     def bounded_profile(self):
@@ -41,6 +44,18 @@ class ReviewedBundle(Record):
                 raise ValueError('legacy EURUSD profile changed')
         elif self.contract_value_review is None or 'quantity' not in self.model_fields_set:
             raise ValueError('explicit quantity and contract value review required')
+        if (self.broker_profile is None) != (self.broker_profile_hash is None):
+            raise ValueError('profile and independent profile pin required together')
+        if self.broker_profile is not None:
+            bp=self.broker_profile; p=self.policy
+            if (digest(bp)!=self.broker_profile_hash or bp.identity.environment!='demo'
+                    or bp.identity.account_id!=p.account_id or bp.identity.currency!=p.currency
+                    or bp.identity.account_type!='HEDGED'):
+                raise ValueError('broker profile/policy identity mismatch')
+            matches=[m for m in bp.symbols if m.instrument==p.instrument]
+            if len(matches)!=1 or any(getattr(matches[0],k)!=getattr(p,k) for k in
+                    ('symbol_id','quote_currency','tick','minimum','maximum','step','contract_value_per_unit')):
+                raise ValueError('broker profile/policy contract mismatch')
         wire_volume(self.quantity)
         if not self.policy.minimum <= self.quantity <= self.policy.maximum or (self.quantity-self.policy.minimum) % self.policy.step:
             raise ValueError('reviewed quantity outside contract grid')
@@ -132,7 +147,8 @@ class Binding:
             if not 0<=(start-created).total_seconds()<=10: raise ValueError('proposal creation window')
             if not p.observed_at<=start<p.valid_until: raise ValueError('reviewed policy expired')
             symbols=yield self.session.read('ProtoOASymbolsListReq')
-            candidates=[r for r in symbols.get('symbol',[]) if r.get('symbolName')==p.instrument]
+            native=p.instrument if bundle.broker_profile is None else next(m.native_symbol for m in bundle.broker_profile.symbols if m.instrument==p.instrument)
+            candidates=[r for r in symbols.get('symbol',[]) if r.get('symbolName')==native]
             if (str(symbols.get('ctidTraderAccountId'))!=p.account_id or len(candidates)!=1
                     or integer(candidates[0]['symbolId'])!=p.symbol_id):
                 raise ValueError('broker symbol mapping mismatch')
@@ -158,9 +174,18 @@ class Binding:
             now=self.now()
             if self._state()!=state: raise ValueError('session/event/fence changed during collection')
             trader=economics['trader'];current=economics['reconciliation']
-            if (trader.get('brokerName')!='FxPro' or trader.get('accessRights')!='FULL_ACCESS'
+            if ((bundle.broker_profile is None and trader.get('brokerName')!='FxPro') or trader.get('accessRights')!='FULL_ACCESS'
                     or trader.get('isLimitedRisk') is not False):
                 raise ValueError('unsupported broker account profile')
+            if bundle.broker_profile is not None:
+                actual=demo_identity(economics,account=self.session.account_id,
+                                     binding=self.session.demo_binding,generation=self.session.generation)
+                bundle.broker_profile.verify(authenticated_identity=actual,
+                    approved_hash=bundle.broker_profile_hash,now=now)
+                assets=self.economics.assets.get('asset',[])
+                quote=[a for a in assets if str(a['assetId'])==str(candidates[0].get('quoteAssetId'))]
+                if len(quote)!=1 or quote[0]['name']!=p.quote_currency:
+                    raise ValueError('broker quote currency mismatch')
             if 'order' not in current or 'position' not in current:
                 # Protobuf omits empty repeated fields: the correlated reconcile response
                 # is complete by protocol; absence is an empty list here, not history proof.
@@ -176,7 +201,7 @@ class Binding:
                 observed_at=economics['observed_at'],classification='demo_observed',evidence_hash=economics['evidence_hash'],
                 **economics['account'],history_complete=True,external_exposure=False,contracts={p.instrument:contract})))
             pre=Preconditions(account_id=p.account_id,is_live=False,observed_at=utc(economics['observed_at']),
-                valid_until=p.valid_until,proposal_hash=digest(entry),account_profile_review=digest([trader,metadata,symbols]),
+                valid_until=min(p.valid_until,bundle.broker_profile.valid_until) if bundle.broker_profile else p.valid_until,proposal_hash=digest(entry),account_profile_review=digest([trader,metadata,symbols]),
                 price_grid_review=bundle.price_grid_review,protection_review=bundle.protection_review,
                 costs_review=bundle.costs_review,entry_expiry_review=bundle.entry_expiry_review,
                 source_hash=bundle.source_hash,image_digest=bundle.image_digest,policy_hash=digest(p),

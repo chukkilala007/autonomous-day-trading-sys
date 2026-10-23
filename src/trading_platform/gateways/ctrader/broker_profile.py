@@ -110,3 +110,44 @@ class BrokerProfile(Record):
                         and e.observed_at <= utc(now) < e.valid_until):
                     return e.state
         return 'unknown'
+
+
+def demo_identity(economics, *, account, binding, generation):
+    """Normalize correlated broker economics plus authenticated demo binding.
+
+    Live sessions are deliberately unsupported by this integration.
+    """
+    if binding != dict(account_id=str(account), generation=generation, is_live=False):
+        raise ValueError('authenticated demo binding required')
+    trader = economics['trader']
+    if (str(trader.get('ctidTraderAccountId')) != str(account)
+            or economics.get('account_id') != str(account)):
+        raise ValueError('foreign economics identity')
+    return AccountIdentity(broker=trader['brokerName'], account_id=str(account), environment='demo',
+                           currency=economics['account']['currency'], account_type=trader['accountType'])
+
+
+class CaptureScope(Record):
+    """Discovery mandate without unknown tick/value prerequisites."""
+    version: Literal[1] = 1
+    identity: AccountIdentity
+    instrument: Name
+    native_symbol: Name
+    symbol_id: int = Field(gt=0)
+    quote_currency: Name
+    observed_at: Time
+    valid_until: Time
+
+    @model_validator(mode='after')
+    def interval(self):
+        if self.identity.environment != 'demo' or self.valid_until <= self.observed_at:
+            raise ValueError('invalid demo capture scope')
+        return self
+
+    def verify(self, identity, pin, now):
+        scope = CaptureScope.model_validate_json(self.model_dump_json())
+        if digest(scope) != pin or scope.identity != identity:
+            raise ValueError('capture scope identity/pin mismatch')
+        if not scope.observed_at <= utc(now) < scope.valid_until:
+            raise ValueError('capture scope outside validity')
+        return scope

@@ -18,6 +18,15 @@ namespace cAlgo.Robots
         [Parameter("Expected symbol", DefaultValue = "")]
         public string ExpectedSymbol { get; set; }
 
+        [Parameter("Expected broker", DefaultValue = "")]
+        public string ExpectedBroker { get; set; }
+        [Parameter("Expected account currency", DefaultValue = "")]
+        public string ExpectedCurrency { get; set; }
+        [Parameter("Expected quote currency", DefaultValue = "")]
+        public string ExpectedQuoteCurrency { get; set; }
+        [Parameter("Capture scope hash", DefaultValue = "")]
+        public string ScopeHash { get; set; }
+
         private static string Exact(double value) => value.ToString("R", CultureInfo.InvariantCulture);
 
         protected override void OnStart()
@@ -25,9 +34,11 @@ namespace cAlgo.Robots
             try
             {
                 if (Account.IsLive || RunningMode != RunningMode.RealTime || SymbolName != ExpectedSymbol
-                    || (ExpectedSymbol != "EURUSD" && ExpectedSymbol != "#USNDAQ100")
-                    || Symbol.QuoteAsset.Name != "USD"
-                    || Account.BrokerName != "FxPro" || Account.Asset.Name != "USD"
+                    || string.IsNullOrWhiteSpace(ExpectedSymbol) || string.IsNullOrWhiteSpace(ExpectedBroker)
+                    || string.IsNullOrWhiteSpace(ExpectedCurrency) || string.IsNullOrWhiteSpace(ExpectedQuoteCurrency)
+                    || Symbol.QuoteAsset.Name != ExpectedQuoteCurrency
+                    || Account.BrokerName != ExpectedBroker || Account.Asset.Name != ExpectedCurrency
+                    || !System.Text.RegularExpressions.Regex.IsMatch(ScopeHash ?? "", "\\A[0-9a-f]{64}\\z")
                     || Account.Number.ToString(CultureInfo.InvariantCulture) != ExpectedLogin
                     || !System.Text.RegularExpressions.Regex.IsMatch(CaptureNonce ?? "", "\\A[0-9a-f]{32}\\z"))
                 {
@@ -36,7 +47,7 @@ namespace cAlgo.Robots
                 }
                 var record = new
                 {
-                    format = 2, source = "ctrader_algo_contract_exporter_v2", nonce = CaptureNonce,
+                    format = 3, source = "ctrader_algo_contract_exporter_v3", nonce = CaptureNonce, scope_hash = ScopeHash,
                     observed_at = Server.TimeInUtc.ToString("O", CultureInfo.InvariantCulture),
                     is_live = Account.IsLive, running_mode = RunningMode.ToString(),
                     broker_login = ExpectedLogin, broker = Account.BrokerName, currency = Account.Asset.Name,
