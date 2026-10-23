@@ -1,0 +1,43 @@
+{
+  "candidate_value_per_unit_per_price": "1",
+  "capture_hash": "c491d93558b0b973a72c172eb0317863d45eb80c84d03b9e38ecd14980522c3d",
+  "challenge_hash": "8745aad350c32004b16b90748c78612775eb745503fe5a798d988530bc2e0546",
+  "classification": "operator_capture_pending_review",
+  "identity_checks_passed": true,
+  "limitation": "Local JSON is not broker-signed evidence. Verify capture provenance before policy promotion; entry/protection grid applicability and execution behavior remain separate.",
+  "monetary_value_classification": "startup_snapshot_pending_review",
+  "observed_at": "2026-10-23T15:20:34.294345+00:00",
+  "orders_enabled": false,
+  "pip_value": "1",
+  "probe_hash": "77e03b1f747ed24987eae8169f72b36641d852fb1fc19ed509c347f9904f9823",
+  "qualification_complete": false,
+  "quote_currency": "USD",
+  "symbol": "#USNDAQ100",
+  "tick_size": "0.01",
+  "tick_value": "0.01",
+  "format": 1,
+  "capture_method": "observed_native_FxPro_local_exporter_log",
+  "artifact_sha256": "a4e4c48a88c9ce0a93c8fa8649748a339ca54952e817570f0e37d85a395408b8",
+  "started_at": "2026-10-23T15:20:32.286Z",
+  "stopped_at": "2026-10-23T15:20:34.408Z",
+  "cloud_synchronization_enabled": false,
+  "contract": {
+    "symbol": "#USNDAQ100",
+    "currency": "USD",
+    "quote_currency": "USD",
+    "tick_size": "0.01",
+    "tick_value": "0.01",
+    "pip_size": "1",
+    "pip_value": "1",
+    "lot_size": "1",
+    "minimum": "0.01",
+    "maximum": "500",
+    "step": "0.01"
+  },
+  "source_files_sha256": {
+    "probe-036.json": "3dc74392629e5443870a8992fcb1d766b486e47c911badcb2273a1fd5e5669f0",
+    "algo-challenge-004.json": "511f0efb63bfb5a67aa45cf8201214b265168ad3b162a070619e798b647fede8",
+    "algo-capture-004.json": "0555b5db70eb7f07d7abcb375b2af936fc7024af80a60374c7553d5b971a31b8",
+    "algo-review-004.json": "39f9f258562556ab588e23e1ee4c8becdf4152bc08a6e1bfe38ce11d1073b1ac"
+  }
+}
