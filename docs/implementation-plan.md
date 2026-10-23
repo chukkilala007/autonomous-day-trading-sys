@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-22. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-23. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -14,7 +14,7 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Actual qualification | Probe033 plus actual Algo capture003: EURUSD TickSize0.00001/pip0.0001; identity/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Account TickSize observed and importer validated; executable price-grid applicability, complete cost/settlement conventions, attached protection semantics and actual LIMIT/GTD acceptance remain |
-| Next concrete action | Obtain remaining reviewed broker facts and independently pinned bundle, then run connected read-only preview acceptance with a fresh proposal. Actual attended submission launcher and explicit bounded authorization remain pending; orders disabled |
+| Next concrete action | NAS100 alternative identified as #USNDAQ100 (1107). Next: account-bound TickSize/point-value evidence and configurable attended symbol/quantity profile; existing path is EURUSD-only. Actual bounded authorization remains pending; orders disabled |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed connected-preview implementation with current tests:453passed+4subtests in5.55s; network disabled, no credentials |
@@ -1113,3 +1113,9 @@ Branch `feature/connected_readonly_preview`. One-shot Docker-compatible composit
 Real broker acceptance remains blocked by missing independently reviewed policy facts/bundle. This feature does not promote synthetic evidence or authorize orders. Next: approved bundle and actual fresh read-only preview, followed by concrete bounded authorization and attended submission lifecycle wiring.
 
 Validation: initial7launcher tests passed; added quote-timeout/retired-callback and credential-redaction regressions. Full Docker suite against the installed connected-preview implementation, with current tests mounted read-only, passed453tests+4subtests in5.55s, network disabled and no credentials. Eleven existing SDK/cache warnings. No real broker connection or order was made. Feature follows commit, no-fast-forward merge and push workflow.
+
+### NAS100 alternative read-only qualification — observation complete (2026-10-23)
+
+Branch `feature/nas100_readonly_qualification`. User requested NAS100 instead of gold. Authenticated selected-account catalog maps spot index to #USNDAQ100/1107; dated futures excluded. MCP failed HTTP404; direct Open API succeeded. Probe034 COLLECTED with1380M1 rows, current contract and economics. Minimum/step0.01units, maximum500, lot1unit; reported commission0. Run035 observed159spots over60.002seconds, zero callback errors, one future quote rejected for624microseconds lead; final quote valid/0.185522seconds old. Minimum-size broker expected margin USD14.50 per side. No future tolerance relaxation, reconnect acceptance or order writes.
+
+Sanitized facts and source hashes: docs/evidence/nas100-readonly-035.json; analysis: docs/evidence/nas100-readonly-qualification.md. Private source retained. Account-bound TickSize, point-value/cost policy and protection/expiry semantics remain. Current attended EURUSD1000unit path must be generalized before NAS100 preview/order testing;1000 exceeds this symbol's maximum. No executable policy/approval generated. Runtime source unchanged;453tests+4subtests baseline remains. Evidence JSON, request allowlist/no-write assertions and whitespace checks passed. Next probe036; shadow026 unchanged.
