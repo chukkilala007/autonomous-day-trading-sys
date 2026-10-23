@@ -31,6 +31,8 @@ def discover(wire,store,now=time.time):
 @defer.inlineCallbacks
 def collect(session,now,symbols=('EURUSD','XAUUSD'),progress=None):
     at=now();generation=session.generation
+    if session.demo_binding!=dict(account_id=str(session.account_id),generation=generation,is_live=False):
+        raise ValueError('authenticated demo generation required')
     progress=progress or (lambda stage,evidence:None)
     profile=yield session.read('ProtoOATraderReq')
     if str(profile.get('ctidTraderAccountId'))!=str(session.account_id): raise ValueError('foreign trader profile')
@@ -54,7 +56,7 @@ def collect(session,now,symbols=('EURUSD','XAUUSD'),progress=None):
     progress('HISTORY',history)
     economics=yield EconomicsCollector(session,now).collect()
     if session.generation!=generation or not session.ready: raise ValueError('connection changed during probe')
-    payload=dict(format=1,mode='demo-readonly',host=HOST,orders_enabled=False,account_id=str(session.account_id),
+    payload=dict(demo_binding=session.demo_binding, generation=generation, format=1,mode='demo-readonly',host=HOST,orders_enabled=False,account_id=str(session.account_id),
                  collected_at=now().isoformat(),symbols=selected,metadata=metadata,economics=economics,
                  history_from=start.isoformat(),history_to=at.isoformat(),trendbars=history,
                  qualification_complete=False,remaining=['verified candle basis and live session','contract conversion and cost mapping','streaming/reconnect shadow run','actual demo execution acceptance'])
