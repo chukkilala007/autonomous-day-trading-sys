@@ -1,0 +1,138 @@
+{
+  "format": 1,
+  "classification": "read_only_observation_not_execution_qualification",
+  "orders_enabled": false,
+  "symbol": "#USNDAQ100",
+  "symbol_id": 1107,
+  "description": "US Nasdaq 100 Spot Index",
+  "probe_collected_at": "2026-10-23T10:13:21.400848+00:00",
+  "history_m1_rows": 1380,
+  "contract_metadata": {
+    "chargeSwapAtWeekends": false,
+    "commission": "0",
+    "commissionType": "USD_PER_MILLION_USD",
+    "digits": 2,
+    "distanceSetIn": "SYMBOL_DISTANCE_IN_POINTS",
+    "enableShortSelling": true,
+    "gslCharge": "0",
+    "gslDistance": 0,
+    "guaranteedStopLoss": false,
+    "holiday": [
+      {
+        "description": "US Labor 07.09.2026 Early Close 19:55",
+        "endSecond": 86399,
+        "holidayDate": "20703",
+        "holidayId": "1600",
+        "isRecurring": false,
+        "name": "US Labor 07.09.2026 Early Close 19:55",
+        "scheduleTimeZone": "Europe/Moscow",
+        "startSecond": 71699
+      }
+    ],
+    "leverageId": "1753",
+    "lotSize": "100",
+    "maxExposure": "10000000000000",
+    "maxVolume": "50000",
+    "minCommission": "0",
+    "minCommissionAsset": "USD",
+    "minCommissionType": "CURRENCY",
+    "minVolume": "1",
+    "pipPosition": 0,
+    "pnlConversionFeeRate": 0,
+    "preciseMinCommission": "0",
+    "preciseTradingCommissionRate": "0",
+    "rolloverCommission": "0",
+    "rolloverCommission3Days": "FRIDAY",
+    "schedule": [
+      {
+        "endSecond": 161985,
+        "startSecond": 79245
+      },
+      {
+        "endSecond": 248385,
+        "startSecond": 165645
+      },
+      {
+        "endSecond": 334785,
+        "startSecond": 252045
+      },
+      {
+        "endSecond": 421185,
+        "startSecond": 338445
+      },
+      {
+        "endSecond": 507585,
+        "startSecond": 424845
+      }
+    ],
+    "scheduleTimeZone": "UTC",
+    "skipRolloverDays": 3,
+    "skipSWAPPeriods": 0,
+    "slDistance": 0,
+    "stepVolume": "1",
+    "swapCalculationType": "PIPS",
+    "swapLong": -5.1615,
+    "swapPeriod": 24,
+    "swapRollover3Days": "FRIDAY",
+    "swapShort": 0.905,
+    "swapTime": 1260,
+    "symbolId": "1107",
+    "tpDistance": 0,
+    "tradingMode": "ENABLED"
+  },
+  "normalized_volume": {
+    "lot_units": "1",
+    "minimum_units": "0.01",
+    "step_units": "0.01",
+    "maximum_units": "500"
+  },
+  "stream": {
+    "started_at": "2026-10-23T10:13:48.418287+00:00",
+    "ended_at": "2026-10-23T10:14:48.420522+00:00",
+    "counts": {
+      "callback_errors": 0,
+      "spots": 159
+    },
+    "spot_rejections": {
+      "FUTURE_QUOTE": 1
+    },
+    "future_quote_lead_us": {
+      "#USNDAQ100": {
+        "count": 1,
+        "max": 624,
+        "min": 624,
+        "total": 624
+      }
+    },
+    "quote_valid": {
+      "valid": true
+    },
+    "failures": {},
+    "requests": {
+      "ProtoOAAccountAuthReq": 1,
+      "ProtoOAApplicationAuthReq": 1,
+      "ProtoOAExpectedMarginReq": 1,
+      "ProtoOAGetAccountListByAccessTokenReq": 1,
+      "ProtoOASubscribeSpotsReq": 1
+    },
+    "rejected_writes": 0
+  },
+  "final_quote_age_seconds": 0.185522,
+  "minimum_quantity_margin": {
+    "quantity_units": "0.01",
+    "buy_usd": "14.50",
+    "sell_usd": "14.50",
+    "classification": "broker_expected_margin_observation_not_fill"
+  },
+  "source_sha256": {
+    "probe-034.json": "8901a707d03d6918782126fbc1004bbd8cb0b99b73ce9a99e0b708e1a76f3f28",
+    "nas100-stream-035.json": "952ba886c92a45828548b92dc6f6e185b5496f6327f305c66f5aa45ca4d21b41"
+  },
+  "remaining": [
+    "account-bound TickSize and grid applicability",
+    "point value and complete index cost bound",
+    "protection and expiry semantics",
+    "configurable attended symbol/quantity profile",
+    "explicit bounded order approval and actual acceptance"
+  ]
+}
