@@ -6,17 +6,18 @@ The bundle is not broker-signed. No default real-account bundle is supplied.
 import json
 from datetime import timedelta
 from typing import Literal
+from pydantic import model_validator
 from twisted.internet import defer
 from ctrader_open_api import Protobuf
 from google.protobuf.json_format import MessageToDict
-from trading_platform.contracts.values import Record, digest, canonical, utc
+from trading_platform.contracts.values import Record, Positive, digest, canonical, utc
 from trading_platform.contracts.orders import Entry
 from trading_platform.contracts.events import Quote as FeedQuote
 from trading_platform.execution.attended_preview import Quote, Preconditions, prepare
 from .valuation import Valuation, Hash
 from .contract_builder import Policy, build
 from .economics import EconomicsCollector
-from .normalization import integer, units
+from .normalization import integer, units, wire_volume
 from .read_only_session import ReadOnlySession
 from .orders import Fence
 
@@ -29,7 +30,21 @@ class ReviewedBundle(Record):
     protection_review: Hash
     costs_review: Hash
     entry_expiry_review: Hash
-    profile: Literal['EURUSD_USD_absolute_protected_buy_limit_gtd']
+    profile: Literal['EURUSD_USD_absolute_protected_buy_limit_gtd', 'USD_linear_absolute_protected_buy_limit_gtd']
+    quantity: Positive = '1000'
+    contract_value_review: Hash | None = None
+
+    @model_validator(mode='after')
+    def bounded_profile(self):
+        if self.profile == 'EURUSD_USD_absolute_protected_buy_limit_gtd':
+            if self.policy.instrument != 'EURUSD' or self.quantity != 1000 or self.policy.contract_value_per_unit != 1:
+                raise ValueError('legacy EURUSD profile changed')
+        elif self.contract_value_review is None or 'quantity' not in self.model_fields_set:
+            raise ValueError('explicit quantity and contract value review required')
+        wire_volume(self.quantity)
+        if not self.policy.minimum <= self.quantity <= self.policy.maximum or (self.quantity-self.policy.minimum) % self.policy.step:
+            raise ValueError('reviewed quantity outside contract grid')
+        return self
 
 
 class Binding:
@@ -47,11 +62,12 @@ class Binding:
         if digest(bundle)!=approved_bundle_hash:
             raise ValueError('reviewed bundle does not match deployment pin')
         p=bundle.policy
-        if (p.account_id!=str(session.account_id) or p.instrument!='EURUSD'
-                or p.currency!='USD' or p.quote_currency!='USD' or p.contract_value_per_unit!=1):
+        if (p.account_id!=str(session.account_id)
+                or p.currency!='USD' or p.quote_currency!='USD'):
             raise ValueError('unsupported bound account/contract')
-        if stream.session is not session or stream.feed.db is not db or stream.symbols.get('EURUSD')!=p.symbol_id:
+        if stream.session is not session or stream.feed.db is not db or stream.symbols.get(p.instrument)!=p.symbol_id:
             raise ValueError('foreign stream or storage')
+        self.symbol=p.instrument
         self.session=session; self.stream=stream; self.db=db; self.now=now
         self._bundle_json=bundle.model_dump_json(); self.pin=approved_bundle_hash
         self.core_id=core_id; self.epoch=epoch; self.fence=Fence(db,session.account_id)
@@ -90,15 +106,15 @@ class Binding:
 
     def _quote(self, now):
         feed=self.stream.feed
-        if (feed.get('quote-valid:EURUSD')!={'valid':True}
-                or not (feed.get('coverage:EURUSD') or {}).get('repaired')
-                or (feed.get('quote-buffer-pending:EURUSD') or {}).get('pending')
+        if (feed.get('quote-valid:'+self.symbol)!={'valid':True}
+                or not (feed.get('coverage:'+self.symbol) or {}).get('repaired')
+                or (feed.get('quote-buffer-pending:'+self.symbol) or {}).get('pending')
                 or self.stream.failures):
             raise ValueError('invalid or unrepaired quote')
-        q=FeedQuote.model_validate_json(json.dumps(feed.get('quote:EURUSD')))
-        if q.instrument!='EURUSD' or q.received_at>now or not 0<=(now-q.source_time).total_seconds()<2:
+        q=FeedQuote.model_validate_json(json.dumps(feed.get('quote:'+self.symbol)))
+        if q.instrument!=self.symbol or q.received_at>now or not 0<=(now-q.source_time).total_seconds()<2:
             raise ValueError('stale or foreign feed quote')
-        return Quote(account_id=str(self.session.account_id),instrument='EURUSD',observed_at=q.source_time,
+        return Quote(account_id=str(self.session.account_id),instrument=self.symbol,observed_at=q.source_time,
                      bid=q.bid,ask=q.ask,evidence_hash=digest(q))
 
     @defer.inlineCallbacks
@@ -110,12 +126,13 @@ class Binding:
             entry=Entry.model_validate_json(entry.model_dump_json())
             bundle=ReviewedBundle.model_validate_json(self._bundle_json);p=bundle.policy
             if digest(bundle)!=self.pin: raise ValueError('deployment review pin changed')
+            if entry.instrument!=p.instrument: raise ValueError('foreign proposal symbol')
             state=self._state(); start=self.now()
             created=entry.expires_at-timedelta(seconds=60)
             if not 0<=(start-created).total_seconds()<=10: raise ValueError('proposal creation window')
             if not p.observed_at<=start<p.valid_until: raise ValueError('reviewed policy expired')
             symbols=yield self.session.read('ProtoOASymbolsListReq')
-            candidates=[r for r in symbols.get('symbol',[]) if r.get('symbolName')=='EURUSD']
+            candidates=[r for r in symbols.get('symbol',[]) if r.get('symbolName')==p.instrument]
             if (str(symbols.get('ctidTraderAccountId'))!=p.account_id or len(candidates)!=1
                     or integer(candidates[0]['symbolId'])!=p.symbol_id):
                 raise ValueError('broker symbol mapping mismatch')
@@ -134,7 +151,7 @@ class Binding:
             margin_at=self.now()
             economics,margin=yield defer.gatherResults([
                 self.economics.collect(),
-                self.session.read('ProtoOAExpectedMarginReq',symbolId=p.symbol_id,volume=[100000])],consumeErrors=True)
+                self.session.read('ProtoOAExpectedMarginReq',symbolId=p.symbol_id,volume=[wire_volume(bundle.quantity)])],consumeErrors=True)
             margin=dict(ctidTraderAccountId=integer(margin['ctidTraderAccountId']),
                 moneyDigits=integer(margin['moneyDigits']),margin=[{k:integer(r[k]) for k in
                 ('volume','buyMargin','sellMargin')} for r in margin['margin']])
@@ -153,11 +170,11 @@ class Binding:
             contract=build(p,entry,account=self.session.account_id,now=now,quote_to_account='1',
                 conversion_observed_at=utc(economics['observed_at']),
                 conversion_evidence_hash=digest({'currency':economics['account']['currency'],'quote_currency':p.quote_currency}),
-                margin_request=dict(ctidTraderAccountId=self.session.account_id,symbolId=p.symbol_id,volume=[100000]),
+                margin_request=dict(ctidTraderAccountId=self.session.account_id,symbolId=p.symbol_id,volume=[wire_volume(bundle.quantity)]),
                 margin_response=margin,margin_observed_at=margin_at)
             v=Valuation.model_validate_json(canonical(dict(mode='demo',account_id=p.account_id,
                 observed_at=economics['observed_at'],classification='demo_observed',evidence_hash=economics['evidence_hash'],
-                **economics['account'],history_complete=True,external_exposure=False,contracts={'EURUSD':contract})))
+                **economics['account'],history_complete=True,external_exposure=False,contracts={p.instrument:contract})))
             pre=Preconditions(account_id=p.account_id,is_live=False,observed_at=utc(economics['observed_at']),
                 valid_until=p.valid_until,proposal_hash=digest(entry),account_profile_review=digest([trader,metadata,symbols]),
                 price_grid_review=bundle.price_grid_review,protection_review=bundle.protection_review,
@@ -165,7 +182,7 @@ class Binding:
                 source_hash=bundle.source_hash,image_digest=bundle.image_digest,policy_hash=digest(p),
                 reconciled_flat=True,unresolved_commands=0,writer_fenced=True,connected=True)
             # Never roll an existing proposal expiry forward after network latency.
-            result=prepare(entry,q,v,pre,now,proposal_created_at=entry.expires_at-timedelta(seconds=60))
+            result=prepare(entry,q,v,pre,now,proposal_created_at=entry.expires_at-timedelta(seconds=60), quantity=bundle.quantity)
             self._preview_lease=canonical(dict(preview=result,metadata=raw,state=state,proposal_hash=digest(entry),bundle_hash=self.pin))
             return result
         finally:

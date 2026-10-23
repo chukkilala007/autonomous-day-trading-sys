@@ -15,7 +15,7 @@ from trading_platform.risk.sizing import size
 
 class Quote(Record):
     account_id: Name
-    instrument: Literal['EURUSD']
+    instrument: Name
     observed_at: Time
     bid: Positive
     ask: Positive
@@ -43,8 +43,11 @@ class Preconditions(Record):
     connected: bool
 
 
-def prepare(entry, quote, valuation, preconditions, now, *, proposal_created_at=None):
+def prepare(entry, quote, valuation, preconditions, now, *, proposal_created_at=None, quantity='1000'):
     """Return a hash-bound, expiring preview; never permission to submit."""
+    from trading_platform.contracts.values import decimal
+    quantity = decimal(quantity)
+    if quantity <= 0: raise ValueError('positive test quantity required')
     now = utc(now)
     entry = Entry.model_validate_json(entry.model_dump_json())
     quote = Quote.model_validate_json(quote.model_dump_json())
@@ -54,10 +57,10 @@ def prepare(entry, quote, valuation, preconditions, now, *, proposal_created_at=
         raise ValueError('foreign preparation account')
     if p.proposal_hash != digest(entry):
         raise ValueError('reviewed proposal changed')
-    if (entry.instrument != 'EURUSD' or entry.side != 'buy' or entry.order_type != 'limit'
+    if (entry.instrument != quote.instrument or entry.side != 'buy' or entry.order_type != 'limit'
             or entry.target is None or entry.worst_fill != entry.entry
             or not entry.stop < entry.entry < entry.target):
-        raise ValueError('protected EURUSD BUY LIMIT required')
+        raise ValueError('matching protected BUY LIMIT required')
     created = now if proposal_created_at is None else utc(proposal_created_at)
     if not 0 <= (now-created).total_seconds() <= 10:
         raise ValueError('proposal collection window expired')
@@ -72,12 +75,12 @@ def prepare(entry, quote, valuation, preconditions, now, *, proposal_created_at=
     export(valuation, p.account_id, now)
     if valuation.currency != 'USD':
         raise ValueError('USD account required')
-    contract = valuation.contracts.get('EURUSD')
+    contract = valuation.contracts.get(entry.instrument)
     if contract is None or contract.exact_costs is None:
         raise ValueError('proposal-specific complete costs and margin required')
     if contract.exact_costs.account_id != p.account_id:
         raise ValueError('foreign economics')
-    rows = [r for r in contract.exact_costs.rows if r.quantity == 1000]
+    rows = [r for r in contract.exact_costs.rows if r.quantity == quantity]
     if len(rows) != 1:
         raise ValueError('minimum test quantity economics missing')
     # Restrict sizing to exactly the authorized preparation quantity, not a maximum affordable size.

@@ -19,7 +19,7 @@ from .sessions import scheduled_state
 class Review(Record):
     mode: Literal['attended_first_test'] = 'attended_first_test'
     account_id: Name
-    symbol: Literal['EURUSD'] = 'EURUSD'
+    symbol: Name = 'EURUSD'
     review_bundle_hash: Hash
     protocol_hash: Hash
     observed_at: Time
@@ -34,6 +34,9 @@ class FirstTestTransport(DemoTransport):
         review=Review.model_validate_json(review.model_dump_json())
         if digest(review)!=approved_review_hash or review.review_bundle_hash!=binding.pin or review.account_id!=str(self.session.account_id):
             raise ValueError('first-test review binding mismatch')
+        from .attended_binding import ReviewedBundle
+        if review.symbol!=ReviewedBundle.model_validate_json(binding._bundle_json).policy.instrument:
+            raise ValueError('review symbol differs from bound contract')
         if not review.observed_at<review.valid_until:raise ValueError('invalid review window')
         self.binding=binding;self.review_hash=approved_review_hash;self.approval_hash=approved_approval_hash
 
@@ -54,10 +57,14 @@ class FirstTestTransport(DemoTransport):
                 or not utc(preview['created_at'])<=now<utc(preview['valid_until'])
                 or preview['status']!='PREPARED_NOT_AUTHORIZED' or preview['blockers']):
             raise ValueError('stale or blocked bound preview')
+        from .attended_binding import ReviewedBundle
+        bundle=ReviewedBundle.model_validate_json(self.binding._bundle_json)
+        if digest(bundle)!=self.binding.pin: raise ValueError('reviewed bundle changed')
+        quantity=bundle.quantity
         entry=Entry.model_validate_json(json.dumps(command['body']['decision']['proposal']))
-        if (command['body']['decision']['environment']!='demo' or digest(entry)!=lease['proposal_hash']
-                or Decimal(command['body']['size']['quantity'])!=1000
-                or Decimal(preview['quantity'])!=1000 or Decimal(preview['planned_loss'])>5):
+        if (entry.instrument!=report.symbol or command['body']['decision']['environment']!='demo' or digest(entry)!=lease['proposal_hash']
+                or Decimal(command['body']['size']['quantity'])!=quantity
+                or Decimal(preview['quantity'])!=quantity or Decimal(preview['planned_loss'])>5):
             raise ValueError('first-test proposal/size mismatch')
         if utc(preview['account_observed_at'])!=account_observed_at or not 0<=(now-account_observed_at).total_seconds()<=2:
             raise ValueError('first-test account timestamp mismatch')
@@ -68,13 +75,12 @@ class FirstTestTransport(DemoTransport):
         if quote.bid!=current.bid or quote.ask!=current.ask or quote.source_time!=current.observed_at:
             raise ValueError('first-test quote changed')
         check_entry(entry,quote,now)
-        from .attended_binding import ReviewedBundle
-        policy=ReviewedBundle.model_validate_json(self.binding._bundle_json).policy
+        policy=bundle.policy
         for price in (entry.entry,entry.stop,entry.target):
             if price is None or price%policy.tick:raise ValueError('first-test price grid')
-        if not policy.minimum<=1000<=policy.maximum or (1000-policy.minimum)%policy.step:
+        if not policy.minimum<=quantity<=policy.maximum or (quantity-policy.minimum)%policy.step:
             raise ValueError('first-test volume grid')
-        fields=limit_fields(self.session.account_id,policy.symbol_id,entry,Decimal(1000))
+        fields=limit_fields(self.session.account_id,policy.symbol_id,entry,quantity)
         fields['clientOrderId']=command['id'][:50]
         return fields
 

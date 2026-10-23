@@ -25,7 +25,7 @@ class Approval(Record):
     approved_at: Time
     submit_before: Time
     maximum_loss: Positive
-    quantity: Literal[1000] = 1000
+    quantity: Positive = '1000'
     scope: Literal['one_entry_and_owned_cancel_close'] = 'one_entry_and_owned_cancel_close'
 
 
@@ -41,6 +41,9 @@ class Adapter:
             raise ValueError('foreign adapter composition')
         if approval.review_bundle_hash!=binding.pin or approval.capability_hash!=digest(report):
             raise ValueError('unapproved evidence')
+        from .attended_binding import ReviewedBundle
+        bundle=ReviewedBundle.model_validate_json(binding._bundle_json)
+        if approval.quantity!=bundle.quantity: raise ValueError('approved quantity differs from reviewed bundle')
         self.gateway=gateway;self.binding=binding;self.ledger=ledger;self.now=now
         self.approval=approval;self.approved_hash=approved_hash;self.report=type(report).model_validate_json(report.model_dump_json())
         self.enabled=enabled;self.key='attended-attempt:'+approval.account_id
@@ -82,14 +85,14 @@ class Adapter:
         if (preview['status']!='PREPARED_NOT_AUTHORIZED' or preview['blockers']
                 or not preview['created_at']<=now<preview['valid_until']
                 or not a.approved_at<=now<a.submit_before
-                or preview['planned_loss']>a.maximum_loss or preview['quantity']!=1000):
+                or preview['planned_loss']>a.maximum_loss or preview['quantity']!=a.quantity):
             raise ValueError('fresh approved preview required')
         command=dict(id=digest(dict(approval=a,entry=entry)),instance=a.test_id,
             body=dict(decision=dict(environment='demo',proposal=json.loads(entry.model_dump_json())),
-                      size=dict(quantity='1000')))
+                      size=dict(quantity=str(a.quantity))))
         from trading_platform.contracts.events import Quote
         bound_quote=self.binding._quote(now)
-        quote=Quote(instrument='EURUSD',bid=bound_quote.bid,ask=bound_quote.ask,
+        quote=Quote(instrument=entry.instrument,bid=bound_quote.bid,ask=bound_quote.ask,
                     source_time=bound_quote.observed_at,received_at=now)
         # Binding already checks original quote/account times. Recheck its short
         # validity before invoking the independent existing capability gate.
@@ -141,7 +144,7 @@ class Adapter:
         if integer(raw['tradeData']['symbolId'])!=expected['symbolId']:
             raise ValueError('foreign cleanup symbol')
         quantity=Decimal(target.get('remaining') if action=='cancel' else target['quantity'])
-        if not 0<quantity<=1000: raise ValueError('cleanup quantity exceeds bounded test')
+        if not 0<quantity<=self.approval.quantity: raise ValueError('cleanup quantity exceeds bounded test')
         management=Management(target_id=str(target_id),owner=self.approval.test_id,
             revision=target['updated'],action=action,expires_at=now+timedelta(seconds=2))
         command_id=digest(dict(approval=self.approval,action=action,target=str(target_id)))
