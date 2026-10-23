@@ -17,3 +17,15 @@ After documentation is obtained, bind it to reviewed policy inputs, implement an
 See [item-by-item investigation](../docs/evidence/broker-evidence-items-1-to-5.md) and fresh probe031 facts. Volume/lot scaling, reported commission basis/minimum, protocol order support and documented default SL sides now have sources. Narrow remaining requests to account-bound TickSize/grid applicability, exact rounding and partial-fill/cancellation/settlement conventions, TP quote-side semantics, account expiry/entry restrictions and the GOLD/XAUUSD step contradiction. Algo TickSize offers a read-only collection route; MCP currently omits it. The guide's suggested test trade and tolerance are not authorization or verified broker policy.
 
 2026-10-22 update: actual account-bound TickSize capture and importer checks passed. Remaining questions above are still unsent; no broker contact or order submission is authorized by this document.
+
+## NAS100 review update — 2026-10-23
+
+Current first-test candidate is #USNDAQ100/1107 at0.01units; EURUSD/gold questions above are retained as history. [Review](../docs/evidence/nas100-policy-review.md) now supports captured tick/point units and documented TP sides. Do not keep TP quote-side documentation on the missing-information list; actual attached protection acceptance remains unobserved.
+
+Narrow unsent account-specific questions:
+
+1. Confirm TickSize0.01 applies to LIMIT entry and absolute SL/TP, and explain public USD1 tick-value terminology versus Algo TickValueUSD0.01/PipValueUSD1.
+2. Confirm0.01unit BUY LIMIT with attached absolute SL/TP and60-second GOOD_TILL_DATE, minimum expiry lead, distances and default attached-stop trigger behavior.
+3. Confirm zero reported commissions/conversion fees, rounding, partial-fill/cancel charges, and current financing/index-adjustment rules and times for this demo account.
+
+Do not request or invent a guaranteed slippage ceiling: documented stops are not guaranteed. The proposed demo-only modeled-risk policy needs a separate decision and implementation; current complete-bound gate remains unchanged. No broker message has been sent.
