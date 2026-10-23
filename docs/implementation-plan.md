@@ -18,10 +18,10 @@ Broker-portable cTrader platform; FxPro is the first qualification profile, not 
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | NAS100 provenance reviewed and TP sides documented. Complete-bound cost policy cannot be supported by non-guaranteed stops; grid applicability, account expiry and fee/adjustment scope still need evidence |
-| Next concrete action | Implement F5.2r broker/account profile, then F5.2s portable capture/binding per decision0005. Keep current identity guards until replaced by pinned profile verification. NAS100 evidence review remains account-scoped; no broker writes authorized |
+| Next concrete action | F5.2r profile foundation delivered. Implement F5.2s authenticated profile integration in capture/binding, preserving old provenance and fail-closed guards; then F5.2t evidence provider isolation. No real profile/approval or broker writes enabled |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed nas100-capture gateway-check:473passed+4subtests in10.79s; network disabled, no credentials |
+| Latest tests | broker-profiles installed Docker suite:490passed+4subtests in8.32s, offline/no credentials; fixture warning cleanup verified by17targeted tests |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1167,3 +1167,11 @@ Validation: source hash and exact tick/pip ratio checks, local document links an
 Branch feature/ctrader_broker_portability. User clarified all cTrader brokers are target environments. Decision0005 separates protocol adapter, broker/account profile, capability resolution and risk policy; inventories FxPro hard-coding and defines pending F5.2r/s/t and F6.4j/k stages with acceptance criteria. Workaround candidates document semantic limits rather than silently relaxing execution checks. These stages are planned, not implemented. No runtime guards changed; no broker connection/orders.
 
 Validation: inspected actual hard-coded checks, verified local documentation links and diff whitespace. Documentation-only; runtime baseline473tests+4subtests unchanged. Next: F5.2r immutable profile and cross-broker isolation tests, followed by migration of existing guarded paths.
+
+### F5.2r — broker/account profile foundation — DONE for offline acceptance (2026-10-23)
+
+Branch feature/broker_account_profiles. Added version1 immutable account identity, explicit canonical/native symbol mapping and normalized geometry, scoped capability evidence and independent canonical profile pin. Verification binds broker/account/environment/currency/type and validity; reparses unchecked copied models. Capability result is supported/unsupported/unknown: absent, expired, future, synthetic and protocol-only evidence cannot establish broker support. Duplicate/foreign evidence and ambiguous mappings reject. Synthetic FxPro and second-broker fixtures deliberately share alias/ID but differ in contract values; no facts are shared or promoted.
+
+Runbook deploy/broker-profiles.md describes trust boundary: caller must derive authenticated identity and independently review the pin. Foundation has no credentials, transport, approval issuer or automatic profile selection. Existing FxPro runtime/exporter guards remain until F5.2s replaces them with verified integration. Geometry is configuration, not automatically verified economics. No actual broker profile or second-broker qualification claimed.
+
+Validation: installed Docker image passed490tests+4subtests in8.32s with network disabled/no credentials, including17new profile tests. Twelve warnings comprised11existing SDK/Hypothesis warnings and one fixture serialization warning; fixture changed to exact Decimal and17targeted tests rerun successfully. Runtime source unchanged after full-suite pass. Diff check passed. Next: F5.2s authenticated identity extraction, profile-bound capture/binding and migration tests; no broker orders authorized or sent.
