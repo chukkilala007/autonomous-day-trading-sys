@@ -14,13 +14,12 @@ def check(bundle, entry, *, account_id, approved_bundle_hash, now):
     policy = bundle.policy
     if digest(bundle) != approved_bundle_hash:
         blockers.append('REVIEW_PIN_MISMATCH')
-    if (policy.account_id != account_id or policy.instrument != 'EURUSD'
-            or policy.currency != 'USD' or policy.quote_currency != 'USD'
-            or policy.contract_value_per_unit != 1):
+    if (policy.account_id != account_id
+            or policy.currency != 'USD' or policy.quote_currency != 'USD'):
         blockers.append('UNSUPPORTED_ACCOUNT_CONTRACT')
     if not policy.observed_at <= now < policy.valid_until:
         blockers.append('POLICY_NOT_CURRENT')
-    if (entry.instrument != 'EURUSD' or entry.side != 'buy'
+    if (entry.instrument != policy.instrument or entry.side != 'buy'
             or entry.order_type != 'limit' or entry.entry != entry.worst_fill
             or entry.target is None or entry.exit_at is not None
             or entry.profile != 'protected' or entry.basis != 'executable'):
@@ -28,8 +27,8 @@ def check(bundle, entry, *, account_id, approved_bundle_hash, now):
     created = entry.expires_at - timedelta(seconds=60)
     if not created <= now <= created + timedelta(seconds=10):
         blockers.append('PROPOSAL_NOT_CURRENT')
-    if (policy.minimum > 1000 or policy.maximum < 1000
-            or (1000-policy.minimum) % policy.step):
+    if (policy.minimum > bundle.quantity or policy.maximum < bundle.quantity
+            or (bundle.quantity-policy.minimum) % policy.step):
         blockers.append('QUANTITY_GRID_MISMATCH')
     if any(price is not None and price % policy.tick for price in
            (entry.entry, entry.worst_fill, entry.stop, entry.target)):

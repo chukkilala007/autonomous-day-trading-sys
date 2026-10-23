@@ -71,7 +71,7 @@ class Monitor:
             pending=Decimal(order['remaining']) if not order['terminal'] else Decimal(0)
             opened=Decimal(position['quantity']) if position and not position['closed'] else Decimal(0)
             filled=Decimal(order['record'].get('executedVolume','0'))/100
-            if min(pending,opened,filled)<0 or pending+opened>1000 or filled>1000:
+            if min(pending,opened,filled)<0 or pending+opened>a.approval.quantity or filled>a.approval.quantity:
                 state['status']='EXPOSURE_BOUND_BREACH';return self._save(state)
             elapsed=(now-utc(attempt['at'])).total_seconds()
             if elapsed<0: state['status']='CLOCK_HALTED';return self._save(state)
