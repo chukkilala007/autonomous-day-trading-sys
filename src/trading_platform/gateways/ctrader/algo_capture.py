@@ -31,6 +31,15 @@ class Capture(Record):
     step: Positive
 
 
+class CaptureV2(Capture):
+    format: Literal[2]
+    source: Literal['ctrader_algo_contract_exporter_v2']
+    symbol: Literal['EURUSD', '#USNDAQ100']
+    quote_currency: Literal['USD']
+    tick_value: Positive
+    pip_value: Positive
+
+
 def identity(probe, account, now):
     if (probe.get('status') != 'COLLECTED' or probe.get('mode') != 'demo-readonly'
             or probe.get('orders_enabled') is not False or probe.get('account_id') != str(account)):
@@ -48,14 +57,18 @@ def identity(probe, account, now):
     return str(login)
 
 
-def challenge(probe, account, now):
-    return dict(format=1, account_id=str(account), broker_login=identity(probe, account, now),
+def challenge(probe, account, now, symbol='EURUSD'):
+    if symbol not in ('EURUSD', '#USNDAQ100') or symbol not in probe.get('symbols', {}):
+        raise ValueError('explicit supported probe symbol required')
+    return dict(format=1, symbol=symbol, account_id=str(account), broker_login=identity(probe, account, now),
                 probe_hash=digest(probe), nonce=secrets.token_hex(16),
                 created_at=now.isoformat(), valid_until=(now + timedelta(hours=1)).isoformat())
 
 
 def review(raw, request, probe, account, now):
-    capture = Capture.model_validate_json(json.dumps(raw))
+    capture = (CaptureV2 if raw.get('format') == 2 else Capture).model_validate_json(json.dumps(raw))
+    if capture.symbol != request.get('symbol', 'EURUSD') or (capture.format == 2 and 'symbol' not in request):
+        raise ValueError('capture/challenge symbol mismatch')
     login = identity(probe, account, now)
     if (request.get('format') != 1 or request.get('account_id') != str(account)
             or request.get('probe_hash') != digest(probe) or request.get('broker_login') != login
@@ -66,7 +79,7 @@ def review(raw, request, probe, account, now):
         raise ValueError('capture outside challenge window')
     if (now - capture.observed_at).total_seconds() > 300:
         raise ValueError('stale Algo capture')
-    sid = integer(probe['symbols']['EURUSD'])
+    sid = integer(probe['symbols'][capture.symbol])
     rows = probe['metadata']['symbol']
     ids = [integer(r['symbolId']) for r in rows]
     if len(set(ids)) != len(ids) or ids.count(sid) != 1:
@@ -81,12 +94,18 @@ def review(raw, request, probe, account, now):
         raise ValueError('pip mismatch')
     if capture.tick_size > capture.pip_size or capture.pip_size % capture.tick_size:
         raise ValueError('inconsistent tick/pip geometry')
-    return dict(account_id=str(account), symbol='EURUSD', observed_at=capture.observed_at.isoformat(),
+    result = dict(account_id=str(account), symbol=capture.symbol, observed_at=capture.observed_at.isoformat(),
                 tick_size=str(capture.tick_size), capture_hash=digest(raw), probe_hash=digest(probe),
                 challenge_hash=digest(request), classification='operator_capture_pending_review',
                 identity_checks_passed=True, orders_enabled=False, qualification_complete=False,
                 limitation='Local JSON is not broker-signed evidence. Verify capture provenance before policy promotion; '
                            'entry/protection grid applicability and execution behavior remain separate.')
+    if isinstance(capture, CaptureV2):
+        result.update(tick_value=str(capture.tick_value), pip_value=str(capture.pip_value),
+                      quote_currency=capture.quote_currency,
+                      candidate_value_per_unit_per_price=str(capture.tick_value/capture.tick_size),
+                      monetary_value_classification='startup_snapshot_pending_review')
+    return result
 
 
 def main():
@@ -94,9 +113,10 @@ def main():
     p.add_argument('mode', choices=['challenge', 'review'])
     for name in ('probe', 'account', 'output'): p.add_argument('--' + name, required=True)
     p.add_argument('--challenge'); p.add_argument('--capture')
+    p.add_argument('--symbol', choices=['EURUSD', '#USNDAQ100'], default='EURUSD')
     a = p.parse_args(); now = datetime.now(timezone.utc)
     probe = json.loads(Path(a.probe).read_text())
-    if a.mode == 'challenge': result = challenge(probe, a.account, now)
+    if a.mode == 'challenge': result = challenge(probe, a.account, now, a.symbol)
     else:
         if not a.challenge or not a.capture: p.error('review requires --challenge and --capture')
         result = review(json.loads(Path(a.capture).read_text()), json.loads(Path(a.challenge).read_text()), probe, a.account, now)

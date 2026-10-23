@@ -12,6 +12,6 @@ The legacy EURUSD profile retains EURUSD/1000units/value1 restrictions. Added bu
 
 ## NAS100 evidence collection route
 
-The current installed read-only Algo exporter/importer accepts EURUSD only. Extend it in a separate reviewed change to bind an expected symbol and emit TickSize, TickValue, PipSize and PipValue with account identity, nonce and fresh probe matching. Capture on #USNDAQ100 locally; retain the source artifact digest and observed log. Do not simply relabel the old EURUSD capture.
+The v2 read-only Algo exporter/importer now supports an explicit expected symbol and emits TickSize, TickValue, PipSize and PipValue with account identity, nonce and fresh probe matching. The installed v1 artifact remains EURUSD-only until v2 is imported. Capture on #USNDAQ100 locally; retain the source artifact digest and observed log. Do not simply relabel the old EURUSD capture.
 
 The official [TickValue reference](https://help.ctrader.com/ctrader-algo/references/MarketData/Symbols/Symbol/TickValue/) describes a monetary tick value fixed at cBot startup. Consequently any derived TickValue/TickSize ratio is a timestamped candidate for review, not a continuously refreshed or broker-signed valuation. A fresh one-shot capture can narrow the point-value question; grid applicability, complete costs, protection/expiry semantics and actual acceptance remain separate checks.

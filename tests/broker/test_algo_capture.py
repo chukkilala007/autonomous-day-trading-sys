@@ -52,3 +52,35 @@ def test_probe_identity_and_uniqueness(fault):
     if fault == 'duplicate': p['metadata']['symbol'] *= 2
     with pytest.raises((ValueError, KeyError)):
         q = challenge(p, '12', T); c['nonce'] = q['nonce']; review(c, q, p, '12', T)
+
+
+def nas_inputs():
+    p,_,_=inputs()
+    p['symbols']={'#USNDAQ100':1107}
+    p['metadata']['symbol']=[dict(symbolId=1107,lotSize=100,minVolume=1,maxVolume=50000,stepVolume=1,pipPosition=0)]
+    q=challenge(p,'12',T,'#USNDAQ100')
+    c=dict(format=2,source='ctrader_algo_contract_exporter_v2',nonce=q['nonce'],observed_at=T.isoformat(),
+        is_live=False,running_mode='RealTime',broker_login='900',broker='FxPro',currency='USD',
+        symbol='#USNDAQ100',tick_size='.1',pip_size='1',lot_size='1',minimum='.01',maximum='500',step='.01',
+        quote_currency='USD',tick_value='.2',pip_value='2')
+    return p,q,c
+
+
+def test_nas_capture_is_only_startup_value_observation():
+    p,q,c=nas_inputs();r=review(c,q,p,'12',T)
+    assert r['symbol']=='#USNDAQ100' and r['candidate_value_per_unit_per_price']=='2'
+    assert r['monetary_value_classification']=='startup_snapshot_pending_review'
+    assert not r['qualification_complete'] and not r['orders_enabled']
+
+
+@pytest.mark.parametrize('field,value',[('symbol','EURUSD'),('quote_currency','EUR'),('tick_value','0'),
+    ('pip_value','NaN'),('format',1),('source','ctrader_algo_contract_exporter_v1')])
+def test_nas_capture_rejects_bad_identity_and_values(field,value):
+    p,q,c=nas_inputs();c[field]=value
+    with pytest.raises(ValueError):review(c,q,p,'12',T)
+
+
+def test_new_capture_requires_symbol_bound_challenge():
+    p,q,c=nas_inputs();q.pop('symbol')
+    with pytest.raises(ValueError):review(c,q,p,'12',T)
+    with pytest.raises(ValueError):challenge(p,'12',T,'XAUUSD')
