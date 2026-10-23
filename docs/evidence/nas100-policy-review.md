@@ -35,3 +35,7 @@ Acceptance work:
 5. Produce a fresh connected read-only preview, then present the exact proposed demo order and modeled-risk assumptions for authorization. Only a subsequent authorized test can establish actual acceptance, cleanup and settlement; do not require those observations to exist before the first test.
 
 Operator decision needed before adopting modeled-risk activation: accept explicitly non-guaranteed demo loss modeling, or retain the current complete-bound requirement and keep broker writes blocked. This review does not select that policy on the operator's behalf. Broker questions remain unsent in the updated evidence request.
+
+## Product-scope clarification
+
+This is evidence for one FxPro account, not the platform specification. Follow [decision0005](../decisions/0005-ctrader-broker-portability.md) for broker-portable profiles and capability workarounds. Non-guaranteed execution and modeled-risk semantics must be handled as explicit risk policy across brokers.

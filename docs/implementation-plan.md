@@ -4,6 +4,10 @@ Last updated: 2026-10-23. Repository: `chukkilala007/autonomous-day-trading-sys`
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
+## Product scope
+
+Broker-portable cTrader platform; FxPro is the first qualification profile, not a shared-core requirement. See [portability decision](decisions/0005-ctrader-broker-portability.md). Strategy, broker capability and risk policy remain separate.
+
 ## Current handoff — start here
 
 | Item | Current value |
@@ -14,7 +18,7 @@ This is the go-to document for **what exists, what comes next, how to implement 
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | NAS100 provenance reviewed and TP sides documented. Complete-bound cost policy cannot be supported by non-guaranteed stops; grid applicability, account expiry and fee/adjustment scope still need evidence |
-| Next concrete action | Review docs/evidence/nas100-policy-review.md. Prepare separately typed demo modeled-risk design/implementation after resolving policy decision; preserve production bound and disabled defaults. No approved bundle or fresh connected preview yet; actual orders require bounded authorization |
+| Next concrete action | Implement F5.2r broker/account profile, then F5.2s portable capture/binding per decision0005. Keep current identity guards until replaced by pinned profile verification. NAS100 evidence review remains account-scoped; no broker writes authorized |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed nas100-capture gateway-check:473passed+4subtests in10.79s; network disabled, no credentials |
@@ -1157,3 +1161,9 @@ Branch feature/nas100_policy_evidence_review. Verified capture004 private source
 Added docs/evidence/nas100-policy-review.md and narrowed unsent broker questions. Identified complete_roundtrip_upper_bound/broker_verified cost-policy mismatch with non-guaranteed stops. Proposed isolated demo modeled-risk path with explicit assumptions; not implemented or approved. No bundle generated, no runtime change, no broker connection or orders. Next: policy decision/design for modeled demo risk, remaining account facts, then fresh connected preview and bounded authorization. Historical capture cannot supply fresh send-time data.
 
 Validation: source hash and exact tick/pip ratio checks, local document links and git diff whitespace checks passed. Documentation-only change; full runtime baseline remains473tests+4subtests, not rerun for prose. Normal feature commit/merge/push workflow applies.
+
+### Broker portability direction — recorded (2026-10-23)
+
+Branch feature/ctrader_broker_portability. User clarified all cTrader brokers are target environments. Decision0005 separates protocol adapter, broker/account profile, capability resolution and risk policy; inventories FxPro hard-coding and defines pending F5.2r/s/t and F6.4j/k stages with acceptance criteria. Workaround candidates document semantic limits rather than silently relaxing execution checks. These stages are planned, not implemented. No runtime guards changed; no broker connection/orders.
+
+Validation: inspected actual hard-coded checks, verified local documentation links and diff whitespace. Documentation-only; runtime baseline473tests+4subtests unchanged. Next: F5.2r immutable profile and cross-broker isolation tests, followed by migration of existing guarded paths.
