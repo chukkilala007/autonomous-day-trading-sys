@@ -3,7 +3,8 @@ import pytest
 from twisted.internet.defer import FirstError
 from trading_platform.contracts.values import digest
 from trading_platform.gateways.ctrader.attended_binding import Binding, ReviewedBundle
-from trading_platform.gateways.ctrader.broker_profile import AccountIdentity, BrokerProfile, SymbolMapping
+from trading_platform.gateways.ctrader.broker_profile import AccountIdentity, BrokerProfile, SymbolMapping, CapabilityEvidence
+from trading_platform.gateways.ctrader.operation_plan import REQUIRED
 from test_attended_binding import rig, result, T
 
 
@@ -12,7 +13,8 @@ def configure(x, broker='Example Broker'):
     identity=AccountIdentity(broker=broker,account_id=p.account_id,environment='demo',currency='USD',account_type='HEDGED')
     mapping=SymbolMapping(instrument=p.instrument,native_symbol='EUR/USD.c',**{k:getattr(p,k) for k in
         ('symbol_id','quote_currency','tick','minimum','maximum','step','contract_value_per_unit')})
-    profile=BrokerProfile(identity=identity,symbols=(mapping,),observed_at=T-timedelta(seconds=1),valid_until=T+timedelta(minutes=5))
+    evidence=tuple(CapabilityEvidence(identity=identity,instrument=p.instrument,symbol_id=p.symbol_id,operation=o,state='supported',classification='broker_verified',source='synthetic reviewed fixture',source_hash='a'*64,observed_at=T-timedelta(seconds=1),valid_until=T+timedelta(minutes=5)) for o in REQUIRED)
+    profile=BrokerProfile(identity=identity,symbols=(mapping,),evidence=evidence,observed_at=T-timedelta(seconds=1),valid_until=T+timedelta(minutes=5))
     bundle=ReviewedBundle(**dict(x.bundle.model_dump(),broker_profile=profile,broker_profile_hash=digest(profile)))
     x.raw['ProtoOATraderReq']['trader']['brokerName']=broker
     x.raw['ProtoOASymbolsListReq']['symbol'][0].update(symbolName='EUR/USD.c',quoteAssetId='1')

@@ -7,11 +7,20 @@ from pathlib import Path
 from trading_platform.contracts.orders import Entry
 from trading_platform.contracts.values import digest
 from .attended_binding import ReviewedBundle
+from .operation_plan import plan
 
 
 def check(bundle, entry, *, account_id, approved_bundle_hash, now):
     blockers = []
     policy = bundle.policy
+    operation_plan = None
+    if bundle.broker_profile is not None:
+        try:
+            operation_plan=plan(bundle.broker_profile,entry,authenticated_identity=bundle.broker_profile.identity,
+                                approved_hash=bundle.broker_profile_hash,now=now)
+            blockers.extend(operation_plan['blockers'])
+        except ValueError:
+            blockers.append('INVALID_OPERATION_PROFILE')
     if digest(bundle) != approved_bundle_hash:
         blockers.append('REVIEW_PIN_MISMATCH')
     if (policy.account_id != account_id
@@ -37,7 +46,7 @@ def check(bundle, entry, *, account_id, approved_bundle_hash, now):
         blockers.append('PRICE_GRID_MISMATCH')
     return dict(status='BLOCKED' if blockers else 'INPUTS_VALIDATED_NOT_BROKER_READY',
                 blockers=blockers, orders_enabled=False, broker_connected=False,
-                bundle_hash=digest(bundle), proposal_hash=digest(entry))
+                bundle_hash=digest(bundle), proposal_hash=digest(entry), operation_plan=operation_plan)
 
 
 def load_check(bundle_path, entry_path, **kwargs):

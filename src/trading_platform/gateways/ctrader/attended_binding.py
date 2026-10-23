@@ -21,6 +21,7 @@ from .normalization import integer, units, wire_volume
 from .read_only_session import ReadOnlySession
 from .orders import Fence
 from .broker_profile import BrokerProfile, demo_identity
+from .operation_plan import plan
 
 
 class ReviewedBundle(Record):
@@ -177,11 +178,16 @@ class Binding:
             if ((bundle.broker_profile is None and trader.get('brokerName')!='FxPro') or trader.get('accessRights')!='FULL_ACCESS'
                     or trader.get('isLimitedRisk') is not False):
                 raise ValueError('unsupported broker account profile')
+            operation_plan=None
             if bundle.broker_profile is not None:
                 actual=demo_identity(economics,account=self.session.account_id,
                                      binding=self.session.demo_binding,generation=self.session.generation)
                 bundle.broker_profile.verify(authenticated_identity=actual,
                     approved_hash=bundle.broker_profile_hash,now=now)
+                operation_plan=plan(bundle.broker_profile,entry,authenticated_identity=actual,
+                                    approved_hash=bundle.broker_profile_hash,now=now)
+                if operation_plan['blockers']:
+                    raise ValueError('operation capability blocked: '+','.join(operation_plan['blockers']))
                 assets=self.economics.assets.get('asset',[])
                 quote=[a for a in assets if str(a['assetId'])==str(candidates[0].get('quoteAssetId'))]
                 if len(quote)!=1 or quote[0]['name']!=p.quote_currency:
@@ -201,13 +207,14 @@ class Binding:
                 observed_at=economics['observed_at'],classification='demo_observed',evidence_hash=economics['evidence_hash'],
                 **economics['account'],history_complete=True,external_exposure=False,contracts={p.instrument:contract})))
             pre=Preconditions(account_id=p.account_id,is_live=False,observed_at=utc(economics['observed_at']),
-                valid_until=min(p.valid_until,bundle.broker_profile.valid_until) if bundle.broker_profile else p.valid_until,proposal_hash=digest(entry),account_profile_review=digest([trader,metadata,symbols]),
+                valid_until=min(p.valid_until,utc(operation_plan['valid_until'])) if operation_plan else p.valid_until,proposal_hash=digest(entry),account_profile_review=digest([trader,metadata,symbols]),
                 price_grid_review=bundle.price_grid_review,protection_review=bundle.protection_review,
                 costs_review=bundle.costs_review,entry_expiry_review=bundle.entry_expiry_review,
                 source_hash=bundle.source_hash,image_digest=bundle.image_digest,policy_hash=digest(p),
                 reconciled_flat=True,unresolved_commands=0,writer_fenced=True,connected=True)
             # Never roll an existing proposal expiry forward after network latency.
             result=prepare(entry,q,v,pre,now,proposal_created_at=entry.expires_at-timedelta(seconds=60), quantity=bundle.quantity)
+            if operation_plan is not None: result['operation_plan']=operation_plan
             self._preview_lease=canonical(dict(preview=result,metadata=raw,state=state,proposal_hash=digest(entry),bundle_hash=self.pin))
             return result
         finally:
