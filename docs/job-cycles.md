@@ -12,8 +12,8 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 | 3 | J06 reviewed pinned executable bundle | BLOCKED | Non-executable review packet prepared; J03–J05, modeled assumptions, rebuilt runtime and independent pins remain. |
 | 4 | J07 actual fresh connected preview | BLOCKED | Rechecked: J06 is a non-executable packet, not an approved bundle. No connection attempted; fresh data and final J08 configuration also required. |
 | 4 | J08 attended launcher/deployment wiring | DONE offline | Installed Docker578tests+4subtests; deployment disabled CLI smoke passed. Actual activation/acceptance depends on J06/J07/J09. |
-| 5 | J09 bounded plan and authorization | BLOCKED | Exact reviewable configuration and preview; orders remain disabled. |
-| 5 | J10 first bounded demo test | BLOCKED | J08/J09 and fresh send-time validation; no authorization yet. |
+| 5 | J09 bounded plan and authorization | BLOCKED | NAS100 draft refreshed for J08; exact prices, modeled amounts, reviewed bundle and fresh preview missing. No authorization requested prematurely. |
+| 5 | J10 first bounded demo test | BLOCKED | J08 offline wiring complete; J06/J07/J09 and fresh send-time validation unresolved. No order attempted. |
 
 Later J11–J27 retain the meanings assigned in chat; they are outside this cycle request. J10 completion does not authorize unattended strategy trading or live trading.
 
