@@ -6,8 +6,8 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 |---|---|---|---|
 | 1 | J01 demo modeled-risk policy | DONE offline | F6.4k;562tests+4subtests. No real assumptions approved. |
 | 1 | J02 actual portable v3 exporter capture | DONE observation/import | Capture005 validated2026-10-24; no execution qualification. |
-| 2 | J03 contract/grid/unit review | IN_PROGRESS | Account-specific applicability evidence. |
-| 2 | J04 fees/rounding/financing/settlement rules | IN_PROGRESS | Documentation plus later observed settlement; do not invent complete costs. |
+| 2 | J03 contract/grid/unit review | BLOCKED | Review complete; LIMIT/SL/TP grid applicability and public tick terminology remain. See contract/cost review. |
+| 2 | J04 fees/rounding/financing/settlement rules | BLOCKED | Zero commission corroborated; account rounding, event clock/rules and delayed-cleanup costs unresolved. Actual settlement follows authorized tests. |
 | 3 | J05 operation support review | TODO | Exact protected LIMIT/GTD/cancel/close account scope. |
 | 3 | J06 reviewed pinned executable bundle | BLOCKED | J03–J05 and explicit modeled assumptions. |
 | 4 | J07 actual fresh connected preview | BLOCKED | J06, fresh market data and final deployment configuration. |
@@ -16,3 +16,5 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 | 5 | J10 first bounded demo test | BLOCKED | J08/J09 and fresh send-time validation; no authorization yet. |
 
 Later J11–J27 retain the meanings assigned in chat; they are outside this cycle request. J10 completion does not authorize unattended strategy trading or live trading.
+
+Cycle2 review: [contract/cost evidence](evidence/nas100-contract-cost-review.md). J03/J04 qualification remains blocked; continue J05 review, then eligible J08 offline wiring while J06 awaits evidence.

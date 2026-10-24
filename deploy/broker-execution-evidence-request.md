@@ -29,3 +29,7 @@ Narrow unsent account-specific questions:
 3. Confirm zero reported commissions/conversion fees, rounding, partial-fill/cancel charges, and current financing/index-adjustment rules and times for this demo account.
 
 Do not request or invent a guaranteed slippage ceiling: documented stops are not guaranteed. The proposed demo-only modeled-risk policy needs a separate decision and implementation; current complete-bound gate remains unchanged. No broker message has been sent.
+
+## Narrowed J03/J04 request — 2026-10-24 (unsent)
+
+V3 capture005 corroborates the prior NAS100 units; separate modeled demo policy is implemented offline. No actual assumptions are approved. Public zero index commission is now corroborated; do not ask the broker to repeat generic platform pricing. Request selected-account exceptions/applicability, monetary rounding and partial-fill/cancel charges; confirm the financing clock and DST mapping against the public 21:59 UK rule, plus index-adjustment server-midnight rules, calendar applicability and delayed-close charges. Retain the LIMIT/absolute SL/TP grid and public tick terminology questions. See [current review](../docs/evidence/nas100-contract-cost-review.md). No message has been sent.
