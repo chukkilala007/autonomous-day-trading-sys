@@ -1,12 +1,14 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-23. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-24. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
 ## Product scope
 
 Broker-portable cTrader platform; FxPro is the first qualification profile, not a shared-core requirement. See [portability decision](decisions/0005-ctrader-broker-portability.md). Strategy, broker capability and risk policy remain separate.
+
+Two-job cycle register: [J01–J10](job-cycles.md).
 
 ## Current handoff — start here
 
@@ -18,10 +20,10 @@ Broker-portable cTrader platform; FxPro is the first qualification profile, not 
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | NAS100 provenance reviewed and TP sides documented. Complete-bound cost policy cannot be supported by non-guaranteed stops; grid applicability, account expiry and fee/adjustment scope still need evidence |
-| Next concrete action | F6.4j operation capability planning delivered for current attended profile. Next F6.4k: separately typed demo modeled-risk design/implementation, preserving production cost semantics and explicit activation approval. Real account evidence, v3 capture and broker acceptance remain pending |
+| Next concrete action | Cycle1: J01 implemented/tested; complete J02 approved v3 capture. Operator selected NAS100; refresh challenge/scope before start. Then J03/J04 evidence review. Orders disabled; J09 concrete authorization remains required |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | operation-plan installed Docker runtime with final tests mounted:551passed+4subtests in5.32s, offline/no credentials;11known SDK/cache warnings |
+| Latest tests | Final modeled-risk source mounted in Docker:562passed+4subtests in8.40s, offline/no credentials;11known SDK/cache warnings |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1197,3 +1199,9 @@ Branch feature/capability_operation_planning. Added explicit combined BUY_LIMIT_
 Scope remains current demo USD-linear/HEDGED protected BUY LIMIT path; nonzero distances, cross-currency, other order profiles and real broker qualification are not claimed. Legacy no-profile reviewed path remains unchanged. Updated synthetic profile fixtures explicitly supply reviewed test claims, not real evidence. Runbook deploy/operation-capability-planning.md defines operation semantics and trust boundaries.
 
 Validation: initial full run550passed/1failed because sell fixture retained buy geometry; corrected test to valid sell geometry. Final full installed Docker runtime with final tests mounted passed551tests+4subtests in5.32s, network disabled/no credentials;11known SDK/Hypothesis warnings.11new planner tests plus existing binding regressions cover classifications, stale/future/missing evidence, identity/pin rejection, expiry cap, preflight/runtime blocking and unsupported sell semantics. Diff check passed. No broker connection/orders. Next F6.4k separate modeled-risk semantics; production complete-bound gate remains unchanged.
+
+### J01 / F6.4k — separate demo modeled risk — DONE for implementation/offline acceptance (2026-10-24)
+
+Branch feature/demo_modeled_risk. Separate policy and preview arithmetic never construct complete-bound production Contract/Policy. Reviewed fee inputs and explicit positive adverse-exit allowance, other-cost allowance and source/review hashes required. Exact minimum quantity, USD5AND0.1%equity modeled budget and10%margin reserve retained. Preview labels realized loss unbounded and separates fees/model allowances. Adapter requires explicit modeled semantics/unbounded-loss acknowledgement and FirstTestTransport; review/send gate checks matching risk semantics and hashes. Production types/transport semantics unchanged. No actual assumptions or orders approved.
+
+Initial full run559passed/3failed caught string versus integer margin account ID normalization in new path. Fixed exact integer normalization and negative margin guard;11targeted tests passed. Final full mounted-source Docker suite562passed+4subtests in8.40s, network disabled/no credentials;11known SDK/cache warnings. Runbook deploy/demo-modeled-risk.md; cycle status docs/job-cycles.md. Real reviewed values and launcher remain J06/J08; concrete activation approval J09. J02 v3 import/run authorized, imported and operator-selected NAS100, not yet started. Probe037 collected read-only; fresh scope/challenge needed. No order writes.

@@ -22,10 +22,11 @@ from .read_only_session import ReadOnlySession
 from .orders import Fence
 from .broker_profile import BrokerProfile, demo_identity
 from .operation_plan import plan
+from .modeled_risk import DemoRiskPolicy, prepare as prepare_modeled
 
 
 class ReviewedBundle(Record):
-    policy: Policy
+    policy: Policy | DemoRiskPolicy
     source_hash: Hash
     image_digest: Hash
     price_grid_review: Hash
@@ -40,6 +41,8 @@ class ReviewedBundle(Record):
 
     @model_validator(mode='after')
     def bounded_profile(self):
+        if isinstance(self.policy,DemoRiskPolicy) and (self.broker_profile is None or self.quantity!=self.policy.minimum):
+            raise ValueError('modeled demo requires broker profile and minimum quantity')
         if self.profile == 'EURUSD_USD_absolute_protected_buy_limit_gtd':
             if self.policy.instrument != 'EURUSD' or self.quantity != 1000 or self.policy.contract_value_per_unit != 1:
                 raise ValueError('legacy EURUSD profile changed')
@@ -198,14 +201,6 @@ class Binding:
                 current=dict(current,order=current.get('order',[]),position=current.get('position',[]))
             if current['order'] or current['position']: raise ValueError('broker exposure not flat')
             q=self._quote(now)
-            contract=build(p,entry,account=self.session.account_id,now=now,quote_to_account='1',
-                conversion_observed_at=utc(economics['observed_at']),
-                conversion_evidence_hash=digest({'currency':economics['account']['currency'],'quote_currency':p.quote_currency}),
-                margin_request=dict(ctidTraderAccountId=self.session.account_id,symbolId=p.symbol_id,volume=[wire_volume(bundle.quantity)]),
-                margin_response=margin,margin_observed_at=margin_at)
-            v=Valuation.model_validate_json(canonical(dict(mode='demo',account_id=p.account_id,
-                observed_at=economics['observed_at'],classification='demo_observed',evidence_hash=economics['evidence_hash'],
-                **economics['account'],history_complete=True,external_exposure=False,contracts={p.instrument:contract})))
             pre=Preconditions(account_id=p.account_id,is_live=False,observed_at=utc(economics['observed_at']),
                 valid_until=min(p.valid_until,utc(operation_plan['valid_until'])) if operation_plan else p.valid_until,proposal_hash=digest(entry),account_profile_review=digest([trader,metadata,symbols]),
                 price_grid_review=bundle.price_grid_review,protection_review=bundle.protection_review,
@@ -213,7 +208,19 @@ class Binding:
                 source_hash=bundle.source_hash,image_digest=bundle.image_digest,policy_hash=digest(p),
                 reconciled_flat=True,unresolved_commands=0,writer_fenced=True,connected=True)
             # Never roll an existing proposal expiry forward after network latency.
-            result=prepare(entry,q,v,pre,now,proposal_created_at=entry.expires_at-timedelta(seconds=60), quantity=bundle.quantity)
+            if isinstance(p,DemoRiskPolicy):
+                result=prepare_modeled(p,entry,q,economics,pre,now,quantity=bundle.quantity,
+                    margin_response=margin,margin_observed_at=margin_at)
+            else:
+                contract=build(p,entry,account=self.session.account_id,now=now,quote_to_account='1',
+                    conversion_observed_at=utc(economics['observed_at']),
+                    conversion_evidence_hash=digest({'currency':economics['account']['currency'],'quote_currency':p.quote_currency}),
+                    margin_request=dict(ctidTraderAccountId=self.session.account_id,symbolId=p.symbol_id,volume=[wire_volume(bundle.quantity)]),
+                    margin_response=margin,margin_observed_at=margin_at)
+                v=Valuation.model_validate_json(canonical(dict(mode='demo',account_id=p.account_id,
+                    observed_at=economics['observed_at'],classification='demo_observed',evidence_hash=economics['evidence_hash'],
+                    **economics['account'],history_complete=True,external_exposure=False,contracts={p.instrument:contract})))
+                result=prepare(entry,q,v,pre,now,proposal_created_at=entry.expires_at-timedelta(seconds=60), quantity=bundle.quantity)
             if operation_plan is not None: result['operation_plan']=operation_plan
             self._preview_lease=canonical(dict(preview=result,metadata=raw,state=state,proposal_hash=digest(entry),bundle_hash=self.pin))
             return result
