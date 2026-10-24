@@ -9,7 +9,7 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 | 2 | J03 contract/grid/unit review | BLOCKED | Review complete; LIMIT/SL/TP grid applicability and public tick terminology remain. See contract/cost review. |
 | 2 | J04 fees/rounding/financing/settlement rules | BLOCKED | Zero commission corroborated; account rounding, event clock/rules and delayed-cleanup costs unresolved. Actual settlement follows authorized tests. |
 | 3 | J05 operation support review | BLOCKED | Documentation/protocol review complete; exact account protected LIMIT/GTD expiry and scoped management evidence pending. |
-| 3 | J06 reviewed pinned executable bundle | BLOCKED | J03–J05 and explicit modeled assumptions. |
+| 3 | J06 reviewed pinned executable bundle | BLOCKED | Non-executable review packet prepared; J03–J05, modeled assumptions, rebuilt runtime and independent pins remain. |
 | 4 | J07 actual fresh connected preview | BLOCKED | J06, fresh market data and final deployment configuration. |
 | 4 | J08 attended launcher/deployment wiring | TODO | Offline work eligible; activation depends on J06/J09. |
 | 5 | J09 bounded plan and authorization | BLOCKED | Exact reviewable configuration and preview; orders remain disabled. |

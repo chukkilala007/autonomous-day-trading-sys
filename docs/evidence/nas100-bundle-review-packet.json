@@ -1,0 +1,56 @@
+{
+  "blockers": [
+    "J03_GRID_APPLICABILITY",
+    "J04_COST_RULES",
+    "J05_ACCOUNT_OPERATION_SCOPE",
+    "MODELED_ASSUMPTIONS_NOT_REVIEWED",
+    "RUNTIME_RELEASE_NOT_PINNED",
+    "INDEPENDENT_BUNDLE_REVIEW_PENDING"
+  ],
+  "broker_connected": false,
+  "candidate": {
+    "contract_value_per_unit": "1",
+    "currency": "USD",
+    "instrument": "NAS100",
+    "maximum": "500",
+    "minimum": "0.01",
+    "native_symbol": "#USNDAQ100",
+    "quantity": "0.01",
+    "quote_currency": "USD",
+    "realized_loss_bounded": false,
+    "risk_semantics": "demo_modeled_risk",
+    "step": "0.01",
+    "symbol_id": 1107,
+    "tick": "0.01"
+  },
+  "candidate_classification": "historical_observation_pending_executable_review",
+  "format": "attended_bundle_review_packet_v1",
+  "orders_enabled": false,
+  "scope": "Selected demo account identified by private capture005 scope; identity is not duplicated here",
+  "sources": {
+    "docs/evidence/nas100-algo-capture-005.json": "fd4623a3305267a5a4d5bb1adb5808a47aa7fb2d22fb74ec3b8b149d73bf41b7",
+    "docs/evidence/nas100-contract-cost-review.md": "67c1c71afd4dc7f73aa5ac4dad02efd932c0dba00e5b2056f3ac743e4e233df0",
+    "docs/evidence/nas100-operation-review.md": "4a99846841dce81733d8c791fc80ab91fa0adf7c2ce3740f1d3aadcf940f3b27"
+  },
+  "status": "BLOCKED_NOT_EXECUTABLE",
+  "unresolved": {
+    "account_scoped_operation_evidence": null,
+    "adverse_exit_price_allowance": null,
+    "assumptions_review_hash": null,
+    "contract_value_review": null,
+    "costs_review": null,
+    "entry_expiry_review": null,
+    "independently_approved_bundle_hash": null,
+    "independently_approved_profile_hash": null,
+    "other_cost_allowance": null,
+    "policy_validity_interval": null,
+    "price_grid_review": null,
+    "profile_validity_interval": null,
+    "protection_review": null,
+    "roundtrip_fee_per_unit": null,
+    "roundtrip_fixed_fee": null,
+    "roundtrip_minimum_fee": null,
+    "tested_runtime_image_digest": null,
+    "tested_runtime_source_hash": null
+  }
+}
