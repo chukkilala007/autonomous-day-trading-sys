@@ -20,10 +20,10 @@ Two-job cycle register: [J01–J10](job-cycles.md).
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | NAS100 provenance reviewed and TP sides documented. J01 separate modeled policy implemented; real assumptions remain unapproved. Grid applicability, account expiry and fee/adjustment scope still need evidence |
-| Next concrete action | J05 documentation/protocol review complete; account qualification blocked. J06 non-executable review packet prepared, no approved bundle. Resolve J03–J05 evidence and model assumptions; J08 offline launcher is next eligible implementation. J07 requires fresh market data and finalized bundle; J09 remains mandatory before orders |
+| Next concrete action | J08 launcher offline acceptance complete:578tests+4subtests and non-root deployment disabled CLI smoke passed. J07 remains blocked on J06. Next pair J09/J10 cannot activate until J03–J06 facts/assumptions, fresh preview and explicit order authorization exist |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Final modeled-risk source mounted in Docker:562passed+4subtests in8.40s, offline/no credentials;11known SDK/cache warnings |
+| Latest tests | Installed attended-launcher Docker:578passed+4subtests in49.85s;16new launcher tests, offline/no credentials;11known SDK/Hypothesis warnings |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1229,3 +1229,9 @@ Branch feature/reviewed_bundle_preparation. Added non-executable NAS100 review p
 ### J07 — connected preview dependency check (2026-10-24)
 
 Branch feature/connected_preview_gate_check. The only current J06 artifact is the explicitly non-executable NAS100 review packet; no independently approved bundle exists. Its prior offline check returns INVALID_REVIEW_FILE before credentials or connection. J07 remains BLOCKED on J03–J06 and final launcher configuration; no redundant broker connection, stale proposal reuse or fabricated preview performed. Market freshness must be measured at the eventual run, not inferred from the date or old capture. Next J08 offline launcher wiring. Documentation check only; prior runtime baseline unchanged.
+
+### J08 — attended test launcher — DONE for offline implementation (2026-10-24)
+
+Branch feature/attended_test_launcher. New Docker-compatible one-shot composition of verified client, read-only session, binding, first-test transport, adapter, ledger, provider and monitor. Default disabled exits without reading inputs/secrets/storage. Active path requires four independent pins including settlement policy, portable profile and matching risk semantics; one original proposal, durable one-attempt journal, no resend after uncertain acknowledgement. Explicit recovery mode monitors/manages only an existing attempt and preserves expired entry approvals without renewing them. Recovery economics verify broker/account identity.
+
+180second invocation bound, monitor deadlines unchanged; shutdown revokes writes/retire callbacks, private exclusive0600 redacted report. Unconfirmed timeout/shutdown never claims flatness. Operator recovery/takeover required if exposure remains; no unattended service claimed. Runbook deploy/attended-test-launcher.md. Initial13tests passed; final installed Docker suite578passed+4subtests in49.85s,11known SDK/Hypothesis warnings. Includes16launcher tests. Gateway runtime target built successfully; non-root/read-only/network-none/cap-drop disabled CLI smoke returned DISABLED with exit0. Gateway image config SHA2560ec551d701f4291f38a7c2c32f8fd12a5e4a828dacae4ed02b10d6ebfc7a5580 is a build observation, not an independent J06 approval pin. Diff check passed. No broker connection/order or real approval supplied.
