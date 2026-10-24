@@ -26,6 +26,7 @@ class Review(Record):
     valid_until: Time
     # These are outputs to collect, not facts promoted by this review.
     acceptance_observed: Literal[False] = False
+    risk_semantics: Literal['verified_bound','demo_modeled_risk'] = 'verified_bound'
 
 
 class FirstTestTransport(DemoTransport):
@@ -60,6 +61,14 @@ class FirstTestTransport(DemoTransport):
         from .attended_binding import ReviewedBundle
         bundle=ReviewedBundle.model_validate_json(self.binding._bundle_json)
         if digest(bundle)!=self.binding.pin: raise ValueError('reviewed bundle changed')
+        from .modeled_risk import DemoRiskPolicy
+        modeled=isinstance(bundle.policy,DemoRiskPolicy)
+        expected='demo_modeled_risk' if modeled else 'verified_bound'
+        if report.risk_semantics!=expected or preview.get('risk_semantics','verified_bound')!=expected:
+            raise ValueError('risk semantics mismatch')
+        if modeled and (preview.get('realized_loss_bounded') is not False or preview.get('risk_policy_hash')!=digest(bundle.policy)
+                or preview.get('assumptions_review_hash')!=bundle.policy.assumptions_review_hash):
+            raise ValueError('modeled assumptions mismatch')
         quantity=bundle.quantity
         entry=Entry.model_validate_json(json.dumps(command['body']['decision']['proposal']))
         if (entry.instrument!=report.symbol or command['body']['decision']['environment']!='demo' or digest(entry)!=lease['proposal_hash']

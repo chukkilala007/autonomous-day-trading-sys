@@ -26,6 +26,8 @@ class Approval(Record):
     submit_before: Time
     maximum_loss: Positive
     quantity: Positive = '1000'
+    risk_semantics: Literal['verified_bound','demo_modeled_risk'] = 'verified_bound'
+    accepts_unbounded_realized_loss: bool = False
     scope: Literal['one_entry_and_owned_cancel_close'] = 'one_entry_and_owned_cancel_close'
 
 
@@ -43,6 +45,13 @@ class Adapter:
             raise ValueError('unapproved evidence')
         from .attended_binding import ReviewedBundle
         bundle=ReviewedBundle.model_validate_json(binding._bundle_json)
+        from .modeled_risk import DemoRiskPolicy
+        modeled=isinstance(bundle.policy,DemoRiskPolicy)
+        if approval.risk_semantics!=('demo_modeled_risk' if modeled else 'verified_bound') or (modeled and not approval.accepts_unbounded_realized_loss):
+            raise ValueError('explicit modeled risk approval required')
+        if modeled:
+            from .first_test import FirstTestTransport
+            if type(gateway) is not FirstTestTransport: raise ValueError('modeled policy requires first-test transport')
         if approval.quantity!=bundle.quantity: raise ValueError('approved quantity differs from reviewed bundle')
         self.gateway=gateway;self.binding=binding;self.ledger=ledger;self.now=now
         self.approval=approval;self.approved_hash=approved_hash;self.report=type(report).model_validate_json(report.model_dump_json())
