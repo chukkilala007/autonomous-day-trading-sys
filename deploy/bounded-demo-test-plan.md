@@ -1,5 +1,31 @@
 # Proposed first attended demo-order test
 
+## Current J09/J10 disposition — 2026-10-24
+
+Status: DRAFT WITH BLOCKERS, NOT AUTHORIZED. This section supersedes the historical EURUSD scope below. The current candidate is NAS100 / #USNDAQ100 /1107 on selected demo account48232468, minimum0.01units, on this Mac's Docker host. J08's [attended launcher](attended-test-launcher.md) is implemented and offline-tested; no actual order has been sent.
+
+Proposed test: one protected BUY LIMIT with absolute SL/TP, original proposal expiry60seconds after proposal creation (not after delayed submission), one durable account-wide attempt, exact minimum quantity. Modeled budget is the smaller of USD5 and0.1%fresh equity, with10%equity margin reserve. Realized loss is not bounded. No second attempt after uncertainty/rejection/restart; no strategy trading. These are proposed authorization limits, not an approved order.
+
+| Final authorization input | Current state |
+|---|---|
+| Selected account and native symbol | Historical authenticated/exporter evidence; revalidate at run |
+| Account grid, cost and operation applicability | J03–J05 unresolved |
+| Independently pinned executable policy/profile/bundle | J06 blocked; review packet is non-executable |
+| Reviewed adverse-exit/other-cost amounts and settlement conventions | Missing; never infer zero or a guaranteed bound |
+| Exact entry, stop, target, expiry and original proposal hash | Not selected; need fresh market conditions |
+| Timestamped connected preview and current clock/feed qualification | J07 blocked; historical EURUSD interval does not qualify NAS100 |
+| Tested deployment | J08 installed suite578tests+4subtests; gateway disabled smoke passed; final independent release pins still J06 |
+| FirstTest Review, Approval, four independent launcher pins | Not issued; needs complete reviewable configuration and explicit authorization |
+
+After evidence is available, run the required read-only interval/reconnect checks for the selected symbol and a fresh connected preview. Present the exact proposal and modeled assumptions for authorization; subsequent send-time collection must still validate the unchanged proposal before its original deadline. If approval arrives too late, do not renew expiry or change prices under that approval. Generate a new reviewable proposal and obtain fresh authorization. No approval question is being asked now because prices, assumptions and the executable bundle are missing.
+
+J10 acceptance records must distinguish accepted/rejected/unfilled/filled/uncertain outcomes, original correlation, actual attached protection, owned cleanup, reconciliation and settlement. The monitor requests cancellation after20seconds or partial fill, closes unprotected owned exposure promptly and requests residual closure at120seconds. The launcher stops unconfirmed after180seconds if necessary; that is not a flatness guarantee. Preserve state for recovery/operator takeover. No-fill is not fee or protection qualification. Further lifecycle cases remain separately scoped after first-result review.
+
+J09 remains BLOCKED (draft prepared, authorization absent). J10 remains BLOCKED and unattempted. This pair cannot be completed by offline tests or by reclassifying general broker documentation. Next unblock actions are J03–J06 evidence/assumptions and J07 fresh qualification.
+
+## Historical plan and delivery record (superseded where above differs)
+
+
 Status: PREPARED, NOT AUTHORIZED FOR SUBMISSION. User requested preparation on 2026-10-20. This document is not executable configuration and does not enable the gateway.
 
 ## Scope and hard bounds
