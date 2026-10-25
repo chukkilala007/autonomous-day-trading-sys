@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from twisted.internet import defer, task
@@ -43,7 +44,7 @@ def run(reactor, args, now=lambda: datetime.now(timezone.utc)):
     # Exclusive creation also refuses symlinks/existing output. No secrets accessed yet.
     fd = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     report = dict(status='FAILED', reason='READONLY_PREVIEW_FAILED', orders_enabled=False)
-    client = db = session = None
+    client = db = session = buffer = None
     try:
         # Recheck parsed inputs against the pin before assembly.
         preflight = load_check(args.bundle, args.proposal, account_id=args.account_id,
@@ -65,11 +66,13 @@ def run(reactor, args, now=lambda: datetime.now(timezone.utc)):
             session = ReadOnlySession(client, store, args.account_id)
             feed = Feed(db)
             stream = Stream(session, feed, {bundle.policy.instrument:bundle.policy.symbol_id}, [], now)
+            from .spot_buffer import configured_buffer
+            buffer = configured_buffer(stream, reactor, time.monotonic, getattr(args, 'quote_buffer_ms', 0))
             core = 'readonly-preview'
             epoch = Fence(db, args.account_id).acquire(core)
             binding = Binding(session, stream, db, bundle,
                               approved_bundle_hash=args.approved_bundle_hash,
-                              core_id=core, epoch=epoch, now=now)
+                              core_id=core, epoch=epoch, now=now, spot_buffer=buffer)
             def disconnected(*event):
                 session.disconnected(*event)
                 stream.disconnected()
@@ -87,6 +90,9 @@ def run(reactor, args, now=lambda: datetime.now(timezone.utc)):
             client.setMessageReceivedCallback(lambda *_: None)
             client.setConnectedCallback(lambda *_: None)
             client.setDisconnectedCallback(lambda *_: None)
+        if buffer is not None:
+            report['quote_buffer'] = buffer.report()
+            buffer.reset()
         if session is not None:
             if session.authenticated is not None and not session.authenticated.called:
                 session.authenticated.cancel()
@@ -114,6 +120,7 @@ def main():
     for name in ('bundle','proposal','account-id','approved-bundle-hash',
                  'credentials','tokens','database','output'):
         parser.add_argument('--'+name, required=True)
+    parser.add_argument('--quote-buffer-ms', type=int, choices=(0, 100), default=0)
     args = parser.parse_args()
     @defer.inlineCallbacks
     def execute(reactor):

@@ -105,3 +105,10 @@ class SpotBuffer:
     def report(self):
         return dict(enabled=True,max_lead_ms=100,max_residence_ms=250,max_pending=64,
                     pending=sum(len(s['queue']) for s in self.pending.values()),counts=dict(self.stats))
+
+
+def configured_buffer(stream, scheduler, monotonic, milliseconds=0):
+    """Explicit opt-in only; callers cannot widen the reviewed causal bound."""
+    if type(milliseconds) is not int or milliseconds not in (0, 100):
+        raise ValueError('quote buffer must be 0 or 100 milliseconds')
+    return SpotBuffer(stream, scheduler, monotonic) if milliseconds else None

@@ -37,3 +37,9 @@ The report is created exclusively at0600 and fsynced, rejects existing output pa
 ## Qualification boundary
 
 Offline fixtures validate wiring; they do not establish actual broker acceptance or cleanup. J07 still lacks J06's executable bundle. J09 cannot finalize prices/approval until that bundle and fresh preview exist. J10 remains blocked and no active invocation was made during implementation.
+
+## Opt-in causal quote buffering
+
+Both attended launchers now accept `--quote-buffer-ms 100`; default0 retains strict immediate processing. No other bound is accepted. This holds only source timestamps up to100ms ahead, with250ms residence and64pending limits, then runs the unchanged strict stream validator. Timestamps are never rewritten. The trusted binding routes only spot messages through the buffer; execution events continue through the existing ledger path. A pending queue inhibits previews and send-time quote checks, even if an older quote was valid. Disconnect resets queues and invalidates coverage; shutdown resets timers before database close.
+
+The output includes buffer metrics when enabled. Select/review this flag with the final deployment configuration and regenerate source/image review pins after this code change. This is not order authorization, a clock correction or relaxed acceptance of future prices. Real broker ten-minute observations do not establish order acceptance.
