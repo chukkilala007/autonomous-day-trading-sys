@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-24. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-25. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -1239,3 +1239,7 @@ Branch feature/attended_test_launcher. New Docker-compatible one-shot compositio
 ### J09/J10 — activation-plan iteration (2026-10-24)
 
 Branch feature/demo_activation_plan. Updated bounded-demo-test-plan current section to NAS100 minimum0.01units and modeled semantics, retaining historical EURUSD records as superseded. Corrected current expiry description to60seconds from original proposal creation. Added explicit missing-input table, J08 deployment evidence and no-renewal authorization handling. No premature approval request, no fabricated current prices/allowances/bundle and no order. J09 draft prepared but BLOCKED on J03–J07; J10 BLOCKED/unattempted. Documentation whitespace check passed; installed578tests+4subtests unchanged. Two-job iterations through J10 have been assessed, not falsely completed.
+
+### J05–J10 market recheck (2026-10-25)
+
+Branch feature/market_freshness_recheck. Fresh read-only probe038 COLLECTED; NAS100 mapping/geometry unchanged, zero last24h M1 rows. Existing session validator reports SCHEDULED_CLOSED at21:37UTC; returned opening22:00:45UTC/London. Stream038 observed60.003seconds with one Friday20:59:35UTC snapshot, zero callback errors/rejections/write attempts. Separate source-age gate rejects it despite feed causal-valid flag. No actual fresh preview, reconnect qualification or order. Sanitized evidence and source hashes committed; private reports/tokens preserved. Request allowlist and whitespace checks passed; runtime unchanged,578tests+4subtests baseline not repeated. Next probe039; recheck fresh open-session feed, then J07 only after J06 evidence/pins. Remaining non-market blockers unchanged.

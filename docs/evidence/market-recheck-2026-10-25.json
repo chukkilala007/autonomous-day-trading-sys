@@ -1,0 +1,46 @@
+{
+  "counts": {
+    "callback_errors": 0,
+    "spots": 1
+  },
+  "ended_at": "2026-10-25T21:38:46.900197+00:00",
+  "failures": {},
+  "fresh_quote_at_end": false,
+  "future_quote_lead_us": {},
+  "last_quote": {
+    "ask": "29022.85",
+    "basis": "bid_ask",
+    "bid": "29020.75",
+    "instrument": "#USNDAQ100",
+    "received_at": "2026-10-25T21:37:46.885421+00:00",
+    "source_time": "2026-10-23T20:59:35.409000+00:00"
+  },
+  "next_scheduled_open_utc": "2026-10-25T22:00:45Z",
+  "orders_enabled": false,
+  "probe_collected_at": "2026-10-25T21:37:34.779167+00:00",
+  "qualification_complete": false,
+  "quote_age_seconds_at_end": 175151.491197,
+  "quote_valid": {
+    "valid": true
+  },
+  "quote_valid_limitation": "Feed causal-valid flag is not freshness; attended binding separately enforces source age below two seconds.",
+  "rejected_writes": 0,
+  "requests": {
+    "ProtoOAAccountAuthReq": 1,
+    "ProtoOAApplicationAuthReq": 1,
+    "ProtoOAExpectedMarginReq": 1,
+    "ProtoOAGetAccountListByAccessTokenReq": 1,
+    "ProtoOASubscribeSpotsReq": 1
+  },
+  "scheduled_state": "SCHEDULED_CLOSED",
+  "source_sha256": {
+    "nas100-readonly-038.py": "3109bb8ac61aabc2d21a3f6acd5db32a050e1ed5743a6daebfd47103fc3fe2df",
+    "nas100-stream-038.json": "61d6f22ce0e845783aa9c2c3a04b9b92b6e1d8c72edd74bf672f8d4ac34d6311",
+    "probe-038.json": "9f6085301769965334bb4ad52811cf4ad636adaccd68b64b31bfdb922df3ef3d"
+  },
+  "spot_rejections": {},
+  "started_at": "2026-10-25T21:37:46.897082+00:00",
+  "status": "OBSERVED",
+  "symbol": "#USNDAQ100",
+  "symbol_id": 1107
+}
