@@ -18,3 +18,5 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 Later J11–J27 retain the meanings assigned in chat; they are outside this cycle request. J10 completion does not authorize unattended strategy trading or live trading.
 
 Cycle2 review: [contract/cost evidence](evidence/nas100-contract-cost-review.md). J03/J04 qualification remains blocked; continue J05 review, then eligible J08 offline wiring while J06 awaits evidence.
+
+2026-10-25 recheck: [probe/stream038](evidence/market-recheck-2026-10-25.md) authenticated, but NAS100 was scheduled closed at21:37UTC; one Friday snapshot only. Next returned scheduled opening22:00:45London25October, subject to actual fresh quotes. J05–J07/J09–J10 blockers unchanged; J08 remains offline DONE.
