@@ -74,7 +74,7 @@ class Binding:
     ledger: any prior commands/intents/reservations/positions require a separate
     recovery workflow, never an optimistic 'already resolved' assertion.
     """
-    def __init__(self, session, stream, db, bundle, *, approved_bundle_hash, core_id, epoch, now):
+    def __init__(self, session, stream, db, bundle, *, approved_bundle_hash, core_id, epoch, now, spot_buffer=None):
         if not isinstance(session, ReadOnlySession):
             raise ValueError('read-only session required')
         bundle=ReviewedBundle.model_validate_json(bundle.model_dump_json())
@@ -86,6 +86,9 @@ class Binding:
             raise ValueError('unsupported bound account/contract')
         if stream.session is not session or stream.feed.db is not db or stream.symbols.get(p.instrument)!=p.symbol_id:
             raise ValueError('foreign stream or storage')
+        if spot_buffer is not None and spot_buffer.stream is not stream:
+            raise ValueError('foreign quote buffer')
+        self.spot_receiver=spot_buffer or stream
         self.symbol=p.instrument
         self.session=session; self.stream=stream; self.db=db; self.now=now
         self._bundle_json=bundle.model_dump_json(); self.pin=approved_bundle_hash
@@ -99,7 +102,7 @@ class Binding:
             payload=Protobuf.extract(message)
             name=payload.DESCRIPTOR.name
             if name=='ProtoOASpotEvent':
-                self.stream.on_spot(MessageToDict(payload,preserving_proto_field_name=True))
+                self.spot_receiver.on_spot(MessageToDict(payload,preserving_proto_field_name=True))
             elif name.endswith('Event'):
                 self.revision+=1
                 self.failed_event=True

@@ -33,3 +33,15 @@ Do not request or invent a guaranteed slippage ceiling: documented stops are not
 ## Narrowed J03/J04 request — 2026-10-24 (unsent)
 
 V3 capture005 corroborates the prior NAS100 units; separate modeled demo policy is implemented offline. No actual assumptions are approved. Public zero index commission is now corroborated; do not ask the broker to repeat generic platform pricing. Request selected-account exceptions/applicability, monetary rounding and partial-fill/cancel charges; confirm the financing clock and DST mapping against the public 21:59 UK rule, plus index-adjustment server-midnight rules, calendar applicability and delayed-close charges. Retain the LIMIT/absolute SL/TP grid and public tick terminology questions. See [current review](../docs/evidence/nas100-contract-cost-review.md). No message has been sent.
+
+## Consolidated current request — NAS100 (prepared, not sent)
+
+Please confirm these conditions for our selected FxPro cTrader USD demo account, Open API48232468/native login10645472, symbol#USNDAQ100/1107. Please identify the applicable date/account scope. No credentials are needed.
+
+1. Does the observed0.01price increment apply to BUY LIMIT entry and attached absolute stop-loss/take-profit? Confirm the contract cash value per unit per full index point, and clarify the public USD1tick label versus Algo TickSize0.01/TickValueUSD0.01/PipValueUSD1.
+2. Is a0.01unit BUY LIMIT with attached absolute SL/TP and GOOD_TILL_DATE supported through Open API? Specify minimum remaining expiry lead and any entry/protection distances. Our proposal expires60seconds after creation, so remaining lead at receipt is shorter. Confirm default attached-stop trigger side/method; we do not interpret the STOP/STOP_LIMIT entry-trigger field as selecting attached LIMIT protection.
+3. Confirm applicability of pending cancellation and full closure of this minimum-size position through Open API, including any account restrictions. We understand cancellation may race with execution and request acceptance is not proof of closure.
+4. Confirm account-specific commission/minimum/fixed charges, partial-fill/cancel treatment and monetary rounding. Identify the authoritative deal fields/sign conventions for opening/closing commission, conversion charges and swap, whether closing commission includes opening charges, and whether separate cash entries must be reconciled.
+5. Confirm financing and index-adjustment rates/calendars, charging clock/timezone/DST, withholding and delayed-close charges applicable to this account. Clarify the public21:59UK swap time and server-midnight dividend rule. We do not assume a short planned holding interval guarantees avoidance.
+
+These answers support pre-test review. Actual order acceptance, fill/protection behavior and settlement remain observations for a separately authorized demo test. We are not requesting a guaranteed slippage ceiling. This request has not been transmitted.

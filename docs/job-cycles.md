@@ -22,3 +22,5 @@ Cycle2 review: [contract/cost evidence](evidence/nas100-contract-cost-review.md)
 2026-10-25 recheck: [probe/stream038](evidence/market-recheck-2026-10-25.md) authenticated, but NAS100 was scheduled closed at21:37UTC; one Friday snapshot only. Next returned scheduled opening22:00:45London25October, subject to actual fresh quotes. J05–J07/J09–J10 blockers unchanged; J08 remains offline DONE.
 
 Later2026-10-25 [open-session retry](evidence/nas100-open-session-retry.md): probe039 SCHEDULED_OPEN; unbuffered039 rejected139/153future updates; existing100ms buffered collector040 passed60seconds with161updates/146releases/zero rejections. This clears observed market availability only. J07 full interval/reconnect and approved-bundle preview remain; attended launcher still uses strict unbuffered Stream.
+
+J08a: optional100ms causal buffering now integrated in both attended launchers; default remains0. Nine new tests; installed587tests+4subtests and disabled deployment smoke passed. Current read-only ten-minute run041 is pending; proposal-bound J07 preview still requires J06.

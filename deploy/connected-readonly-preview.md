@@ -23,3 +23,9 @@ The complete authentication, subscription, causal quote wait and preview collect
 The launcher authenticates only a demo account, repairs its quote subscription and uses the same-generation trusted binding for current economics and margin. Disconnect/reconnect, invalidation or missing fresh prices fail closed. No future-quote buffering is enabled by this launcher. It retires callbacks, revokes session readiness, stops the client and releases the database lock before writing the final report. A shutdown failure cannot be reported as success.
 
 Exit0 and PREPARED_NOT_AUTHORIZED indicate a read-only preview only. Exit2 indicates blocked/failed preparation. Even a successful saved preview becomes stale quickly and cannot be used as a send permit. The adapter must repeat send-time checks under separately approved bounded authorization. Actual reviewed policy facts and real-broker launcher acceptance remain outstanding; offline tests do not supply them.
+
+## Opt-in causal quote buffering
+
+Both attended launchers now accept `--quote-buffer-ms 100`; default0 retains strict immediate processing. No other bound is accepted. This holds only source timestamps up to100ms ahead, with250ms residence and64pending limits, then runs the unchanged strict stream validator. Timestamps are never rewritten. The trusted binding routes only spot messages through the buffer; execution events continue through the existing ledger path. A pending queue inhibits previews and send-time quote checks, even if an older quote was valid. Disconnect resets queues and invalidates coverage; shutdown resets timers before database close.
+
+The output includes buffer metrics when enabled. Select/review this flag with the final deployment configuration and regenerate source/image review pins after this code change. This is not order authorization, a clock correction or relaxed acceptance of future prices. Real broker ten-minute observations do not establish order acceptance.

@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -66,11 +67,11 @@ def inputs(args, now):
     return SimpleNamespace(bundle=bundle, entry=entry, review=review, approval=approval, costs=costs)
 
 
-def assemble(session, stream, db, data, args, now):
+def assemble(session, stream, db, data, args, now, *, spot_buffer=None):
     core = 'attended-first-test'
     epoch = Fence(db, args.account_id).acquire(core)
     binding = Binding(session, stream, db, data.bundle, approved_bundle_hash=args.approved_bundle_hash,
-                      core_id=core, epoch=epoch, now=now)
+                      core_id=core, epoch=epoch, now=now, spot_buffer=spot_buffer)
     gateway = FirstTestTransport(binding, data.review, approved_review_hash=args.approved_review_hash,
                                  approved_approval_hash=args.approved_approval_hash, authorized=args.execute)
     adapter = Adapter(gateway, binding, ExecutionLedger(db, int(args.account_id)), data.review,
@@ -135,7 +136,7 @@ def lifecycle(reactor, session, stream, adapter, monitor, entry, *, recover):
 def run(reactor, args, now=lambda: datetime.now(timezone.utc)):
     fd = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     report = dict(status='DISABLED', orders_enabled=False, exposure_resolved=False)
-    client = session = db = monitor = adapter = None
+    client = session = db = monitor = adapter = buffer = None
     try:
         if args.execute:
             data = inputs(args, now())
@@ -145,7 +146,9 @@ def run(reactor, args, now=lambda: datetime.now(timezone.utc)):
             client = VerifiedClient(reactor)
             session = ReadOnlySession(client, store, args.account_id)
             stream = Stream(session, Feed(db), {data.bundle.policy.instrument:data.bundle.policy.symbol_id}, [], now)
-            adapter, monitor = assemble(session, stream, db, data, args, now)
+            from .spot_buffer import configured_buffer
+            buffer = configured_buffer(stream, reactor, time.monotonic, getattr(args, 'quote_buffer_ms', 0))
+            adapter, monitor = assemble(session, stream, db, data, args, now, spot_buffer=buffer)
             def disconnected(*event):
                 session.disconnected(*event)
                 stream.disconnected()
@@ -169,6 +172,9 @@ def run(reactor, args, now=lambda: datetime.now(timezone.utc)):
             client.setMessageReceivedCallback(lambda *_: None)
             client.setConnectedCallback(lambda *_: None)
             client.setDisconnectedCallback(lambda *_: None)
+        if buffer is not None:
+            report['quote_buffer'] = buffer.report()
+            buffer.reset()
         if session is not None:
             if session.authenticated is not None and not session.authenticated.called:
                 session.authenticated.cancel()
@@ -200,6 +206,7 @@ def main():
                  'approved-bundle-hash', 'approved-review-hash', 'approved-approval-hash',
                  'approved-cost-policy-hash', 'credentials', 'tokens', 'database', 'output'):
         parser.add_argument('--'+name, required=True)
+    parser.add_argument('--quote-buffer-ms', type=int, choices=(0, 100), default=0)
     parser.add_argument('--execute', action='store_true', help='Requires separately authorized, pinned J09 inputs')
     parser.add_argument('--recover', action='store_true', help='Only monitor/manage an existing consumed attempt; never submit')
     args = parser.parse_args()
