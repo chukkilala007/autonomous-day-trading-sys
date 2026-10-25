@@ -1,0 +1,49 @@
+{
+  "bounded_freshness_passed": true,
+  "counts": {
+    "callback_errors": 0,
+    "spots": 161
+  },
+  "ended_at": "2026-10-25T23:03:55.572398+00:00",
+  "full_qualification_complete": false,
+  "last_quote": {
+    "ask": "29145.8",
+    "basis": "bid_ask",
+    "bid": "29142.3",
+    "instrument": "#USNDAQ100",
+    "received_at": "2026-10-25T23:03:55.565863+00:00",
+    "source_time": "2026-10-25T23:03:55.560000+00:00"
+  },
+  "orders_enabled": false,
+  "quote_age_seconds_at_end": 0.012398,
+  "quote_buffer": {
+    "counts": {
+      "buffered": 146,
+      "peak_pending": 1,
+      "released": 146
+    },
+    "enabled": true,
+    "max_lead_ms": 100,
+    "max_pending": 64,
+    "max_residence_ms": 250,
+    "pending": 0
+  },
+  "quote_valid": {
+    "valid": true
+  },
+  "rejected_writes": 0,
+  "requests": {
+    "ProtoOAAccountAuthReq": 1,
+    "ProtoOAApplicationAuthReq": 1,
+    "ProtoOAExpectedMarginReq": 1,
+    "ProtoOAGetAccountListByAccessTokenReq": 1,
+    "ProtoOASubscribeSpotsReq": 1
+  },
+  "source_sha256": {
+    "nas100-readonly-040.py": "aa085e05ee5aa41d91d703b3c334510da09b377f576df6b7c44150336b3ad88c",
+    "nas100-stream-040.json": "38e17a8eb42bc090241f17e47a0a2363cff5649359ef08ec2c503b726ba5a626"
+  },
+  "spot_rejections": {},
+  "started_at": "2026-10-25T23:02:55.570141+00:00",
+  "status": "OBSERVED"
+}

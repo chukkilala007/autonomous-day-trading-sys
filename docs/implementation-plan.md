@@ -1243,3 +1243,9 @@ Branch feature/demo_activation_plan. Updated bounded-demo-test-plan current sect
 ### J05–J10 market recheck (2026-10-25)
 
 Branch feature/market_freshness_recheck. Fresh read-only probe038 COLLECTED; NAS100 mapping/geometry unchanged, zero last24h M1 rows. Existing session validator reports SCHEDULED_CLOSED at21:37UTC; returned opening22:00:45UTC/London. Stream038 observed60.003seconds with one Friday20:59:35UTC snapshot, zero callback errors/rejections/write attempts. Separate source-age gate rejects it despite feed causal-valid flag. No actual fresh preview, reconnect qualification or order. Sanitized evidence and source hashes committed; private reports/tokens preserved. Request allowlist and whitespace checks passed; runtime unchanged,578tests+4subtests baseline not repeated. Next probe039; recheck fresh open-session feed, then J07 only after J06 evidence/pins. Remaining non-market blockers unchanged.
+
+### NAS100 open-session retry039/040 (2026-10-25)
+
+Branch feature/market_freshness_retry. Fresh probe039 at23:01UTC SCHEDULED_OPEN,61M1rows. Unbuffered60second stream039 rejected139/153updates (maximum future lead45.162ms). Separate unchanged100ms SpotBuffer run040 observed161updates,146held/released,zero rejections/errors/pending and final quote age below2seconds. Request allowlist and source-hash assertions passed; no write attempts. Sanitized evidence docs/evidence/nas100-open-session-retry.md and JSON039/040.
+
+J07 full10minute/reconnect and reviewed proposal-bound preview remain. J05/J06/J09 non-market prerequisites unchanged. Attended launcher/preview still use strict Stream; buffered collector success is not proof of attended integration. Next: resolve/pin J06 facts/assumptions, implement/test optional attended buffer integration if chosen, then fresh complete read-only qualification. Next probe/stream041. Runtime unchanged;578tests+4subtests baseline not repeated. No orders sent.
