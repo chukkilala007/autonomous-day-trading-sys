@@ -1,0 +1,82 @@
+{
+  "account_history_complete": true,
+  "assessment": "PASS_BOUNDED_READONLY_RECONNECT",
+  "blocked_samples": 37,
+  "callback_errors": 0,
+  "disconnects": 2,
+  "elapsed_seconds": 600.228947733005,
+  "ended_at": "2026-10-25T23:25:16.272797+00:00",
+  "final_quote": {
+    "ask": "29049.8",
+    "basis": "bid_ask",
+    "bid": "29046.3",
+    "instrument": "#USNDAQ100",
+    "received_at": "2026-10-25T23:25:15.917938+00:00",
+    "source_time": "2026-10-25T23:25:15.915000+00:00"
+  },
+  "fresh_samples": 522,
+  "generations": [
+    1,
+    3
+  ],
+  "order_execution_qualified": false,
+  "orders_enabled": false,
+  "post_reconnect_fresh_samples": 263,
+  "proposal_bound_preview_complete": false,
+  "quote_age_seconds_at_end": 0.357797,
+  "quote_buffer": {
+    "counts": {
+      "buffered": 1324,
+      "peak_pending": 1,
+      "released": 1324
+    },
+    "enabled": true,
+    "max_lead_ms": 100,
+    "max_pending": 64,
+    "max_residence_ms": 250,
+    "pending": 0
+  },
+  "quote_valid": {
+    "valid": true
+  },
+  "read_failures": 0,
+  "reconnect_at": "2026-10-25T23:20:16.776465+00:00",
+  "reconnect_requested": true,
+  "rejected_writes": 0,
+  "repairs": [
+    {
+      "at": "2026-10-25T23:15:16.575195+00:00",
+      "generation": 1,
+      "history_from": "2026-10-25T21:15:16.225936+00:00",
+      "history_to": "2026-10-25T23:15:16.225936+00:00",
+      "m1_rows": 75
+    },
+    {
+      "at": "2026-10-25T23:20:21.248405+00:00",
+      "generation": 3,
+      "history_from": "2026-10-25T21:20:20.979089+00:00",
+      "history_to": "2026-10-25T23:20:20.979089+00:00",
+      "m1_rows": 80
+    }
+  ],
+  "requests": {
+    "ProtoOAAccountAuthReq": 2,
+    "ProtoOAApplicationAuthReq": 2,
+    "ProtoOADealListReq": 57,
+    "ProtoOAGetAccountListByAccessTokenReq": 2,
+    "ProtoOAGetTrendbarsReq": 2,
+    "ProtoOAReconcileReq": 57,
+    "ProtoOASubscribeSpotsReq": 2,
+    "ProtoOASymbolByIdReq": 1,
+    "ProtoOASymbolsListReq": 1,
+    "ProtoOATraderReq": 57
+  },
+  "source_sha256": {
+    "nas100-qualification-041.json": "a354b7d4b0141bd61915bc5bb9eca10bf9f9d65ca5efff19214975bc2943e959",
+    "nas100-qualification-041.py": "ba3200806517e96a9fa3431da941bac60858e8821c187e208e1c2e9be3e30e1f"
+  },
+  "spot_rejections": {},
+  "spots": 1558,
+  "started_at": "2026-10-25T23:15:16.042703+00:00",
+  "status": "OBSERVED"
+}

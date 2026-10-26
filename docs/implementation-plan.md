@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-25. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-10-26. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -20,10 +20,10 @@ Two-job cycle register: [J01–J10](job-cycles.md).
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | NAS100 provenance reviewed and TP sides documented. J01 separate modeled policy implemented; real assumptions remain unapproved. Grid applicability, account expiry and fee/adjustment scope still need evidence |
-| Next concrete action | J07/J08 cycle: J07 dependency-blocked, J08 offline implementation complete. J09/J10 cycle: NAS100 plan updated, both activation jobs blocked. Resolve J03–J06 account evidence/assumptions and independently pin the built runtime; then selected-symbol read-only qualification/J07 preview and concrete J09 authorization. No orders sent |
+| Next concrete action | J08a buffer integration tested; NAS100041 ten-minute read-only reconnect slice passed. Resolve J03–J05 account evidence and review modeled/settlement assumptions for J06, independently pin current source/image/configuration, then fresh J07 proposal-bound preview and J09 authorization. Broker query prepared but unsent. Next private evidence042 |
 | Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed attended-launcher Docker:578passed+4subtests in49.85s;16new launcher tests, offline/no credentials;11known SDK/Hypothesis warnings |
+| Latest tests | Installed attended-buffer Docker587tests+4subtests in9.58s,11known warnings; rebuilt gateway disabled smoke passed. Actual NAS100041:600.229seconds,1,558spots,1,324causal releases,zero rejections/read failures, successful forced reconnect |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1252,4 +1252,10 @@ J07 full10minute/reconnect and reviewed proposal-bound preview remain. J05/J06/J
 
 ### J08a — attended causal-buffer integration — DONE offline (2026-10-25)
 
-Branch feature/attended_quote_buffer. Binding accepts a same-stream optional spot receiver; preview/attended launchers expose explicit0/100ms configuration, default disabled. Pending queues continue to block trusted quotes and send-time checks. Shutdown retires callbacks then resets timers before storage close; disconnect resets existing buffer. Targeted52tests passed; installed Docker suite587tests+4subtests passed in9.58s with11known SDK/Hypothesis warnings. Rebuilt gateway disabled/offline/non-root CLI smoke passed with100ms flag. New image config SHA256c1444aa052e7809f3b9dc856a31e758dd60a215337bae6f4199ad211fed56a56 is a build observation, not an approved J06 pin. Actual ten-minute NAS100 reconnect observation041 running; not yet qualified. Consolidated broker query prepared but not sent. No orders.
+Branch feature/attended_quote_buffer. Binding accepts a same-stream optional spot receiver; preview/attended launchers expose explicit0/100ms configuration, default disabled. Pending queues continue to block trusted quotes and send-time checks. Shutdown retires callbacks then resets timers before storage close; disconnect resets existing buffer. Targeted52tests passed; installed Docker suite587tests+4subtests passed in9.58s with11known SDK/Hypothesis warnings. Rebuilt gateway disabled/offline/non-root CLI smoke passed with100ms flag. New image config SHA256c1444aa052e7809f3b9dc856a31e758dd60a215337bae6f4199ad211fed56a56 is a build observation, not an approved J06 pin. Actual ten-minute NAS100 reconnect observation041 completed; see subsequent acceptance record. Consolidated broker query prepared but not sent. No orders.
+
+### J07a — NAS100 read-only reconnect slice — PASS (observed2026-10-25, reviewed2026-10-26)
+
+Branch feature/nas100_reconnect_qualification. Run041 completed while the chat was interrupted. Reviewed saved evidence, not restarted or represented as current data.600.229seconds,1,558spots,1,324buffered/released,zero quote rejections/callback/read failures, final quote0.357797seconds old. Forced TCP abort followed by authenticated/subscribed generations1and3 and263post-reconnect fresh samples. Two paginated M1 ranges75/80rows and57account/deal-history reconciliations; no gap-free strategy lookback/candle-basis certification inferred.
+
+Sanitized evidence docs/evidence/nas100-reconnect-041.json/md; report/runner hashes and request allowlist checked, no order writes. J07 parent still BLOCKED on J06 for a fresh proposal-bound preview. J03–J06 evidence/assumptions and J09 authorization unchanged. Runtime unchanged after587test pass; no duplicate test run needed. Next evidence042. No broker messages sent.
