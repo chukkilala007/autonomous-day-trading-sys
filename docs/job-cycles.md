@@ -10,7 +10,7 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 | 2 | J04 fees/rounding/financing/settlement rules | BLOCKED | Zero commission corroborated; account rounding, event clock/rules and delayed-cleanup costs unresolved. Actual settlement follows authorized tests. |
 | 3 | J05 operation support review | BLOCKED | Documentation/protocol review complete; exact account protected LIMIT/GTD expiry and scoped management evidence pending. |
 | 3 | J06 reviewed pinned executable bundle | BLOCKED | Non-executable review packet prepared; J03–J05, modeled assumptions, rebuilt runtime and independent pins remain. |
-| 4 | J07 actual fresh connected preview | BLOCKED | Rechecked: J06 is a non-executable packet, not an approved bundle. No connection attempted; fresh data and final J08 configuration also required. |
+| 4 | J07 actual fresh connected preview | BLOCKED (read-only slice passed) | NAS100041 ten-minute/reconnect acceptance passed; final proposal-bound preview still requires independently approved J06 bundle and fresh inputs. |
 | 4 | J08 attended launcher/deployment wiring | DONE offline | Installed Docker578tests+4subtests; deployment disabled CLI smoke passed. Actual activation/acceptance depends on J06/J07/J09. |
 | 5 | J09 bounded plan and authorization | BLOCKED | NAS100 draft refreshed for J08; exact prices, modeled amounts, reviewed bundle and fresh preview missing. No authorization requested prematurely. |
 | 5 | J10 first bounded demo test | BLOCKED | J08 offline wiring complete; J06/J07/J09 and fresh send-time validation unresolved. No order attempted. |
@@ -24,3 +24,5 @@ Cycle2 review: [contract/cost evidence](evidence/nas100-contract-cost-review.md)
 Later2026-10-25 [open-session retry](evidence/nas100-open-session-retry.md): probe039 SCHEDULED_OPEN; unbuffered039 rejected139/153future updates; existing100ms buffered collector040 passed60seconds with161updates/146releases/zero rejections. This clears observed market availability only. J07 full interval/reconnect and approved-bundle preview remain; attended launcher still uses strict unbuffered Stream.
 
 J08a: optional100ms causal buffering now integrated in both attended launchers; default remains0. Nine new tests; installed587tests+4subtests and disabled deployment smoke passed. Current read-only ten-minute run041 is pending; proposal-bound J07 preview still requires J06.
+
+J07a acceptance: [NAS100041](evidence/nas100-reconnect-041.md),600.229seconds and successful forced reconnect, zero quote rejections. This is historical read-only evidence, not order readiness. J08a installed587tests+4subtests and deployment smoke passed; source/image pins need final J06 review.
