@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-10-26. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-11-19. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -19,11 +19,11 @@ Two-job cycle register: [J01–J10](job-cycles.md).
 | Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
-| Current blocker | NAS100 provenance reviewed and TP sides documented. J01 separate modeled policy implemented; real assumptions remain unapproved. Grid applicability, account expiry and fee/adjustment scope still need evidence |
-| Next concrete action | J08a buffer integration tested; NAS100041 ten-minute read-only reconnect slice passed. Resolve J03–J05 account evidence and review modeled/settlement assumptions for J06, independently pin current source/image/configuration, then fresh J07 proposal-bound preview and J09 authorization. Broker query prepared but unsent. Next private evidence042 |
-| Capability blockers | Broker economics/order/protection qualification and bounded demo approval remain; buffering does not enable execution |
+| Current blocker | Broker support replies are no longer mandatory for configured modeled demo preparation. Actual account-specific configuration, independent pins, fresh data and explicit order authorization remain; unknown settlement cannot be declared complete. |
+| Next concrete action | Configured-demo offline acceptance passed. Assemble/review J06 per-account configuration and allowances, run a fresh J07 preview and obtain J09 authorization. October evidence is historical. Do not wait for optional FxPro correspondence. |
+| Capability blockers | Written broker confirmations optional for configured modeled demo trials. Real acceptance/settlement remains unobserved; configured assumptions do not certify production/live capability. Explicit order authorization still required |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Installed attended-buffer Docker587tests+4subtests in9.58s,11known warnings; rebuilt gateway disabled smoke passed. Actual NAS100041:600.229seconds,1,558spots,1,324causal releases,zero rejections/read failures, successful forced reconnect |
+| Latest tests | Installed broker-configured Docker600tests+4subtests in6.57s;13new tests,11known warnings. No broker connection or orders in this change |
 | External inputs | This Mac/Docker Desktop is demo host; separate Linux/registry not required. Off-host backup destination unspecified. Actual orders require explicit bounded authorization |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1259,3 +1259,11 @@ Branch feature/attended_quote_buffer. Binding accepts a same-stream optional spo
 Branch feature/nas100_reconnect_qualification. Run041 completed while the chat was interrupted. Reviewed saved evidence, not restarted or represented as current data.600.229seconds,1,558spots,1,324buffered/released,zero quote rejections/callback/read failures, final quote0.357797seconds old. Forced TCP abort followed by authenticated/subscribed generations1and3 and263post-reconnect fresh samples. Two paginated M1 ranges75/80rows and57account/deal-history reconciliations; no gap-free strategy lookback/candle-basis certification inferred.
 
 Sanitized evidence docs/evidence/nas100-reconnect-041.json/md; report/runner hashes and request allowlist checked, no order writes. J07 parent still BLOCKED on J06 for a fresh proposal-bound preview. J03–J06 evidence/assumptions and J09 authorization unchanged. Runtime unchanged after587test pass; no duplicate test run needed. Next evidence042. No broker messages sent.
+
+### J06a — operator-configured broker demo trials — DONE offline (2026-11-19)
+
+Branch feature/broker_configured_demo_trials. User explicitly requested avoiding tight FxPro dependency. Added scoped expiring DemoConfiguration for portable modeled demo bundles, explicit per-topic rationale and exact operations. Unknown capability remains unknown while explicitly declared trial preparation is permitted; known unsupported evidence cannot be overridden. Preview displays assumptions/config hash; adapter/launcher require separate unverified-settings acknowledgement and existing first-test approval. No production verified policy accepts this fallback.
+
+Optional DeferredCostPolicy removes complete-accounting knowledge as a first-trial prerequisite. Settlement remains unverified and monitor/launcher report SETTLEMENT_REVIEW_REQUIRED, never COMPLETE/flat. Broker support response is optional, not an implementation dependency. Config example deliberately synthetic/expired; no real policy/approval issued. Current USD-linear/HEDGED/zero-distance implementation limits remain; not all account/order profiles are implemented. Initial52targeted tests passed; final installed Docker suite600tests+4subtests passed in6.57s,11known SDK/Hypothesis warnings. Thirteen new tests include two-broker trial preview, scope/expiry/live/assumption rejection, known-unsupported preservation, acknowledgement/single attempt, deferred settlement and launcher pins. Docker Desktop was stopped and was started for tests. No broker connection/orders.
+
+J06a deployment verification: rebuilt gateway target; offline non-root/read-only CLI smoke returned DISABLED/exit0 with no inputs or credentials. Diff check passed. No broker calls or real assumptions/approvals created. New schema fields require renewed pins.

@@ -1,5 +1,8 @@
 # Proposed first attended demo-order test
 
+2026-11-19 update: [configured demo route](broker-configured-demo.md) permits explicit account-scoped assumptions instead of mandatory broker replies, with separate order acknowledgement and deferred unknown settlement. Earlier blanket evidence prerequisites below describe the verified route; they do not block configured demo preparation.
+
+
 ## Current J09/J10 disposition — 2026-10-24
 
 Status: DRAFT WITH BLOCKERS, NOT AUTHORIZED. This section supersedes the historical EURUSD scope below. The current candidate is NAS100 / #USNDAQ100 /1107 on selected demo account48232468, minimum0.01units, on this Mac's Docker host. J08's [attended launcher](attended-test-launcher.md) is implemented and offline-tested; no actual order has been sent.

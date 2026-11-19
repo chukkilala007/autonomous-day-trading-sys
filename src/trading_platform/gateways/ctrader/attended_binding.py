@@ -25,7 +25,11 @@ from .operation_plan import plan
 from .modeled_risk import DemoRiskPolicy, prepare as prepare_modeled
 
 
+from .demo_configuration import DemoConfiguration
+
+
 class ReviewedBundle(Record):
+    demo_configuration: DemoConfiguration | None = None
     policy: Policy | DemoRiskPolicy
     source_hash: Hash
     image_digest: Hash
@@ -41,6 +45,10 @@ class ReviewedBundle(Record):
 
     @model_validator(mode='after')
     def bounded_profile(self):
+        if self.demo_configuration is not None:
+            if not isinstance(self.policy, DemoRiskPolicy) or self.broker_profile is None:
+                raise ValueError('operator configuration requires portable modeled demo policy')
+            self.demo_configuration.verify(self.broker_profile, self.policy.instrument, self.demo_configuration.observed_at)
         if isinstance(self.policy,DemoRiskPolicy) and (self.broker_profile is None or self.quantity!=self.policy.minimum):
             raise ValueError('modeled demo requires broker profile and minimum quantity')
         if self.profile == 'EURUSD_USD_absolute_protected_buy_limit_gtd':
@@ -191,7 +199,7 @@ class Binding:
                 bundle.broker_profile.verify(authenticated_identity=actual,
                     approved_hash=bundle.broker_profile_hash,now=now)
                 operation_plan=plan(bundle.broker_profile,entry,authenticated_identity=actual,
-                                    approved_hash=bundle.broker_profile_hash,now=now)
+                                    approved_hash=bundle.broker_profile_hash,now=now, demo_configuration=bundle.demo_configuration)
                 if operation_plan['blockers']:
                     raise ValueError('operation capability blocked: '+','.join(operation_plan['blockers']))
                 assets=self.economics.assets.get('asset',[])
@@ -224,6 +232,10 @@ class Binding:
                     observed_at=economics['observed_at'],classification='demo_observed',evidence_hash=economics['evidence_hash'],
                     **economics['account'],history_complete=True,external_exposure=False,contracts={p.instrument:contract})))
                 result=prepare(entry,q,v,pre,now,proposal_created_at=entry.expires_at-timedelta(seconds=60), quantity=bundle.quantity)
+            if bundle.demo_configuration is not None:
+                result['broker_settings_classification']='operator_configured_demo_trial'
+                result['broker_assumptions']=bundle.demo_configuration.assumptions
+                result['demo_configuration_hash']=digest(bundle.demo_configuration)
             if operation_plan is not None: result['operation_plan']=operation_plan
             self._preview_lease=canonical(dict(preview=result,metadata=raw,state=state,proposal_hash=digest(entry),bundle_hash=self.pin))
             return result

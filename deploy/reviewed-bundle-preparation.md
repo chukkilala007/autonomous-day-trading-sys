@@ -1,5 +1,8 @@
 # J06 reviewed-bundle preparation
 
+2026-11-19 update: [configured demo route](broker-configured-demo.md) permits explicit account-scoped assumptions instead of mandatory broker replies, with separate order acknowledgement and deferred unknown settlement. Earlier blanket evidence prerequisites below describe the verified route; they do not block configured demo preparation.
+
+
 Status: preparation packet available; executable bundle BLOCKED. [Packet](../docs/evidence/nas100-bundle-review-packet.json) is deliberately not a ReviewedBundle. It records historical candidate geometry and hashes the local review documents. Those SHA256 values detect document changes; they are neither independent approval pins nor hashes of downloaded broker pages. Unknown fields are null, not zero, empty approvals or invented hashes. Do not pass this packet to a broker launcher or rename it into a bundle.
 
 ## Assembly once evidence is available

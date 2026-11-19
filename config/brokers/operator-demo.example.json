@@ -1,0 +1,29 @@
+{
+  "classification": "operator_configured_demo_trial",
+  "identity": {
+    "broker": "Example cTrader Broker",
+    "account_id": "REPLACE_WITH_DEMO_ACCOUNT",
+    "environment": "demo",
+    "currency": "USD",
+    "account_type": "HEDGED"
+  },
+  "instrument": "NAS100",
+  "symbol_id": 1,
+  "operations": [
+    "BUY_LIMIT_ABSOLUTE_SLTP_GTD_60S",
+    "CANCEL_PENDING",
+    "CLOSE_POSITION"
+  ],
+  "assumptions": {
+    "price_grid": "EXAMPLE: apply the configured tick to entry and absolute SL/TP; applicability unverified. Replace with reviewed rationale.",
+    "contract_value": "EXAMPLE: configured USD-linear value; confirm units and supply source/rationale.",
+    "fees": "EXAMPLE: configure explicit estimated round-trip fees; no implicit zero. Replace with reviewed amounts/rationale.",
+    "financing_adjustments": "EXAMPLE: include explicit other-cost allowance for possible financing/adjustments and delayed cleanup.",
+    "protection": "EXAMPLE: request attached absolute protection; actual acceptance/trigger behavior remains to be observed. Unprotected owned exposure invokes existing close path.",
+    "expiry": "EXAMPLE: request original60second GTD; no automatic retry or alternative if rejected.",
+    "recovery": "EXAMPLE: owned cancel/close requested through cTrader; response/reconciliation required, outage may prevent completion."
+  },
+  "review_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "observed_at": "2000-01-01T00:00:00Z",
+  "valid_until": "2000-01-02T00:00:00Z"
+}

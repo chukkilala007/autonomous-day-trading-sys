@@ -1,5 +1,8 @@
 # Attended operation capability planning
 
+2026-11-19 update: [configured demo route](broker-configured-demo.md) permits explicit account-scoped assumptions instead of mandatory broker replies, with separate order acknowledgement and deferred unknown settlement. Earlier blanket evidence prerequisites below describe the verified route; they do not block configured demo preparation.
+
+
 F6.4j adds explicit planning for the currently implemented demo USD-linear protected BUY LIMIT profile. It does not generalize cross-currency valuation, nonzero protection distances, account types or order types. Those require separately implemented and tested profiles.
 
 A BrokerProfile must provide current reviewed operation evidence for:

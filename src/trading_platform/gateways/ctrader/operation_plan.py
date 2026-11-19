@@ -6,7 +6,7 @@ from trading_platform.contracts.values import digest, utc
 REQUIRED = ('BUY_LIMIT_ABSOLUTE_SLTP_GTD_60S', 'CANCEL_PENDING', 'CLOSE_POSITION')
 
 
-def plan(profile, entry, *, authenticated_identity, approved_hash, now):
+def plan(profile, entry, *, authenticated_identity, approved_hash, now, demo_configuration=None):
     now=utc(now)
     profile=profile.verify(authenticated_identity=authenticated_identity,approved_hash=approved_hash,now=now)
     entry=Entry.model_validate_json(entry.model_dump_json())
@@ -26,7 +26,10 @@ def plan(profile, entry, *, authenticated_identity, approved_hash, now):
     created=entry.expires_at-timedelta(seconds=60)
     if not created<=now<=created+timedelta(seconds=10):
         blockers.append('PROPOSAL_NOT_CURRENT')
+    configuration = demo_configuration.verify(profile, entry.instrument, now) if demo_configuration is not None else None
     requirements=[];valid_until=min(profile.valid_until,entry.expires_at)
+    if configuration is not None: valid_until=min(valid_until,configuration.valid_until)
+    trial_used=False
     for operation in REQUIRED:
         evidence=next((e for e in profile.evidence if e.instrument==entry.instrument and e.operation==operation),None)
         state=profile.capability(entry.instrument,operation,authenticated_identity=authenticated_identity,
@@ -37,10 +40,16 @@ def plan(profile, entry, *, authenticated_identity, approved_hash, now):
         elif state=='unknown': reason='EXPLICIT_UNKNOWN'
         elif state=='unsupported': reason='BROKER_UNSUPPORTED'
         else: reason='REVIEWED_SUPPORTED'
+        # Explicit broker rejection is never overridden, even if its evidence expired.
+        contradicted = evidence is not None and evidence.state == 'unsupported' and evidence.classification in ('broker_verified','demo_observed')
+        trial = bool(configuration is not None and operation in configuration.operations and state == 'unknown' and not contradicted)
+        trial_used = trial_used or trial
         requirements.append(dict(operation=operation,state=state,reason=reason,
+                                 preparation_basis='operator_configured_demo_trial' if trial else 'capability_evidence',
                                  evidence_hash=digest(evidence) if evidence else None))
-        if state!='supported': blockers.append(('UNSUPPORTED:' if state=='unsupported' else 'UNKNOWN:')+operation)
-        else: valid_until=min(valid_until,evidence.valid_until)
-    return dict(status='BLOCKED' if blockers else 'SUPPORTED_NOT_AUTHORIZED',blockers=blockers,
+        if state!='supported' and not trial: blockers.append(('UNSUPPORTED:' if state=='unsupported' else 'UNKNOWN:')+operation)
+        elif state=='supported': valid_until=min(valid_until,evidence.valid_until)
+    return dict(status='BLOCKED' if blockers else ('DEMO_TRIAL_NOT_AUTHORIZED' if trial_used else 'SUPPORTED_NOT_AUTHORIZED'),blockers=blockers,
                 requirements=requirements,profile_hash=digest(profile),proposal_hash=digest(entry),
+                demo_configuration_hash=digest(configuration) if configuration else None,
                 valid_until=valid_until.isoformat(),orders_enabled=False,alternatives=[])

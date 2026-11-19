@@ -41,3 +41,7 @@ Each stage follows feature branch from develop, targeted/full checks appropriate
 | Incomplete fees/adjustment rules | Gather scoped evidence; restrict sessions only where verified rules justify it | Planned early cleanup does not prove absence of overnight/adjustment costs after a failure. |
 
 Workarounds are design candidates, not enabled fallbacks. Capability negotiation must never silently change a strategy's execution semantics. Existing FxPro evidence remains valuable but scoped; the NAS100 review is one broker/account case study.
+
+## 2026-11-19 clarification: configured demo qualification
+
+The operator explicitly requested closing avoidable broker-data dependencies. For the minimum-size, single-attempt modeled demo path, missing broker confirmations may now be represented by an account-scoped DemoConfiguration with explicit assumptions and separate approval acknowledgement. This changes the earlier blanket rule that unknown operations always block preparation: declared trials may prepare while capability remains unknown. Known unsupported operations, feed contradictions and identity/freshness/risk/ownership gates remain blockers. Production/live paths are unchanged. Unknown accounting uses deferred settlement, never invented complete costs. See deploy/broker-configured-demo.md. Broker support correspondence is optional for this route.
