@@ -6,10 +6,10 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 |---|---|---|---|
 | 1 | J01 demo modeled-risk policy | DONE offline | F6.4k;562tests+4subtests. No real assumptions approved. |
 | 1 | J02 actual portable v3 exporter capture | DONE observation/import | Capture005 validated2026-10-24; no execution qualification. |
-| 2 | J03 contract/grid/unit review | BLOCKED | Review complete; LIMIT/SL/TP grid applicability and public tick terminology remain. See contract/cost review. |
-| 2 | J04 fees/rounding/financing/settlement rules | BLOCKED | Zero commission corroborated; account rounding, event clock/rules and delayed-cleanup costs unresolved. Actual settlement follows authorized tests. |
-| 3 | J05 operation support review | BLOCKED | Documentation/protocol review complete; exact account protected LIMIT/GTD expiry and scoped management evidence pending. |
-| 3 | J06 reviewed pinned executable bundle | BLOCKED | Non-executable review packet prepared; J03–J05, modeled assumptions, rebuilt runtime and independent pins remain. |
+| 2 | J03 contract/grid/unit review | DEFERRED verification | Captured values plus explicit operator grid/value rationale may supply J06; written broker confirmation is optional on the configured trial path. Production verification remains separate. |
+| 2 | J04 fees/rounding/financing/settlement rules | DEFERRED verification | Explicit fee/model allowances and rationale may prepare a demo. Unknown settlement conventions remain unresolved through DeferredCostPolicy; never COMPLETE without evidence. |
+| 3 | J05 operation support review | DEFERRED verification | Exact operations may be declared as unverified demo trials; known unsupported operations still block. No broker-verified evidence fabricated. |
+| 3 | J06 reviewed pinned executable bundle | TODO configuration | Select account-scoped numeric settings/assumptions and independent pins using configured demo route. No mandatory FxPro reply; no actual bundle/approval issued. |
 | 4 | J07 actual fresh connected preview | BLOCKED (read-only slice passed) | NAS100041 ten-minute/reconnect acceptance passed; final proposal-bound preview still requires independently approved J06 bundle and fresh inputs. |
 | 4 | J08 attended launcher/deployment wiring | DONE offline | Installed Docker578tests+4subtests; deployment disabled CLI smoke passed. Actual activation/acceptance depends on J06/J07/J09. |
 | 5 | J09 bounded plan and authorization | BLOCKED | NAS100 draft refreshed for J08; exact prices, modeled amounts, reviewed bundle and fresh preview missing. No authorization requested prematurely. |
@@ -26,3 +26,5 @@ Later2026-10-25 [open-session retry](evidence/nas100-open-session-retry.md): pro
 J08a: optional100ms causal buffering now integrated in both attended launchers; default remains0. Nine new tests; installed587tests+4subtests and disabled deployment smoke passed. Current read-only ten-minute run041 is pending; proposal-bound J07 preview still requires J06.
 
 J07a acceptance: [NAS100041](evidence/nas100-reconnect-041.md),600.229seconds and successful forced reconnect, zero quote rejections. This is historical read-only evidence, not order readiness. J08a installed587tests+4subtests and deployment smoke passed; source/image pins need final J06 review.
+
+2026-11-19: J06a configured-demo implementation closes the mandatory external broker-reply dependency. J03–J05 verification is deferred for this route, not falsely marked observed. See [configuration runbook](../deploy/broker-configured-demo.md). J06 settings/review and J07/J09/J10 remain; no order authorization implied.

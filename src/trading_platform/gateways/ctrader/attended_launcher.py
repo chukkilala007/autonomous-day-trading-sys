@@ -23,7 +23,8 @@ from .launch_preflight import check
 from .orders import Fence
 from .provider import Provider
 from .read_only_session import ReadOnlySession
-from .settlement import CostPolicy
+from .settlement import CostPolicy, DeferredCostPolicy
+from pydantic import TypeAdapter
 from .stream import Stream
 
 
@@ -33,13 +34,17 @@ def inputs(args, now):
     entry = Entry.model_validate_json(Path(args.proposal).read_text())
     review = Review.model_validate_json(Path(args.review).read_text())
     approval = Approval.model_validate_json(Path(args.approval).read_text())
-    costs = CostPolicy.model_validate_json(Path(args.cost_policy).read_text())
+    costs = TypeAdapter(CostPolicy | DeferredCostPolicy).validate_json(Path(args.cost_policy).read_text())
     for value, pin in ((bundle, args.approved_bundle_hash), (review, args.approved_review_hash),
                        (approval, args.approved_approval_hash), (costs, args.approved_cost_policy_hash)):
         if digest(value) != pin:
             raise ValueError('independent pin mismatch')
     if bundle.broker_profile is None:
         raise ValueError('portable broker profile required')
+    if isinstance(costs, DeferredCostPolicy) and bundle.demo_configuration is None:
+        raise ValueError('deferred settlement requires explicit demo configuration')
+    if bundle.demo_configuration is not None and not approval.accepts_unverified_broker_settings:
+        raise ValueError('unverified broker settings acknowledgement required')
     semantics = bundle.policy.classification
     semantics = 'demo_modeled_risk' if semantics == 'demo_modeled_risk' else 'verified_bound'
     if (bundle.policy.account_id != args.account_id or review.account_id != args.account_id
@@ -127,7 +132,7 @@ def lifecycle(reactor, session, stream, adapter, monitor, entry, *, recover):
                 raise
     while True:
         state = yield monitor.tick()
-        if state['status'] in ('COMPLETE', 'TERMINAL_UNFILLED_COST_REVIEW_REQUIRED'):
+        if state['status'] in ('COMPLETE', 'TERMINAL_UNFILLED_COST_REVIEW_REQUIRED', 'SETTLEMENT_REVIEW_REQUIRED'):
             return dict(status=state['status'], exposure_resolved=state['status'] == 'COMPLETE')
         yield task.deferLater(reactor, 1, lambda: None)
 

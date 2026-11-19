@@ -4,6 +4,7 @@ from decimal import Decimal
 from twisted.internet import defer, task
 from trading_platform.contracts.values import canonical, digest, utc
 from .provider import Provider
+from .settlement import SettlementReviewRequired
 from .valuation import Valuation, export
 
 
@@ -99,6 +100,9 @@ class Monitor:
             elif elapsed>=120: state['status']='CLEANUP_UNCONFIRMED'
             elif elapsed>=60: state['status']='EXPIRY_UNCONFIRMED'
             else: state['status']='MONITORING'
+            return self._save(state)
+        except SettlementReviewRequired:
+            state['status']='SETTLEMENT_REVIEW_REQUIRED'
             return self._save(state)
         except Exception:
             # Never persist exception text which may contain provider/private data.

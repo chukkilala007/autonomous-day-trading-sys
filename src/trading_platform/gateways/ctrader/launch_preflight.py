@@ -17,7 +17,7 @@ def check(bundle, entry, *, account_id, approved_bundle_hash, now):
     if bundle.broker_profile is not None:
         try:
             operation_plan=plan(bundle.broker_profile,entry,authenticated_identity=bundle.broker_profile.identity,
-                                approved_hash=bundle.broker_profile_hash,now=now)
+                                approved_hash=bundle.broker_profile_hash,now=now, demo_configuration=bundle.demo_configuration)
             blockers.extend(operation_plan['blockers'])
         except ValueError:
             blockers.append('INVALID_OPERATION_PROFILE')

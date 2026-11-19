@@ -28,6 +28,7 @@ class Approval(Record):
     quantity: Positive = '1000'
     risk_semantics: Literal['verified_bound','demo_modeled_risk'] = 'verified_bound'
     accepts_unbounded_realized_loss: bool = False
+    accepts_unverified_broker_settings: bool = False
     scope: Literal['one_entry_and_owned_cancel_close'] = 'one_entry_and_owned_cancel_close'
 
 
@@ -49,6 +50,8 @@ class Adapter:
         modeled=isinstance(bundle.policy,DemoRiskPolicy)
         if approval.risk_semantics!=('demo_modeled_risk' if modeled else 'verified_bound') or (modeled and not approval.accepts_unbounded_realized_loss):
             raise ValueError('explicit modeled risk approval required')
+        if bundle.demo_configuration is not None and not approval.accepts_unverified_broker_settings:
+            raise ValueError('explicit unverified broker settings acknowledgement required')
         if modeled:
             from .first_test import FirstTestTransport
             if type(gateway) is not FirstTestTransport: raise ValueError('modeled policy requires first-test transport')

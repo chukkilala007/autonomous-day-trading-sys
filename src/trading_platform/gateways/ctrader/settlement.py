@@ -19,6 +19,19 @@ class CostPolicy(Record):
     all_costs_covered: Literal[True]
 
 
+class DeferredCostPolicy(Record):
+    account_id: Name
+    classification: Literal['settlement_review_pending']
+    review_hash: Hash
+    verified_at: Time
+    valid_until: Time
+    all_costs_covered: Literal[False] = False
+
+
+class SettlementReviewRequired(ValueError):
+    pass
+
+
 def charge(value,convention):
     if value is None: raise ValueError('missing scaled cost')
     if convention=='positive_charge':
@@ -28,6 +41,10 @@ def charge(value,convention):
 
 
 def settle(account,command,position_id,entry_order_id,expected_quantity,deals,history_from,history_to,now,policy):
+    if isinstance(policy, DeferredCostPolicy):
+        value=DeferredCostPolicy.model_validate_json(policy.model_dump_json())
+        if value.account_id != str(account): raise ValueError('foreign deferred settlement policy')
+        raise SettlementReviewRequired('observed settlement requires review; no completion inferred')
     policy=CostPolicy.model_validate_json(policy.model_dump_json())
     if policy.account_id!=str(account) or not policy.verified_at<=now<policy.valid_until:
         raise ValueError('account-bound current cost policy required')
