@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-11-19. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-11-20. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -16,11 +16,11 @@ Two-job cycle register: [J01–J10](job-cycles.md).
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
 | Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled adapter; F6.4e timed recovery; F6.4f first-test gate; F6.4g offline launch-input preflight; F6.4h connected read-only launcher; F6.4i configurable attended profile |
-| Account state | Demo account authenticated; no orders enabled or sent; private rotated tokens preserved |
+| Account state | November20 application authentication succeeds but token discovery returns zero accounts; no orders enabled or sent; private rotated tokens preserved |
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
 | Current blocker | Broker support replies are no longer mandatory for configured modeled demo preparation. Actual account-specific configuration, independent pins, fresh data and explicit order authorization remain; unknown settlement cannot be declared complete. |
-| Next concrete action | Configured-demo offline acceptance passed. Assemble/review J06 per-account configuration and allowances, run a fresh J07 preview and obtain J09 authorization. October evidence is historical. Do not wait for optional FxPro correspondence. |
+| Next concrete action | Restore cTrader token access to the selected demo account (current discovery returns zero accounts), then refresh identity/geometry and assemble J06 from the saved provisional configuration. Rebuild/pin final runtime, run fresh J07 preview, then obtain J09 authorization. See docs/evidence/configured-nas100-preparation-2026-11-20.md; no mandatory broker correspondence. |
 | Capability blockers | Written broker confirmations optional for configured modeled demo trials. Real acceptance/settlement remains unobserved; configured assumptions do not certify production/live capability. Explicit order authorization still required |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
 | Latest tests | Installed broker-configured Docker600tests+4subtests in6.57s;13new tests,11known warnings. No broker connection or orders in this change |
@@ -1267,3 +1267,10 @@ Branch feature/broker_configured_demo_trials. User explicitly requested avoiding
 Optional DeferredCostPolicy removes complete-accounting knowledge as a first-trial prerequisite. Settlement remains unverified and monitor/launcher report SETTLEMENT_REVIEW_REQUIRED, never COMPLETE/flat. Broker support response is optional, not an implementation dependency. Config example deliberately synthetic/expired; no real policy/approval issued. Current USD-linear/HEDGED/zero-distance implementation limits remain; not all account/order profiles are implemented. Initial52targeted tests passed; final installed Docker suite600tests+4subtests passed in6.57s,11known SDK/Hypothesis warnings. Thirteen new tests include two-broker trial preview, scope/expiry/live/assumption rejection, known-unsupported preservation, acknowledgement/single attempt, deferred settlement and launcher pins. Docker Desktop was stopped and was started for tests. No broker connection/orders.
 
 J06a deployment verification: rebuilt gateway target; offline non-root/read-only CLI smoke returned DISABLED/exit0 with no inputs or credentials. Diff check passed. No broker calls or real assumptions/approvals created. New schema fields require renewed pins.
+
+
+### J06 configuration preparation and account-discovery diagnostic (2026-11-20)
+
+Branch feature/configured_nas100_preview. Saved explicit provisional NAS100 modeling amounts and rationale in docs/evidence/configured-nas100-preparation-2026-11-20.md. No executable bundle, renewed approval pins or order authorization issued. The current token authenticates but returns zero total accounts; no cause inferred. Corrected probe diagnostic distinguishes NO_AUTHORIZED_ACCOUNTS and SELECTED_DEMO_ACCOUNT_UNAVAILABLE without logging secrets or weakening account checks. Fresh connected probe046 confirms NO_AUTHORIZED_ACCOUNTS; sanitized manifest records private-report hash. Probes042/044 generic failures and corrected diagnostic045 are retained privately.
+
+Docker targeted discovery tests:4passed in0.71s, network disabled, updated source mounted read-only. First test invocation failed before collection because read-only filesystem lacked a temp directory; rerun with /tmp tmpfs passed. New cases cover empty and omitted account lists. Prior installed600tests+4subtests remains historical baseline, not a retest of this probe-only change. No orders or broker messages. J06/J07 remain blocked on restored selected-account access; resume with fresh discovery, final runtime rebuild/pins and preview. Configurable broker settings are implemented; broker replies remain optional.
