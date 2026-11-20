@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-20",
+  "selected_native_login": "10655835",
+  "open_api_account_id": null,
+  "status": "NEW_ACCOUNT_AUTHORIZATION_REQUIRED",
+  "application_authentication": "OK",
+  "account_list_request": "OK",
+  "returned_account_count": 0,
+  "orders_enabled": false,
+  "private_report_sha256": "aea7c5ab5ff55947f50aae444235008945341b176202d25c140515f36cb2a110"
+}

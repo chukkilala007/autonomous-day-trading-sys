@@ -6,7 +6,7 @@ Run the input check inside the gateway image using:
 python -m trading_platform.gateways.ctrader.launch_preflight \
   --bundle /private/reviewed-bundle.json \
   --proposal /private/proposal.json \
-  --account-id 48232468 \
+  --account-id VERIFIED_OPEN_API_ACCOUNT_ID \
   --approved-bundle-hash "$APPROVED_REVIEW_PIN"
 ```
 

@@ -7,7 +7,7 @@ python -m trading_platform.gateways.ctrader.preview_launcher \
   --bundle /review/reviewed-bundle.json \
   --proposal /review/proposal.json \
   --approved-bundle-hash "$APPROVED_REVIEW_PIN" \
-  --account-id 48232468 \
+  --account-id VERIFIED_OPEN_API_ACCOUNT_ID \
   --credentials /secrets/credentials.json \
   --tokens /state/tokens.json \
   --database /state/attended-preview.sqlite \
