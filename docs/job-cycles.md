@@ -9,11 +9,11 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 | 2 | J03 contract/grid/unit review | DEFERRED verification | Captured values plus explicit operator grid/value rationale may supply J06; written broker confirmation is optional on the configured trial path. Production verification remains separate. |
 | 2 | J04 fees/rounding/financing/settlement rules | DEFERRED verification | Explicit fee/model allowances and rationale may prepare a demo. Unknown settlement conventions remain unresolved through DeferredCostPolicy; never COMPLETE without evidence. |
 | 3 | J05 operation support review | DEFERRED verification | Exact operations may be declared as unverified demo trials; known unsupported operations still block. No broker-verified evidence fabricated. |
-| 3 | J06 reviewed pinned executable bundle | IN_PROGRESS | Provisional numeric settings saved November20. Access restored: login10655835 maps to API49644649; probe050 confirms demo/USD/HEDGED and NAS100 geometry. Assemble new-account configuration/review pins. No mandatory FxPro reply; no executable bundle/approval issued. |
-| 4 | J07 actual fresh connected preview | BLOCKED (read-only slice passed) | NAS100041 ten-minute/reconnect acceptance passed; final proposal-bound preview still requires independently approved J06 bundle and fresh inputs. |
+| 3 | J06 reviewed pinned executable bundle | DONE preparation | New account49644649 bundle051 assembled/checked with installed runtime and independent read-only pins. Explicit configured assumptions; finite validity; no order approval. |
+| 4 | J07 actual fresh connected preview | DONE observation | Preview052 passed November20, no blockers, modeled lossUSD2.25/marginUSD12.68. Saved preview is now expired; fresh send-time checks remain mandatory. Older reconnect041 belongs to retired account. |
 | 4 | J08 attended launcher/deployment wiring | DONE offline | Installed Docker578tests+4subtests; deployment disabled CLI smoke passed. Actual activation/acceptance depends on J06/J07/J09. |
-| 5 | J09 bounded plan and authorization | BLOCKED | NAS100 draft refreshed for J08; exact prices, modeled amounts, reviewed bundle and fresh preview missing. No authorization requested prematurely. |
-| 5 | J10 first bounded demo test | BLOCKED | J08 offline wiring complete; J06/J07/J09 and fresh send-time validation unresolved. No order attempted. |
+| 5 | J09 bounded plan and authorization | PENDING explicit approval | Configuration and preview prepared; disclose modeled/unbounded risk, unverified settings and deferred settlement. Renew exact proposal before approval; do not reuse expired052. |
+| 5 | J10 first bounded demo test | BLOCKED on J09 | J06/J07 preparation passed. Explicit order approval and fresh send-time checks required. No order attempted. |
 
 Later J11–J27 retain the meanings assigned in chat; they are outside this cycle request. J10 completion does not authorize unattended strategy trading or live trading.
 

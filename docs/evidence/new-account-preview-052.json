@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-20",
+  "account_id": "49644649",
+  "native_login": "10655835",
+  "status": "PREPARED_NOT_AUTHORIZED",
+  "orders_enabled": false,
+  "blockers": [],
+  "pins": {
+    "bundle_hash": "33b157c7bef29509902c90a4f45b61a368a669d391f288befaf4d2e8dad825d6",
+    "profile_hash": "0391ea30835a0ebc8294b4b499dd1b90be9efe3a9aefa7527781e721350f0f2c",
+    "cost_policy_hash": "6c379623d35820079c0e2024de46de72100a9813ccdf5caa9c6a0c1fb932e713",
+    "source_hash": "8419359d396dd91393df22c84a2d960c8280e894ac04d12a2dee91b80417049c",
+    "image_digest": "d5cf361d6cd021e9400e1171c1252f2ca8be0c268a59309c930633c93ad344c6",
+    "purpose": "read_only_preparation_not_order_approval"
+  },
+  "configuration_valid_until": "2026-11-21T19:04:21.254193+00:00",
+  "preview": {
+    "created_at": "2026-11-20T19:25:11.512295+00:00",
+    "valid_until": "2026-11-20T19:25:11.686808+00:00",
+    "entry": {
+      "basis": "executable",
+      "entry": "25349.5",
+      "exit_at": null,
+      "expires_at": "2026-11-20T19:26:09.197984+00:00",
+      "instrument": "NAS100",
+      "kind": "entry",
+      "limit": null,
+      "order_type": "limit",
+      "profile": "protected",
+      "side": "buy",
+      "stop": "25249.5",
+      "target": "25449.5",
+      "worst_fill": "25349.5"
+    },
+    "quantity": "0.01",
+    "modeled_loss": "2.25",
+    "planned_stop_loss": "1",
+    "reviewed_fees": "0.25",
+    "modeled_allowance": "1",
+    "loss_ceiling": "5",
+    "margin": "12.68",
+    "quote_buffer": {
+      "counts": {},
+      "enabled": true,
+      "max_lead_ms": 100,
+      "max_pending": 64,
+      "max_residence_ms": 250,
+      "pending": 0
+    },
+    "requests": {
+      "ProtoOAAccountAuthReq": 1,
+      "ProtoOAApplicationAuthReq": 1,
+      "ProtoOAAssetListReq": 1,
+      "ProtoOAExpectedMarginReq": 1,
+      "ProtoOAGetAccountListByAccessTokenReq": 1,
+      "ProtoOAGetPositionUnrealizedPnLReq": 1,
+      "ProtoOAReconcileReq": 2,
+      "ProtoOASubscribeSpotsReq": 1,
+      "ProtoOASymbolByIdReq": 1,
+      "ProtoOASymbolsListReq": 1,
+      "ProtoOATraderReq": 2
+    },
+    "rejected_writes": 0
+  },
+  "private_artifact_hashes": {
+    "reviewed-bundle-051.json": "9087be821e2a2cbe6c322f4b5aedfb5e07d8fc205752dbe7ceb6adb311f7789d",
+    "configuration-review-051.json": "ddf2d5be6cab0f61a66dbc828223756727a50cfc22e1046487c30dee153eac2f",
+    "review-pins-051.json": "aa8238818367a6909bd8e7d88c9bb8b4dd912e68d0f660b8278e1c4f01e106a9",
+    "cost-policy-051.json": "e3d2634c369862b0af3f3da387794dc53aa755def82c62e24874e76e0cd4f8b7",
+    "preview-052.json": "1de030f373c13e6f1e35489e1d9aa935feaa3c0aa06447faf082876693f8fe83",
+    "proposal-052.json": "ca870e5afdae50de1dfe2eaecc8cafb6fd3808d3bb6c393f4f9a69abc54c94a5",
+    "preview-052.py": "ee0ec0f0f16fbdf54d8cdd33ec5c22de2da795a4b518782857e0d259e6a1ba6a"
+  }
+}
