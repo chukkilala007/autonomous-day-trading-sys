@@ -5,7 +5,7 @@
 
 ## Current J09/J10 disposition — 2026-10-24
 
-Status: DRAFT WITH BLOCKERS, NOT AUTHORIZED. This section supersedes the historical EURUSD scope below. The current candidate is NAS100 / #USNDAQ100 /1107 on selected demo account48232468, minimum0.01units, on this Mac's Docker host. J08's [attended launcher](attended-test-launcher.md) is implemented and offline-tested; no actual order has been sent.
+Status: DRAFT WITH BLOCKERS, NOT AUTHORIZED. This section supersedes the historical EURUSD scope below. The selected development account is now native demo login10655835; its Open API account ID is pending authenticated discovery. NAS100 / #USNDAQ100 is the candidate instrument; prior symbol ID1107 and minimum0.01units must be revalidated for this account. The host remains this Mac/Docker. Old account48232468 is closed; historical scope below is not executable authorization. J08's [attended launcher](attended-test-launcher.md) is implemented and offline-tested; no actual order has been sent.
 
 Proposed test: one protected BUY LIMIT with absolute SL/TP, original proposal expiry60seconds after proposal creation (not after delayed submission), one durable account-wide attempt, exact minimum quantity. Modeled budget is the smaller of USD5 and0.1%fresh equity, with10%equity margin reserve. Realized loss is not bounded. No second attempt after uncertainty/rejection/restart; no strategy trading. These are proposed authorization limits, not an approved order.
 
