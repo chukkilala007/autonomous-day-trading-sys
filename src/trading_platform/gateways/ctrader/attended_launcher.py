@@ -23,7 +23,7 @@ from .launch_preflight import check
 from .orders import Fence
 from .provider import Provider
 from .read_only_session import ReadOnlySession
-from .settlement import CostPolicy, DeferredCostPolicy
+from .settlement import CostPolicy, DeferredCostPolicy, ObservedZeroCostPolicy
 from pydantic import TypeAdapter
 from .stream import Stream
 
@@ -34,13 +34,15 @@ def inputs(args, now):
     entry = Entry.model_validate_json(Path(args.proposal).read_text())
     review = Review.model_validate_json(Path(args.review).read_text())
     approval = Approval.model_validate_json(Path(args.approval).read_text())
-    costs = TypeAdapter(CostPolicy | DeferredCostPolicy).validate_json(Path(args.cost_policy).read_text())
+    costs = TypeAdapter(CostPolicy | DeferredCostPolicy | ObservedZeroCostPolicy).validate_json(Path(args.cost_policy).read_text())
     for value, pin in ((bundle, args.approved_bundle_hash), (review, args.approved_review_hash),
                        (approval, args.approved_approval_hash), (costs, args.approved_cost_policy_hash)):
         if digest(value) != pin:
             raise ValueError('independent pin mismatch')
     if bundle.broker_profile is None:
         raise ValueError('portable broker profile required')
+    if isinstance(costs, ObservedZeroCostPolicy) and not args.recover:
+        raise ValueError('observed lifecycle policy is recovery only')
     if isinstance(costs, DeferredCostPolicy) and bundle.demo_configuration is None:
         raise ValueError('deferred settlement requires explicit demo configuration')
     if bundle.demo_configuration is not None and not approval.accepts_unverified_broker_settings:

@@ -13,7 +13,7 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 | 4 | J07 actual fresh connected preview | DONE observation | Preview052 passed November20, no blockers, modeled lossUSD2.25/marginUSD12.68. Saved preview is now expired; fresh send-time checks remain mandatory. Older reconnect041 belongs to retired account. |
 | 4 | J08 attended launcher/deployment wiring | DONE offline | Installed Docker578tests+4subtests; deployment disabled CLI smoke passed. Actual activation/acceptance depends on J06/J07/J09. |
 | 5 | J09 bounded plan and authorization | DONE / consumed | Explicit user approval for single test053; exact fresh artifacts retained. No further entry permission. |
-| 5 | J10 first bounded demo test | PARTIAL / settlement pending | One protected fill and owned close observed. Broker flat confirmed054/055; settlement056 requires review and cleanup journal reconciliation. Initial monitor needed intervention; not an unattended pass. |
+| 5 | J10 first bounded demo test | DONE with attended recovery | Protected fill/owned close053; scoped cash settlement and cleanup reconciliation completed060; restart061 COMPLETE, one entry/one cleanup retained. Uninterrupted autonomous cleanup is not claimed. |
 
 Later J11–J27 retain the meanings assigned in chat; they are outside this cycle request. J10 completion does not authorize unattended strategy trading or live trading.
 
@@ -28,3 +28,5 @@ J08a: optional100ms causal buffering now integrated in both attended launchers; 
 J07a acceptance: [NAS100041](evidence/nas100-reconnect-041.md),600.229seconds and successful forced reconnect, zero quote rejections. This is historical read-only evidence, not order readiness. J08a installed587tests+4subtests and deployment smoke passed; source/image pins need final J06 review.
 
 2026-11-19: J06a configured-demo implementation closes the mandatory external broker-reply dependency. J03–J05 verification is deferred for this route, not falsely marked observed. See [configuration runbook](../deploy/broker-configured-demo.md). J06 settings/review and J07/J09/J10 remain; no order authorization implied.
+
+2026-11-20: user authorized necessary bounded demo runtime tests. Settlement/recovery060/061 complete; no new order in this change. Original monitor transient reason cannot be reconstructed; safe diagnostics now implemented. See [review](evidence/demo-settlement-recovery-060.md).

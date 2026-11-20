@@ -1,3 +1,5 @@
+> Test053 settlement and cleanup are now complete through recovery060/restart061. See [recovery evidence](../docs/evidence/demo-settlement-recovery-060.md). User has authorized further necessary bounded demo tests; retain original consumed attempt and scope each subsequent run. Older pending-status notes below are historical.
+
 > Test053 has consumed the user's single-entry approval. One protected fill and owned close occurred; broker is flat but settlement remains pending. See [actual test evidence](../docs/evidence/first-demo-test-053.md). Do not reuse approval, clear the account ledger or submit another entry.
 
 > Current November20 checkpoint: new-account bundle051 and preview052 passed. See [reviewed test evidence](../docs/evidence/new-account-preview-052.md). Historical prices/expiry are not reusable. J09 explicit approval remains absent; all orders disabled. Modeled risk USD2.25 for the observed preview is not a guaranteed loss bound. Old account references below are historical only.

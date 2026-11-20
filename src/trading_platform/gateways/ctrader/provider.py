@@ -10,7 +10,7 @@ from trading_platform.contracts.values import canonical,digest,utc
 from trading_platform.execution.recovery import matches
 from .economics import EconomicsCollector,rows_by_id
 from .history import complete_range
-from .settlement import settle
+from .settlement import settle, ObservedZeroCostPolicy, verify_observed_cash
 from .valuation import Valuation,Settlement,export
 from .normalization import integer
 
@@ -38,7 +38,9 @@ class Provider:
         saved={r['id'].split(':',1)[1]:Settlement.model_validate_json(r['body']) for r in self.db.connection.execute("SELECT id,body FROM checkpoints WHERE id LIKE 'provider-settlement:%'")}
         pending={k:v for k,v in sends.items() if k not in saved}
         order_rows=[];deals=[]
+        policy=self.cost_policy()
         start=min((utc(v['at']) for v in pending.values()),default=at)
+        if pending and isinstance(policy,ObservedZeroCostPolicy): start=min(start,policy.history_from)
         if start>at: raise ValueError('future intent history')
         if pending:
             fields=dict(from_ms=int(start.timestamp()*1000),to_ms=int(at.timestamp()*1000))
@@ -46,6 +48,10 @@ class Provider:
             deals=yield complete_range(self.session,'ProtoOADealListReq','deal',maxRows=1000,**fields)
             rows_by_id(deals,'dealId')
         economics=yield self.economics.collect()
+        if pending and isinstance(policy,ObservedZeroCostPolicy):
+            cash=yield self.session.read('ProtoOACashFlowHistoryListReq',fromTimestamp=int(start.timestamp()*1000),toTimestamp=int(at.timestamp()*1000))
+            if str(cash.get('ctidTraderAccountId'))!=str(self.session.account_id): raise ValueError('foreign cash history')
+            verify_observed_cash(policy,deals,cash.get('depositWithdraw',[]),economics)
         current=economics['reconciliation']
         orders=latest_orders(order_rows+current.get('order',[]))
         positions=rows_by_id(current.get('position',[]),'positionId')
@@ -67,7 +73,7 @@ class Provider:
                     if any(str(d['symbolId'])!=str(send['fields']['symbolId']) for d in position_deals):
                         raise ValueError('settlement symbol mismatch')
                     settlement=settle(account,{'id':command,'currency':economics['account']['currency']},pid,oid,filled,
-                                      position_deals,start,at,self.now(),self.cost_policy())
+                                      position_deals,start,at,self.now(),policy)
                     # Closure is derived from complete execution quantities AND
                     # a current reconciled absence, never disappearance alone.
                     entry_deals=[d for d in position_deals if 'closePositionDetail' not in d]
@@ -108,3 +114,5 @@ class Provider:
                 old=c.execute('SELECT body FROM checkpoints WHERE id=?',(key,)).fetchone()
                 if old and old['body']!=body: raise ValueError('settlement evidence changed')
                 c.execute('INSERT OR IGNORE INTO checkpoints VALUES (?,?)',(key,body))
+        from .management import reconcile_cleanup
+        reconcile_cleanup(self.db,str(self.session.account_id),self.now())

@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-20",
+  "account_id": "49644649",
+  "position_id": "155928101",
+  "status": "COMPLETE",
+  "settled_net": "0.45",
+  "currency": "USD",
+  "entry_records": 1,
+  "cleanup_records": 1,
+  "cleanup_status": "TARGET_RESOLVED",
+  "request_acknowledgement_inferred": false,
+  "position_closed": true,
+  "recovery_first": {
+    "activation_requested": true,
+    "exposure_resolved": true,
+    "orders_enabled": false,
+    "quote_buffer": {
+      "counts": {},
+      "enabled": true,
+      "max_lead_ms": 100,
+      "max_pending": 64,
+      "max_residence_ms": 250,
+      "pending": 0
+    },
+    "recovery_only": true,
+    "status": "COMPLETE"
+  },
+  "recovery_restart": {
+    "activation_requested": true,
+    "exposure_resolved": true,
+    "orders_enabled": false,
+    "quote_buffer": {
+      "counts": {},
+      "enabled": true,
+      "max_lead_ms": 100,
+      "max_pending": 64,
+      "max_residence_ms": 250,
+      "pending": 0
+    },
+    "recovery_only": true,
+    "status": "COMPLETE"
+  },
+  "deployment": {
+    "image_digest": "sha256:99f7491c9c303911db4afeaa90fd4f40e2df5618e7f49fd1238cf504a03a55b4",
+    "source_hash": "4a372fc45b51ae97bdeaddcd1754ce0b1d02c4033d47bdbc0880cf5e01140d6b",
+    "mode": "recovery_only",
+    "original_bundle_preserved": true,
+    "new_entry_allowed": false
+  },
+  "validation": {
+    "full_tests": 614,
+    "subtests": 4,
+    "seconds": "9.33",
+    "warnings": 11
+  },
+  "private_artifact_hashes": {
+    "settlement-evidence-057.json": "64524246cb479d2380c4c9bfbd835a29b881244625e0b5a6dd61c833ff561039",
+    "settlement-evidence-058.json": "452db2b1aa1a22f88c6c663c4c0693d87620ba6f013817f7ad2ea4ef20e6778b",
+    "observed-cost-policy-059.json": "2945459a3e8275ca4b97fe5df84011ecdc93ecdf754e40b8a3209c12247280e1",
+    "reviewed-settlement-059.json": "1d4afb1fe02b05e4986a5ccffdb79f67f48b7d99f564c713ec4e815909ed6943",
+    "recovery-pins-059.json": "1d4f5257589cdcb46f6ac519da1722028a6a4f4f076da7e3697c2d0be2c25204",
+    "recovery-deployment-060.json": "1f308fee0805df7b7a08e860ed36ac7981b86d728d879e49438f5edb7a2e2e35",
+    "recovery-060.json": "a634f7b50bcecd8ca2bbc741665d4998d523cc6d1bb25696db5ea826b8ec7f1b",
+    "recovery-restart-061.json": "a634f7b50bcecd8ca2bbc741665d4998d523cc6d1bb25696db5ea826b8ec7f1b"
+  }
+}

@@ -12,7 +12,7 @@ from .auth import bind_demo
 
 HOST = 'demo.ctraderapi.com'
 READ_REQUESTS = frozenset(('ProtoOATraderReq','ProtoOASymbolsListReq','ProtoOASymbolByIdReq','ProtoOAAssetListReq',
-    'ProtoOAReconcileReq','ProtoOADealListReq','ProtoOAOrderListReq','ProtoOAGetTrendbarsReq','ProtoOAGetTickDataReq',
+    'ProtoOAReconcileReq','ProtoOACashFlowHistoryListReq','ProtoOADealListReq','ProtoOAOrderListReq','ProtoOAGetTrendbarsReq','ProtoOAGetTickDataReq',
     'ProtoOASubscribeSpotsReq','ProtoOAUnsubscribeSpotsReq','ProtoOASubscribeLiveTrendbarReq',
     'ProtoOAUnsubscribeLiveTrendbarReq','ProtoOAExpectedMarginReq','ProtoOASymbolsForConversionReq','ProtoOAGetPositionUnrealizedPnLReq'))
 
