@@ -15,3 +15,6 @@ dist
 
 # Local application credentials.
 [Cc]traderInt*
+
+# Private demo authorization tokens.
+**/demotokens.txt

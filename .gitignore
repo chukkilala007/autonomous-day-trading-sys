@@ -24,3 +24,6 @@ var/
 # Compiled cTrader exporter artifacts (source/lockfile remain tracked).
 tools/ctrader/**/bin/
 tools/ctrader/**/obj/
+
+# Private demo authorization tokens.
+demotokens.txt
