@@ -43,3 +43,10 @@ Offline fixtures validate wiring; they do not establish actual broker acceptance
 Both attended launchers now accept `--quote-buffer-ms 100`; default0 retains strict immediate processing. No other bound is accepted. This holds only source timestamps up to100ms ahead, with250ms residence and64pending limits, then runs the unchanged strict stream validator. Timestamps are never rewritten. The trusted binding routes only spot messages through the buffer; execution events continue through the existing ledger path. A pending queue inhibits previews and send-time quote checks, even if an older quote was valid. Disconnect resets queues and invalidates coverage; shutdown resets timers before database close.
 
 The output includes buffer metrics when enabled. Select/review this flag with the final deployment configuration and regenerate source/image review pins after this code change. This is not order authorization, a clock correction or relaxed acceptance of future prices. Real broker ten-minute observations do not establish order acceptance.
+
+
+## Observed zero-cost lifecycle recovery
+
+A completed demo trade may use ObservedZeroCostPolicy only with --recover. It pins one exact lifecycle, reviewed deal hash and baseline/post balances. Provider re-fetches cash/deal history and verifies no extra activity, explicit zero cost fields, matching realized result and flatness. It is not a universal zero-fee rule and cannot authorize a fresh entry. Preserve original bundle/proposal/review/approval pins; independently pin the scoped cost review and record the newly reviewed recovery runtime identity. No consumed attempt is cleared.
+
+Verified owned closure plus cached settlement reconciles a close request to TARGET_RESOLVED. This is an outcome, not proof of broker request acknowledgement. Safe monitor last_failure records fixed code, phase and timestamp plus cumulative failure_count, retained through later recovery. It never stores raw exception text. See actual recovery evidence060/061.

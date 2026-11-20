@@ -58,3 +58,20 @@ def test_closed_deals_recover_missing_position_without_inventing_settlement(tmp_
         results=[];errors=[];provider.reconcile(reconnect=True).addCallbacks(results.append,errors.append)
         assert results and not errors
         assert json.loads(results[0]['valuation'])['settlements'][0]['command_id']=='cmd'
+
+
+def test_verified_closure_resolves_equal_revision_created_event(tmp_path):
+    from trading_platform.gateways.ctrader.execution import ExecutionLedger
+    from trading_platform.contracts.values import canonical
+    fields=dict(clientOrderId='cmd',symbolId=1,volume=100,tradeSide=1,limitPrice=99,stopLoss=90,takeProfit=110)
+    order=dict(orderId='3',clientOrderId='cmd',positionId='2',tradeData=dict(symbolId='1',volume='100',tradeSide='BUY'),limitPrice=99,executedVolume='100',utcLastUpdateTimestamp='1000',orderStatus='ORDER_STATUS_FILLED')
+    position=dict(positionId='2',positionStatus='POSITION_STATUS_CREATED',tradeData=dict(symbolId='1',volume='0',tradeSide='BUY'),price='99',utcLastUpdateTimestamp='2000')
+    with Database(tmp_path/'db') as db:
+        db.connection.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:cmd',canonical(dict(fields=fields,at=T,instance='x',status='OBSERVED'))))
+        ledger=ExecutionLedger(db,12);ledger.apply(dict(ctidTraderAccountId='12',order=order,position=position))
+        read=lambda:json.loads(db.connection.execute("SELECT body FROM checkpoints WHERE id='broker-position:2'").fetchone()[0])
+        closed=dict(position,positionStatus='POSITION_STATUS_CLOSED')
+        ledger.apply(dict(ctidTraderAccountId='12',order=order,position=closed))
+        assert read()['closed'] is False
+        ledger.apply(dict(ctidTraderAccountId='12',order=order,position=closed,settlement_evidence_hash='a'*64))
+        assert read()['closed'] is True and read()['quantity']=='0'

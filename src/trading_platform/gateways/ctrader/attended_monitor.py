@@ -32,6 +32,7 @@ class Monitor:
         if self.busy: return dict(status='BUSY')
         self.busy=True
         state=self._read(self.key) or dict(approval_hash=self.adapter.approved_hash,status='AWAITING_ATTEMPT',last_at=None)
+        phase='PRECHECK'
         try:
             if state['approval_hash']!=self.adapter.approved_hash: raise ValueError('monitor approval changed')
             now=self.now()
@@ -43,10 +44,12 @@ class Monitor:
                 state['status']='AWAITING_ATTEMPT';return self._save(state)
             if attempt['approval_hash']!=a.approved_hash: raise ValueError('foreign consumed approval')
             a._check();generation=a.gateway.session.generation;revision=a.binding.revision
+            phase='PROVIDER_RECONCILIATION'
             bundle=yield self.provider.reconcile(reconnect=generation!=self.generation)
             if not self.enabled:
                 state['status']='STOPPED_UNCONFIRMED';return self._save(state)
             a._check()
+            phase='CONSISTENCY_CHECK'
             if a.gateway.session.generation!=generation or a.binding.revision!=revision:
                 raise ValueError('broker changed during monitor reconciliation')
             now=self.now()
@@ -58,6 +61,7 @@ class Monitor:
                     or not value.history_complete): raise ValueError('incomplete monitor history')
             if any(str(e.get('ctidTraderAccountId'))!=a.approval.account_id for e in bundle['execution_events']):
                 raise ValueError('foreign execution history')
+            phase='LEDGER_RECONCILIATION'
             for event in bundle['execution_events']: a.ledger.apply(event)
             self.provider.checkpoint(bundle)
             self.generation=generation
@@ -82,6 +86,7 @@ class Monitor:
             actions=[]
             if pending and (elapsed>=20 or filled>0): actions.append(('cancel',send['broker_order_id']))
             if opened and (not position['protected'] or elapsed>=120): actions.append(('close',str(pid)))
+            phase='OWNED_CLEANUP'
             for action,target in actions:
                 if not self.enabled:
                     state['status']='STOPPED_UNCONFIRMED';return self._save(state)
@@ -104,8 +109,16 @@ class Monitor:
         except SettlementReviewRequired:
             state['status']='SETTLEMENT_REVIEW_REQUIRED'
             return self._save(state)
-        except Exception:
-            # Never persist exception text which may contain provider/private data.
+        except Exception as error:
+            # Fixed codes only: never serialize broker text, tokens or payloads.
+            codes={'account changed during valuation':'ACCOUNT_CHANGED_DURING_VALUATION',
+                   'stale account economics':'STALE_ACCOUNT_ECONOMICS',
+                   'broker changed during monitor reconciliation':'BROKER_CHANGED_DURING_RECONCILIATION',
+                   'conflicting order revision':'CONFLICTING_ORDER_REVISION',
+                   'unresolved original order; never resend':'ORIGINAL_ORDER_UNRESOLVED'}
+            code=codes.get(str(error),'UNCLASSIFIED_RECONCILIATION_FAILURE')
+            state['failure_count']=state.get('failure_count',0)+1
+            state['last_failure']=dict(code=code,phase=phase,at=self.now())
             state['status']='RECONCILIATION_REQUIRED'
             return self._save(state)
         finally:

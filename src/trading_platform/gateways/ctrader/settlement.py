@@ -1,7 +1,7 @@
 """Complete hedged-position deal settlement with explicit audited fee semantics."""
 from decimal import Decimal
 from typing import Literal
-from trading_platform.contracts.values import Record,Name,Time,canonical,digest
+from trading_platform.contracts.values import Record,Name,Time,Number,Positive,canonical,digest
 from .valuation import Hash,Settlement
 from .execution import money
 from .normalization import integer,timestamp_ms
@@ -28,6 +28,51 @@ class DeferredCostPolicy(Record):
     all_costs_covered: Literal[False] = False
 
 
+class ObservedZeroCostPolicy(Record):
+    """Exact completed demo lifecycle only; no general fee-sign claim."""
+    classification: Literal['demo_observed_zero_cost_lifecycle']
+    account_id: Name
+    command_id: Name
+    position_id: Name
+    entry_order_id: Name
+    currency: Name
+    quantity: Positive
+    deals_hash: Hash
+    balance_before: Number
+    balance_after: Number
+    baseline_evidence_hash: Hash
+    review_hash: Hash
+    history_from: Time
+    verified_at: Time
+    valid_until: Time
+
+
+def verify_observed_cash(policy, deals, cashflows, economics):
+    p=ObservedZeroCostPolicy.model_validate_json(policy.model_dump_json())
+    if (economics['account_id']!=p.account_id or economics['account']['currency']!=p.currency
+            or Decimal(economics['account']['balance'])!=p.balance_after
+            or economics['reconciliation'].get('order') or economics['reconciliation'].get('position')
+            or cashflows or digest(sorted(deals,key=lambda d:str(d['dealId'])))!=p.deals_hash):
+        raise ValueError('observed lifecycle cash evidence changed')
+    if any(str(d['positionId'])!=p.position_id for d in deals):
+        raise ValueError('other lifecycle in observed cash window')
+    gross=Decimal(0)
+    for d in deals:
+        if money(d,'commission')!=0: raise ValueError('nonzero or missing observed commission')
+        detail=d.get('closePositionDetail')
+        if detail is not None:
+            if any(money(detail,k)!=0 for k in ('commission','swap','pnlConversionFee')):
+                raise ValueError('nonzero or missing observed closing costs')
+            amount=money(detail,'grossProfit')
+            if amount is None: raise ValueError('missing observed gross profit')
+            gross+=amount
+    closing=[d for d in deals if 'closePositionDetail' in d]
+    if not closing or money(max(closing,key=lambda d:integer(d['executionTimestamp']))['closePositionDetail'],'balance')!=p.balance_after:
+        raise ValueError('closing balance mismatch')
+    if p.balance_after-p.balance_before!=gross:
+        raise ValueError('observed balance change unexplained')
+
+
 class SettlementReviewRequired(ValueError):
     pass
 
@@ -45,6 +90,22 @@ def settle(account,command,position_id,entry_order_id,expected_quantity,deals,hi
         value=DeferredCostPolicy.model_validate_json(policy.model_dump_json())
         if value.account_id != str(account): raise ValueError('foreign deferred settlement policy')
         raise SettlementReviewRequired('observed settlement requires review; no completion inferred')
+    if isinstance(policy, ObservedZeroCostPolicy):
+        p=ObservedZeroCostPolicy.model_validate_json(policy.model_dump_json())
+        if (str(account)!=p.account_id or command['id']!=p.command_id or command['currency']!=p.currency
+                or str(position_id)!=p.position_id or str(entry_order_id)!=p.entry_order_id
+                or expected_quantity!=p.quantity or history_from>p.history_from
+                or not p.history_from<p.verified_at<=now<p.valid_until
+                or digest(sorted(deals,key=lambda d:str(d['dealId'])))!=p.deals_hash):
+            raise ValueError('observed settlement scope mismatch')
+        # Zero costs make sign and duplicate-incidence conventions irrelevant for
+        # this exact reviewed lifecycle. The provider separately checks cash evidence.
+        verify_observed_cash(p,deals,[],dict(account_id=p.account_id,
+            account=dict(currency=p.currency,balance=str(p.balance_after)),reconciliation={}))
+        scoped=CostPolicy(account_id=p.account_id,evidence_hash=digest(p),verified_at=p.verified_at,
+            valid_until=p.valid_until,commission_sign='signed_cash',conversion_fee_sign='signed_cash',
+            closing_commission_source='close_detail',closing_commission_excludes_opening=True,all_costs_covered=True)
+        return settle(account,command,position_id,entry_order_id,expected_quantity,deals,history_from,history_to,now,scoped)
     policy=CostPolicy.model_validate_json(policy.model_dump_json())
     if policy.account_id!=str(account) or not policy.verified_at<=now<policy.valid_until:
         raise ValueError('account-bound current cost policy required')

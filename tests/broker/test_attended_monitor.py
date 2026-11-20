@@ -116,3 +116,17 @@ def test_stop_during_pending_read_prevents_later_cleanup_send(adapter):
     pending=Deferred();p.reconcile=lambda **kw:pending
     d=m.tick();m.stop();pending.callback(b())
     assert result(d)['status']=='STOPPED_UNCONFIRMED' and len(calls)==1
+
+
+def test_failure_diagnostics_are_safe_and_survive_recovery(adapter):
+    from twisted.internet.defer import fail
+    x,a,calls,m,p,b=setup(adapter)
+    p.reconcile=lambda **kw:fail(ValueError('account changed during valuation'))
+    state=result(m.tick());assert state['last_failure']['code']=='ACCOUNT_CHANGED_DURING_VALUATION'
+    assert state['last_failure']['phase']=='PROVIDER_RECONCILIATION'
+    p.reconcile=lambda **kw:fail(ValueError('secret broker payload must not be saved'))
+    state=result(m.tick());assert state['failure_count']==2
+    assert 'secret broker payload' not in canonical(state)
+    p.reconcile=lambda **kw:succeed(b())
+    assert result(m.tick())['status']=='MONITORING'
+    assert m._read(m.key)['failure_count']==2

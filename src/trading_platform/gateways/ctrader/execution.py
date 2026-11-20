@@ -62,7 +62,14 @@ class ExecutionLedger:
                 owner=owner or (prior or {}).get('owner')
                 timestamp=integer(position.get('utcLastUpdateTimestamp',0))
                 # No revision timestamp means evidence only, never authoritative overwrite.
-                if timestamp>0 and (not prior or timestamp>prior['updated']):
+                # A complete-history settlement can resolve a zero-volume broker
+                # CREATED event at the same revision; raw events cannot do so.
+                settled_equal=(prior is not None and timestamp==prior['updated']
+                    and prior['quantity']=='0' and owner is not None and owner==prior['owner']
+                    and position.get('positionStatus')=='POSITION_STATUS_CLOSED'
+                    and integer(position.get('tradeData',{}).get('volume',-1))==0
+                    and bool(event.get('settlement_evidence_hash')) and bool(sends))
+                if timestamp>0 and (not prior or timestamp>prior['updated'] or settled_equal):
                     raw_volume=integer(position.get('tradeData',{}).get('volume',0))
                     closed=position.get('positionStatus')=='POSITION_STATUS_CLOSED'
                     expected=sends[0][1]['fields'] if sends else (prior or {}).get('expected',{})
