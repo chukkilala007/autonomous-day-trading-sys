@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-20",
+  "status": "COLLECTED",
+  "native_login": "10655835",
+  "account_id": "49644649",
+  "environment": "demo",
+  "currency": "USD",
+  "account_type": "HEDGED",
+  "symbols": {
+    "#USNDAQ100": 1107
+  },
+  "minimum_quantity": "0.01",
+  "step_quantity": "0.01",
+  "maximum_quantity": "500",
+  "orders_enabled": false,
+  "qualification_complete": false,
+  "private_report_sha256": "165b392de4d8a8ffa6d867aabda93977b51814e016d8b3778637e167fe80b1bc",
+  "remaining": [
+    "J06 scoped configuration and independent pins",
+    "J07 fresh proposal-bound preview",
+    "J09 explicit bounded order approval",
+    "J10 observed order lifecycle"
+  ]
+}
