@@ -50,3 +50,8 @@ The output includes buffer metrics when enabled. Select/review this flag with th
 A completed demo trade may use ObservedZeroCostPolicy only with --recover. It pins one exact lifecycle, reviewed deal hash and baseline/post balances. Provider re-fetches cash/deal history and verifies no extra activity, explicit zero cost fields, matching realized result and flatness. It is not a universal zero-fee rule and cannot authorize a fresh entry. Preserve original bundle/proposal/review/approval pins; independently pin the scoped cost review and record the newly reviewed recovery runtime identity. No consumed attempt is cleared.
 
 Verified owned closure plus cached settlement reconciles a close request to TARGET_RESOLVED. This is an outcome, not proof of broker request acknowledgement. Safe monitor last_failure records fixed code, phase and timestamp plus cumulative failure_count, retained through later recovery. It never stores raw exception text. See actual recovery evidence060/061.
+
+
+## Starting a subsequent bounded demo test
+
+Use test_cycle.advance_completed_test with newly collected authenticated flat economics and an explicit unused test ID. It only advances a fully settled COMPLETE lifecycle, archives prior records atomically, resolves only the proven-closed position's protection halt, invalidates old fencing and retains permanent replay blockers. Do not delete the database or clear checkpoints manually. A new exact proposal, scoped configuration, approval and runtime review are still required for the next cycle. The user may provide standing demo-test authorization, but each run remains bounded and independently identified. Old approval recovery must finish before advancing.

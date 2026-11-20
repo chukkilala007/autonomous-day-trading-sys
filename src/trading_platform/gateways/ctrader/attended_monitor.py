@@ -103,7 +103,7 @@ class Monitor:
                     state['status']='COMPLETE';state['completed_once']=True
                 else: state['status']='AWAITING_SETTLEMENT'
             elif elapsed>=120: state['status']='CLEANUP_UNCONFIRMED'
-            elif elapsed>=60: state['status']='EXPIRY_UNCONFIRMED'
+            elif elapsed>=60 and pending: state['status']='EXPIRY_UNCONFIRMED'
             else: state['status']='MONITORING'
             return self._save(state)
         except SettlementReviewRequired:

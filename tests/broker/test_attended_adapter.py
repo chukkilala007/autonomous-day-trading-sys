@@ -118,3 +118,10 @@ def test_same_owner_unrelated_position_rejected(adapter):
     x.raw['ProtoOAGetPositionUnrealizedPnLReq']['positionUnrealizedPnL']=[dict(positionId='9',netUnrealizedPnL='0')]
     with pytest.raises(ValueError,match='original'):result(a.manage('close','9'))
     assert len(calls)==1
+
+
+def test_existing_adapter_cannot_reuse_archived_approval(adapter):
+    x,a,calls=adapter;a.enabled=True
+    x.db.connection.execute('INSERT INTO checkpoints VALUES (?,?)',('consumed-test:'+a.approval.account_id+':'+a.approval.test_id,'{}'))
+    with pytest.raises(ValueError):result(a.submit(x.entry))
+    assert calls==[]
