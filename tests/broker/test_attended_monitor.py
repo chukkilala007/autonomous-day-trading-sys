@@ -130,3 +130,10 @@ def test_failure_diagnostics_are_safe_and_survive_recovery(adapter):
     p.reconcile=lambda **kw:succeed(b())
     assert result(m.tick())['status']=='MONITORING'
     assert m._read(m.key)['failure_count']==2
+
+
+def test_filled_protected_position_is_not_pending_expiry(adapter):
+    x,a,calls,m,p,b=setup(adapter,True)
+    x.clock[0]=T+timedelta(seconds=61)
+    assert result(m.tick())['status']=='MONITORING'
+    assert len(calls)==1

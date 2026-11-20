@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-20",
+  "account_id": "49644649",
+  "native_login": "10655835",
+  "test_id": "nas100-demo-064",
+  "status": "COMPLETE",
+  "automatic_cleanup": true,
+  "manual_close": false,
+  "entry_fill": "25266.60",
+  "exit_fill": "25333.25",
+  "quantity": "0.01",
+  "settled_net": "0.67",
+  "balance_before": "10000.45",
+  "balance_after": "10001.12",
+  "currency": "USD",
+  "orders_enabled": false,
+  "prior_test_archived": true,
+  "current_entry_records": 1,
+  "current_cleanup_records": 1,
+  "monitor_failures": 7,
+  "last_monitor_failure": {
+    "at": "2026-11-20T19:54:04.279528+00:00",
+    "code": "BROKER_CHANGED_DURING_RECONCILIATION",
+    "phase": "CONSISTENCY_CHECK"
+  },
+  "runtime": {
+    "image_digest": "sha256:8c0359286265ad28b1ce4d3b269a222e03c861f8c5499694034cc7bd0e6e9605",
+    "source_hash": "aa5859a792fddc2cab62f24fa03fb578a66f06c9a0b3f65c35df74aedc4e96d6",
+    "mode": "recovery_only"
+  },
+  "recovery": {
+    "activation_requested": true,
+    "exposure_resolved": true,
+    "orders_enabled": false,
+    "quote_buffer": {
+      "counts": {},
+      "enabled": true,
+      "max_lead_ms": 100,
+      "max_pending": 64,
+      "max_residence_ms": 250,
+      "pending": 0
+    },
+    "recovery_only": true,
+    "status": "COMPLETE"
+  },
+  "validation": {
+    "full_suite_tests": 625,
+    "full_suite_subtests": 4,
+    "full_suite_seconds": "11.18",
+    "subsequent_status_fix_tests": 16,
+    "subsequent_status_fix_seconds": "1.98"
+  },
+  "artifact_hashes": {
+    "probe-062.json": "d6ce80b5840ac3566786cb3a1e0c15418f05123d338750ef2662df4eaa17a210",
+    "reviewed-bundle-063.json": "a677fef3f4d799d779a423669e90b36b1c96e525409441efae1de0d633f10c84",
+    "review-pins-063.json": "fc88bc46bd43a4f97af5b2a7ee4f6215c93f06fe15bcd66f5f20e5d53eedb59e",
+    "user-mandate-064.json": "9f2e4dc890b3336db8e261a7fd7635c083c99963e26959f4ad6581b54b8ec44b",
+    "cycle-transition-064.json": "6fa4a68a4a1cd504562ff1645d8de2d6cb6d0c50e420b244851e6d83f872adb5",
+    "proposal-064.json": "4e032c9c991b9289ae41be5712e0565799f2039ab90cb09775736efd00a458be",
+    "review-064.json": "0c911c217537301fdbe4a5cf44af61489be2ed8083d1756b36dd825a18a06de9",
+    "approval-064.json": "a5b8254733159dafdf9cf28ac8d6d27dce371cf19e6a06db3d68b9af31c8d84e",
+    "execution-pins-064.json": "b8576485866ceb130adf46d7272ae73015998dd1c4ee29942d3e0030bd3011d8",
+    "execution-064.json": "3995ac4bd1d846718082c619a018188c38f8959749cceb1bfb4969cbac945436",
+    "execute-064.py": "82154997cd91c4dcebd5a37abc6a486d31e0fb6503a0486e326916f3768ec388",
+    "settlement-evidence-065.json": "df9baad77423b05f5326b8c913164cb01f7f4e786900854ce1edc2924561d8cc",
+    "observed-cost-policy-066.json": "5605398f8bfc9da3609fc440fce1a2edc894638a4be7cf6e2ffc0aac7d592a9c",
+    "recovery-pins-066.json": "66c43ccabc9620811d90ab91a2dcdf741593d72bf26157d7e95945c37d2bdd39",
+    "recovery-067.json": "a634f7b50bcecd8ca2bbc741665d4998d523cc6d1bb25696db5ea826b8ec7f1b"
+  }
+}

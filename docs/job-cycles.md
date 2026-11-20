@@ -30,3 +30,5 @@ J07a acceptance: [NAS100041](evidence/nas100-reconnect-041.md),600.229seconds an
 2026-11-19: J06a configured-demo implementation closes the mandatory external broker-reply dependency. J03–J05 verification is deferred for this route, not falsely marked observed. See [configuration runbook](../deploy/broker-configured-demo.md). J06 settings/review and J07/J09/J10 remain; no order authorization implied.
 
 2026-11-20: user authorized necessary bounded demo runtime tests. Settlement/recovery060/061 complete; no new order in this change. Original monitor transient reason cannot be reconstructed; safe diagnostics now implemented. See [review](evidence/demo-settlement-recovery-060.md).
+
+2026-11-20 second test064: automatic protected-position cleanup and scoped settlement067 COMPLETE; first test preserved by guarded cycle archive. See [second test](evidence/second-demo-test-064.md). Remaining scenario acceptance is separate from first/second lifecycle success.

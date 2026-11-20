@@ -58,6 +58,13 @@ class Adapter:
         if approval.quantity!=bundle.quantity: raise ValueError('approved quantity differs from reviewed bundle')
         self.gateway=gateway;self.binding=binding;self.ledger=ledger;self.now=now
         self.approval=approval;self.approved_hash=approved_hash;self.report=type(report).model_validate_json(report.model_dump_json())
+        cycle=gateway.db.connection.execute('SELECT body FROM checkpoints WHERE id=?',('active-test-cycle:'+approval.account_id,)).fetchone()
+        if cycle and json.loads(cycle['body'])['test_id']!=approval.test_id:
+            raise ValueError('approval is not the active test cycle')
+        for key in ('consumed-approval:'+approval.account_id+':'+digest(approval),
+                    'consumed-test:'+approval.account_id+':'+approval.test_id):
+            if gateway.db.connection.execute('SELECT 1 FROM checkpoints WHERE id=?',(key,)).fetchone():
+                raise ValueError('historical test approval already consumed')
         self.enabled=enabled;self.key='attended-attempt:'+approval.account_id
         self.economics=EconomicsCollector(gateway.session,now)
         self.event_error=False
@@ -82,6 +89,13 @@ class Adapter:
         if not self.enabled or not self.gateway.authorized: raise ValueError('attended submission disabled')
         if self.event_error or not s.ready or s.demo_binding!=dict(account_id=self.approval.account_id,generation=s.generation,is_live=False):
             raise ValueError('authenticated demo session required')
+        cycle=self.gateway.db.connection.execute('SELECT body FROM checkpoints WHERE id=?',('active-test-cycle:'+self.approval.account_id,)).fetchone()
+        if cycle and json.loads(cycle['body'])['test_id']!=self.approval.test_id:
+            raise ValueError('active cycle changed')
+        for key in ('consumed-approval:'+self.approval.account_id+':'+self.approved_hash,
+                    'consumed-test:'+self.approval.account_id+':'+self.approval.test_id):
+            if self.gateway.db.connection.execute('SELECT 1 FROM checkpoints WHERE id=?',(key,)).fetchone():
+                raise ValueError('historical test approval consumed')
         self.gateway.fence.check(self.binding.core_id,self.binding.epoch)
 
     @defer.inlineCallbacks
