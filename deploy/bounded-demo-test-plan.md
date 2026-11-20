@@ -1,3 +1,5 @@
+> Test053 has consumed the user's single-entry approval. One protected fill and owned close occurred; broker is flat but settlement remains pending. See [actual test evidence](../docs/evidence/first-demo-test-053.md). Do not reuse approval, clear the account ledger or submit another entry.
+
 > Current November20 checkpoint: new-account bundle051 and preview052 passed. See [reviewed test evidence](../docs/evidence/new-account-preview-052.md). Historical prices/expiry are not reusable. J09 explicit approval remains absent; all orders disabled. Modeled risk USD2.25 for the observed preview is not a guaranteed loss bound. Old account references below are historical only.
 
 # Proposed first attended demo-order test

@@ -12,8 +12,8 @@ User requested two jobs per cycle through J10. Preserve feature branches from de
 | 3 | J06 reviewed pinned executable bundle | DONE preparation | New account49644649 bundle051 assembled/checked with installed runtime and independent read-only pins. Explicit configured assumptions; finite validity; no order approval. |
 | 4 | J07 actual fresh connected preview | DONE observation | Preview052 passed November20, no blockers, modeled lossUSD2.25/marginUSD12.68. Saved preview is now expired; fresh send-time checks remain mandatory. Older reconnect041 belongs to retired account. |
 | 4 | J08 attended launcher/deployment wiring | DONE offline | Installed Docker578tests+4subtests; deployment disabled CLI smoke passed. Actual activation/acceptance depends on J06/J07/J09. |
-| 5 | J09 bounded plan and authorization | PENDING explicit approval | Configuration and preview prepared; disclose modeled/unbounded risk, unverified settings and deferred settlement. Renew exact proposal before approval; do not reuse expired052. |
-| 5 | J10 first bounded demo test | BLOCKED on J09 | J06/J07 preparation passed. Explicit order approval and fresh send-time checks required. No order attempted. |
+| 5 | J09 bounded plan and authorization | DONE / consumed | Explicit user approval for single test053; exact fresh artifacts retained. No further entry permission. |
+| 5 | J10 first bounded demo test | PARTIAL / settlement pending | One protected fill and owned close observed. Broker flat confirmed054/055; settlement056 requires review and cleanup journal reconciliation. Initial monitor needed intervention; not an unattended pass. |
 
 Later J11–J27 retain the meanings assigned in chat; they are outside this cycle request. J10 completion does not authorize unattended strategy trading or live trading.
 
