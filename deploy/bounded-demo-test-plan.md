@@ -1,3 +1,5 @@
+> Current November20 checkpoint: new-account bundle051 and preview052 passed. See [reviewed test evidence](../docs/evidence/new-account-preview-052.md). Historical prices/expiry are not reusable. J09 explicit approval remains absent; all orders disabled. Modeled risk USD2.25 for the observed preview is not a guaranteed loss bound. Old account references below are historical only.
+
 # Proposed first attended demo-order test
 
 2026-11-19 update: [configured demo route](broker-configured-demo.md) permits explicit account-scoped assumptions instead of mandatory broker replies, with separate order acknowledgement and deferred unknown settlement. Earlier blanket evidence prerequisites below describe the verified route; they do not block configured demo preparation.
