@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-20",
+  "status": "FAILED",
+  "reason": "NO_AUTHORIZED_ACCOUNTS",
+  "phase": "APPLICATION_AUTH_AND_DISCOVERY",
+  "orders_enabled": false,
+  "private_report_sha256": "4d0a4f91e5ea989052bfb5fc2404f492ed342efa8ec4437e7afb9f97e30623d3"
+}

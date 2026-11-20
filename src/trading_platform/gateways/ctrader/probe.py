@@ -23,6 +23,7 @@ def discover(wire,store,now=time.time):
         credentials=store.rotate(credentials,refreshed,now())
     response=yield wire('ProtoOAGetAccountListByAccessTokenReq',accessToken=credentials['access_token'])
     accounts=response.get('ctidTraderAccount',[])
+    if not accounts: raise ValueError('no accounts available to access token')
     identities=[str(a['ctidTraderAccountId']) for a in accounts]
     if len(identities)!=len(set(identities)): raise ValueError('duplicate account discovery')
     return [a for a in accounts if a.get('isLive') is False]
@@ -108,7 +109,9 @@ def run(reactor,args):
         report=dict(result,status='COLLECTED')
     except Exception as error:
         # Only fixed local classifications are allowed into reports.
-        known={'unsupported account margin profile':'UNSUPPORTED_MARGIN_PROFILE',
+        known={'no accounts available to access token':'NO_AUTHORIZED_ACCOUNTS',
+               'explicit authorized demo account required':'SELECTED_DEMO_ACCOUNT_UNAVAILABLE',
+               'unsupported account margin profile':'UNSUPPORTED_MARGIN_PROFILE',
                'bonus valuation requires separate qualification':'UNQUALIFIED_BONUS',
                'stale account economics':'STALE_ACCOUNT_ECONOMICS',
                'account changed during valuation':'ACCOUNT_CHANGED_DURING_VALUATION',

@@ -36,3 +36,16 @@ def test_probe_collects_only_read_requests_without_claiming_qualification():
     assert results and not results[0]['orders_enabled'] and not results[0]['qualification_complete']
     from trading_platform.gateways.ctrader.client import READ_REQUESTS
     assert set(sent)<=READ_REQUESTS
+
+
+@pytest.mark.parametrize('response', [{}, {'ctidTraderAccount': []}])
+def test_discovery_empty_accounts_is_explicit_and_stops(response):
+    calls=[];errors=[]
+    store=SimpleNamespace(read=lambda:dict(client_id='id',client_secret='secret',access_token='token',expires_at=1000))
+    def wire(name,**fields):
+        calls.append(name)
+        return succeed(response if name=='ProtoOAGetAccountListByAccessTokenReq' else {})
+    discover(wire,store,lambda:1).addErrback(errors.append)
+    assert len(errors)==1
+    assert str(errors[0].value)=='no accounts available to access token'
+    assert calls==['ProtoOAApplicationAuthReq','ProtoOAGetAccountListByAccessTokenReq']
