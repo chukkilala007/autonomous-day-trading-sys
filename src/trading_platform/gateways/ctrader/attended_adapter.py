@@ -101,6 +101,7 @@ class Adapter:
 
     @defer.inlineCallbacks
     def submit(self, entry):
+        self.gateway.check_restore_guard()
         self._check();a=self.approval;now=self.now()
         entry=Entry.model_validate_json(entry.model_dump_json())
         if digest(entry)!=a.proposal_hash or not a.approved_at<=now<a.submit_before:

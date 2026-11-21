@@ -42,6 +42,7 @@ class FirstTestTransport(DemoTransport):
         self.binding=binding;self.review_hash=approved_review_hash;self.approval_hash=approved_approval_hash
 
     def prepare(self,command,core_id,epoch,report,quote,now,account_observed_at):
+        self.check_restore_guard()
         if not isinstance(report,Review) or digest(report)!=self.review_hash:
             raise ValueError('explicit first-test review required')
         if not self.authorized:raise ValueError('first-test transport disabled')
