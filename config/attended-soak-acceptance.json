@@ -1,0 +1,10 @@
+{
+  "duration_seconds": 300,
+  "cycles_per_second": 1,
+  "minimum_cycles": 250,
+  "warmup_cycles": 20,
+  "maximum_p95_seconds": 1,
+  "maximum_rss_mib": 256,
+  "maximum_post_warmup_growth_mib": 32,
+  "scope": "Offline synthetic attended cycles in one process and retained SQLite database; not broker or production qualification"
+}
