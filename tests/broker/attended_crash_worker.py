@@ -18,6 +18,8 @@ from test_pending_lifecycle import pending_lifecycle, terminal
 
 
 def run(root, phase, scenario):
+    if phase == 'auto':
+        phase = 'recover' if (root / 'broker.json').exists() else 'crash'
     fixture = rig.__wrapped__(root)
     x = next(fixture)
     components = adapter.__wrapped__(x)
@@ -91,6 +93,7 @@ def run(root, phase, scenario):
     result(monitor.tick())
     (root / 'recovery.json').write_text(json.dumps(dict(
         status=monitor._read(monitor.key)['status'], command_id=attempt_before['command_id'])))
+    x.db.close()
     fixture.close()
 
 
