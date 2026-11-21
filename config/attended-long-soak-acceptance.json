@@ -1,0 +1,10 @@
+{
+  "duration_seconds": 7200,
+  "cycles_per_second": 1,
+  "minimum_cycles": 6000,
+  "warmup_cycles": 20,
+  "maximum_p95_seconds": 1,
+  "maximum_rss_mib": 256,
+  "maximum_post_warmup_growth_mib": 32,
+  "scope": "Two-hour offline attended soak; synthetic clock and broker, retained SQLite history; not production qualification"
+}

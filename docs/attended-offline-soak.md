@@ -22,3 +22,15 @@ docker build --target gateway -t trading-gateway:attended-soak .
 ```
 
 A new image fingerprint does not renew broker evidence or authorize orders. Review and bind fresh account/configuration/proposal/source/image inputs before the next market-open broker test.
+
+## Two-hour profile
+
+Use the longer predeclared profile and a new synthetic evidence directory:
+
+```sh
+docker run --name attended-long-soak --network none --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges -v "$PWD/var/offline-long-soak:/evidence" trading-gateway-check:long-soak-bounded python scripts/attended_soak.py --limits config/attended-long-soak-acceptance.json --state-dir /evidence/state
+```
+
+Prepare a writable, synthetic-only evidence mount for container UID10001 first. The state directory itself must not already exist. Never mount the broker demo ledger or credentials. Unlike the default temporary run, this option retains the synthetic database for investigation. It starts a new workload; it does not resume or add together partial runs to satisfy duration.
+
+The long profile requires7200seconds and at least6000cycles. Other latency and memory limits are unchanged. Progress includes elapsed seconds, most recent cycle latency and database size. Only the final JSON plus successful container exit establishes completion. Interrupted runs remain diagnostic evidence.

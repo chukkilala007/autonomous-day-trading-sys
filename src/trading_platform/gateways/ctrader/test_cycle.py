@@ -17,11 +17,17 @@ def advance_completed_test(db, account, next_test_id, economics, now):
         for table in ('commands','attempts','positions','reservations'):
             if c.execute('SELECT 1 FROM '+table+' LIMIT 1').fetchone():
                 raise ValueError('core lifecycle still active')
-        rows={r['id']:json.loads(r['body']) for r in c.execute('SELECT id,body FROM checkpoints')}
+        # Immutable archives and consumption tombstones stay on disk. They
+        # must not be decoded into every active-cycle transition.
+        rows={r['id']:json.loads(r['body']) for r in c.execute(
+            "SELECT id,body FROM checkpoints WHERE id NOT GLOB 'completed-test:*' "
+            "AND id NOT GLOB 'consumed-test:*' AND id NOT GLOB 'consumed-approval:*'")}
+        used_next=c.execute('SELECT 1 FROM checkpoints WHERE id=?',
+                            ('consumed-test:'+account+':'+next_test_id,)).fetchone()
         attempt=rows.get('attended-attempt:'+account);monitor=rows.get('attended-monitor:'+account)
         if (not attempt or not monitor or monitor.get('status')!='COMPLETE' or not monitor.get('completed_once')
                 or monitor['approval_hash']!=attempt['approval_hash'] or next_test_id==attempt['owner']
-                or 'consumed-test:'+account+':'+next_test_id in rows):
+                or used_next):
             raise ValueError('completed prior cycle and unused next identity required')
         sends={k:v for k,v in rows.items() if k.startswith('gateway-send:')}
         if set(sends)!={'gateway-send:'+attempt['command_id']}:
