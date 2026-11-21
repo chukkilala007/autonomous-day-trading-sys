@@ -19,6 +19,25 @@ def rows_by_id(rows,key):
     return result
 
 
+def funded_positions(reconcile):
+    """Separate a strictly empty pending-order placeholder from funded exposure."""
+    rows=rows_by_id(reconcile.get('position',[]),'positionId');opened={}
+    for pid,p in rows.items():
+        if p.get('positionStatus')=='POSITION_STATUS_OPEN':
+            opened[pid]=p;continue
+        trade=p.get('tradeData',{})
+        linked=[o for o in reconcile.get('order',[]) if str(o.get('positionId'))==pid]
+        if (p.get('positionStatus')!='POSITION_STATUS_CREATED' or integer(trade.get('volume',-1))!=0
+                or any(money(p,k)!=0 for k in ('usedMargin','commission','swap')) or len(linked)!=1):
+            raise ValueError('unexpected reconciled position status')
+        o=linked[0];ot=o.get('tradeData',{})
+        if (o.get('orderStatus')!='ORDER_STATUS_ACCEPTED' or integer(o.get('executedVolume',-1))!=0
+                or integer(ot.get('volume',0))<=0 or str(ot.get('symbolId'))!=str(trade.get('symbolId'))
+                or trade.get('tradeSide') not in ('BUY','SELL') or ot.get('tradeSide')!=trade['tradeSide']):
+            raise ValueError('unverified empty pending position')
+    return opened
+
+
 def account_money(account,trader,reconcile,pnl,assets):
     for response in (trader,reconcile,pnl,assets):
         if str(response.get('ctidTraderAccountId'))!=str(account): raise ValueError('foreign economics response')
@@ -31,10 +50,15 @@ def account_money(account,trader,reconcile,pnl,assets):
     currencies=rows_by_id(assets.get('asset',[]),'assetId')
     currency=currencies[str(raw['depositAssetId'])]['name']
     if len(currency)!=3 or not currency.isascii() or not currency.isalpha() or not currency.isupper(): raise ValueError('unsupported account currency')
-    positions=rows_by_id(reconcile.get('position',[]),'positionId')
+    positions=funded_positions(reconcile)
+    all_positions=rows_by_id(reconcile.get('position',[]),'positionId')
     profits=rows_by_id(pnl.get('positionUnrealizedPnL',[]),'positionId')
     rows_by_id(reconcile.get('order',[]),'orderId')
-    if set(positions)!=set(profits): raise ValueError('incomplete position P&L')
+    empty=set(all_positions)-set(positions)
+    for pid in empty & set(profits):
+        if any(money(dict(profits[pid],moneyDigits=pnl['moneyDigits']),k)!=0 for k in ('netUnrealizedPnL','grossUnrealizedPnL')):
+            raise ValueError('nonzero empty-position P&L')
+    if set(positions)!=set(profits)-empty or set(profits)-set(all_positions): raise ValueError('incomplete position P&L')
     balance=money(raw,'balance')
     if balance is None: raise ValueError('balance scale required')
     used=Decimal(0);net=Decimal(0);sides={}

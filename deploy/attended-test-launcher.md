@@ -55,3 +55,12 @@ Verified owned closure plus cached settlement reconciles a close request to TARG
 ## Starting a subsequent bounded demo test
 
 Use test_cycle.advance_completed_test with newly collected authenticated flat economics and an explicit unused test ID. It only advances a fully settled COMPLETE lifecycle, archives prior records atomically, resolves only the proven-closed position's protection halt, invalidates old fencing and retains permanent replay blockers. Do not delete the database or clear checkpoints manually. A new exact proposal, scoped configuration, approval and runtime review are still required for the next cycle. The user may provide standing demo-test authorization, but each run remains bounded and independently identified. Old approval recovery must finish before advancing.
+
+
+## Unfilled cancellation and expiry scenarios
+
+Approval.pending_cancel_after_seconds is20 by default; explicit65 permits the original60second broker GTD to elapse before a cancellation fallback. No other delay is accepted. This changes approval hashes; review new inputs instead of migrating old approvals silently. Partial-fill and unprotected-position cleanup remain immediate; protected-position cleanup remains120seconds.
+
+Terminal unfilled history is reviewed through unfilled.certify_unfilled against fresh authenticated account economics, full history from baseline, unchanged balance/version and no deals/cashflows/exposure. It creates a scoped UnfilledCertificate, not a position Settlement. Provider/monitor rechecks original order identity/hash and permits COMPLETE; next-cycle transition archives that proof. Cancellation outcome TARGET_RESOLVED is not an inferred acknowledgement. Preserve all previous ledger records.
+
+Pending CREATED placeholders are excluded from funded exposure only with explicit zero economics and one matching wholly unfilled accepted order. Unsupported cases reject. Monitor retains up to8safe failure records with fixed code, phase, timestamp and exception class. A compatibility fix does not constitute live acceptance; see scenario070 results.

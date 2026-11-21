@@ -1,6 +1,6 @@
 # Implementation tracker and session handoff
 
-Last updated: 2026-11-20. Repository: `chukkilala007/autonomous-day-trading-sys`.
+Last updated: 2026-11-21. Repository: `chukkilala007/autonomous-day-trading-sys`.
 
 This is the go-to document for **what exists, what comes next, how to implement it, and how to resume after context is lost**. Feature status here is authoritative; architecture documents describe intended behavior, not delivered functionality. Update this file in the same change as the implementation it tracks.
 
@@ -16,14 +16,14 @@ Two-job cycle register: [J01–J10](job-cycles.md).
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
 | Latest features | F5.2o actual Algo capture validated; F6.4a disabled rehearsal; F6.4b read-only attended preparation boundary; F6.4c trusted broker-data binding; F6.4d disabled adapter; F6.4e timed recovery; F6.4f first-test gate; F6.4g offline launch-input preflight; F6.4h connected read-only launcher; F6.4i configurable attended profile |
-| Account state | Second demo test064 COMPLETE after automatic owned close and scoped settlement067. Account49644649 flat, balanceUSD10001.12. First test053 preserved in hashed archive; current test one entry/one cleanup. |
+| Account state | Test070 expired unfilled; zero cash change. Fresh probe074 confirms demo49644649 flat atUSD10001.12. Unfilled review/recovery073 COMPLETE; forced flat reconnect generation1→3 passed. Prior test archives retained. |
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
-| Current blocker | Broker support replies are no longer mandatory for configured modeled demo preparation. Actual account-specific configuration, independent pins, fresh data and explicit order authorization remain; unknown settlement cannot be declared complete. |
-| Next concrete action | Second end-to-end demo test passed including automatic cleanup and reviewed settlement. Continue bounded cancellation/expiry, nonzero-cost and reconnect-under-exposure scenarios under standing demo authorization. Use guarded cycle transition; never discard prior ledger. |
+| Current blocker | November21 broker schedule is SCHEDULED_CLOSED. Automatic cancellation failed to reach its request during070 pending reconciliation; strict placeholder compatibility fix tested offline, live retest pending. Active-order disconnect not yet exercised. |
+| Next concrete action | When broker schedule is open and quotes fresh, renew account/config/runtime review and run automatic cancellation retest, then controlled disconnect with an active pending order. Optional65second expiry trial is implemented/offline-tested. Do not reuse proposal070; use guarded completed-cycle transition and standing demo authorization. |
 | Capability blockers | Written broker confirmations optional for configured modeled demo trials. Real acceptance/settlement remains unobserved; configured assumptions do not certify production/live capability. Explicit order authorization still required |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Full625tests+4subtests in11.18s; subsequent monitor label correction16tests in1.98s. Actual second trade automatic cleanup and installed recovery067 COMPLETE. |
+| Latest tests | Final651tests+4subtests in6.57s,11known warnings; installed unfilled recovery073 COMPLETE and forced flat-account reconnect1→3 COMPLETE. Actual cancellation remains unqualified. |
 | External inputs | This Mac/Docker is demo host. User explicitly authorized necessary bounded demo tests on account49644649. No live-account authorization. Off-host backup destination unspecified. |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -1316,3 +1316,12 @@ Actual original transient monitor cause is not recoverable from previous logs; l
 Branch feature/sequential_demo_tests. Added atomic completed-cycle transition: fresh flat economics and all prior terminal/settled/owned invariants required; immutable checkpoint/halt archive, permanent approval/test-ID tombstones, fence invalidation and next-cycle identity. Same database retained. Adapter write checks prevent stale or reused approval even on existing objects. Initial42targeted tests, then full625tests+4subtests in11.18s (11known warnings). Runtime source/image pinned in bundle063. User authorization recorded for this new bounded test.
 
 Actual064 NAS1000.01 BUY LIMIT filled25266.60, protected and automatically closed25333.25 after configured deadline, no manual intervention or retry. Seven transient reconciliation failures recovered; last classified code BROKER_CHANGED_DURING_RECONCILIATION. Earlier generic failures remain unassigned. Runtime exposed incorrect EXPIRY_UNCONFIRMED label for filled positions; fixed pending-only condition,16monitor tests passed in1.98s. Rebuilt final installed source matches local and recovery067 COMPLETE after scoped settlement066. NetUSD0.67; balanceUSD10001.12; broker flat. Prior053 history preserved, current exactly one entry/cleanup. Evidence docs/evidence/second-demo-test-064.json/md. Cancellation/unfilled, nonzero cost, connection-loss and sustained unattended scenarios remain. Standing demo authorization persists; no live trading.
+
+
+### Unfilled expiry, pending-order compatibility and flat reconnect (2026-11-20–21)
+
+Branch feature/cancel_expiry_reconnect. Actual070 minimum NAS100 limit500points below quote expired unfilled; broker terminal update1ms after originalGTD. Automatic20second cancellation was NOT attempted because provider reconciliation failed while pending; not a cancellation pass. Initial639tests+4subtests had passed before run. User resumed November21; reviewed retained result and collected fresh history/flat account. First unfilled review071 rejected too-short history window;072 recollected from baseline economics timestamp and certified no deals/cashflows/balance-version change. Original order consumed, not resubmitted.
+
+Added UnfilledCertificate/monitor completion, cancel-outcome reconciliation, completed-cycle archival for no-fill orders, bounded approved20/65second cancellation deadlines, strict empty pending-placeholder economics/provider handling, and8-entry safe diagnostic history. Actual raw CREATED/zero-volume event demonstrates the supported shape; previous raw reconciliation errors weren't saved, so exact historical cause remains unproven. Placeholder test pass initially649/one fixture failed; corrected schema-incomplete external-position stub and added provider test. Final651tests+4subtests passed6.57s,11known warnings. Rebuilt source verified; installed recovery073 COMPLETE, forced TCP abort/re-auth1→3 and repeat recovery COMPLETE while flat. No new entry or management request on resume.
+
+Evidence docs/evidence/cancel-expiry-reconnect-070.json/md. Fresh probe074 reports USD10001.12 flat and SCHEDULED_CLOSED on November21. Runtime automatic cancellation after fix, dedicated expiry-mode fallback and disconnect-under-active-order remain market-dependent. Do not claim those scenarios passed or reset ledger. Standing demo authorization persists; no live permission.

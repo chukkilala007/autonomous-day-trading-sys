@@ -32,3 +32,5 @@ J07a acceptance: [NAS100041](evidence/nas100-reconnect-041.md),600.229seconds an
 2026-11-20: user authorized necessary bounded demo runtime tests. Settlement/recovery060/061 complete; no new order in this change. Original monitor transient reason cannot be reconstructed; safe diagnostics now implemented. See [review](evidence/demo-settlement-recovery-060.md).
 
 2026-11-20 second test064: automatic protected-position cleanup and scoped settlement067 COMPLETE; first test preserved by guarded cycle archive. See [second test](evidence/second-demo-test-064.md). Remaining scenario acceptance is separate from first/second lifecycle success.
+
+2026-11-21 scenario follow-up:070 broker expiry observed unfilled; intended automatic cancellation failed before request. Scoped unfilled recovery073 COMPLETE, flat-account TCP reconnect passed. Pending-placeholder fix651tests+4subtests passed; current schedule closed. Cancellation retest and active-order disconnect remain. [Evidence](evidence/cancel-expiry-reconnect-070.md).

@@ -17,6 +17,7 @@ from .economics import EconomicsCollector
 
 
 class Approval(Record):
+    pending_cancel_after_seconds: Literal[20,65] = 20
     account_id: Name
     test_id: Name
     proposal_hash: Hash

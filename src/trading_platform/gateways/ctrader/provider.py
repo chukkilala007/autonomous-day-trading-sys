@@ -8,7 +8,7 @@ from decimal import Decimal
 from twisted.internet import defer
 from trading_platform.contracts.values import canonical,digest,utc
 from trading_platform.execution.recovery import matches
-from .economics import EconomicsCollector,rows_by_id
+from .economics import EconomicsCollector,rows_by_id,funded_positions
 from .history import complete_range
 from .settlement import settle, ObservedZeroCostPolicy, verify_observed_cash
 from .valuation import Valuation,Settlement,export
@@ -54,7 +54,7 @@ class Provider:
             verify_observed_cash(policy,deals,cash.get('depositWithdraw',[]),economics)
         current=economics['reconciliation']
         orders=latest_orders(order_rows+current.get('order',[]))
-        positions=rows_by_id(current.get('position',[]),'positionId')
+        positions=funded_positions(current)
         owned_orders=set();owned_positions=set();events=[];new_settlements={}
         account=str(self.session.account_id)
         for command,send in pending.items():

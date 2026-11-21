@@ -1,0 +1,63 @@
+{
+  "reviewed_date": "2026-11-21",
+  "execution_date": "2026-11-20",
+  "test_id": "nas100-demo-070",
+  "account_id": "49644649",
+  "status": "COMPLETE_UNFILLED_EXPIRY",
+  "intended_cancellation_result": "FAILED_NO_CANCEL_REQUEST",
+  "expiry_result": "OBSERVED_PASS",
+  "expiry_delta_ms": 1,
+  "executed_quantity": "0",
+  "cash_change": "0",
+  "balance": "10001.12",
+  "currency": "USD",
+  "position_count": 0,
+  "pending_order_count": 0,
+  "current_session": "SCHEDULED_CLOSED",
+  "entry_records": 1,
+  "management_records": 0,
+  "unfilled_certificate_hash": "a3379fba56563b4d8bf027769ba36c4220ffa75d6fedbb1164d9bf3ec0fa7ae2",
+  "reconnect": {
+    "entry_submitted": false,
+    "exposure_resolved": true,
+    "first_status": "COMPLETE",
+    "forced_disconnect": true,
+    "generation_after": 3,
+    "generation_before": 1,
+    "orders_enabled": false,
+    "phase": "POST_RECONNECT_RECOVERY",
+    "post_reconnect_status": "COMPLETE",
+    "status": "COMPLETE"
+  },
+  "reconnect_scope": "flat account after terminal-order review; no active-order disconnect claim",
+  "deployment": {
+    "image_digest": "sha256:a57d18f1af27e84fa58f2d0a8eb8ec1824a2559e09ebf684c9f803bb18b6d752",
+    "source_hash": "ae216e5dd84df5159f349cb3a7e4e0c5110c407847195c87087d7186eede8ac2",
+    "mode": "recovery_only"
+  },
+  "validation": {
+    "final_full_tests": 651,
+    "subtests": 4,
+    "seconds": "6.57",
+    "warnings": 11
+  },
+  "pending": [
+    "Automatic cancellation retest in open session",
+    "Deliberate disconnect with pending order or position",
+    "Dedicated approved65second cancel-fallback expiry scenario"
+  ],
+  "private_artifact_hashes": {
+    "probe-068.json": "d14a3aac28967ad8b6fcddc21c25d236490dc955a8e1f82f32cd4f0642d5f98c",
+    "reviewed-bundle-069.json": "e50a4fdf2e9762912abb8522d3f7847f65d4178fd81c353cc45f90f52d567831",
+    "review-pins-069.json": "386bfea721d9cd207777ba1830ea88de7a8dca2d30f000d91201a4142502eeae",
+    "proposal-070.json": "00595953d4e7a1690d63785583ba5b67a7f1d469d03836d417a308a48b262311",
+    "approval-070.json": "e9d117e52bd43e70ce84ff1884f1c23d03f6f2cdaa59e76d8a24e5396782eed3",
+    "execution-pins-070.json": "7620daec73b973a7b61820cd566b315a83d5d06948c126a9ae826fdf7d908d62",
+    "execution-070.json": "9976a3c0d0382f0d1aa0f8f716203921b27170ab516a029529c7bff93ef71e6b",
+    "settlement-evidence-071.json": "8fadfc93cb10833d257da18958fc02eb8d8a3a219ee02c2a363b295ac8a138e6",
+    "settlement-evidence-072.json": "d8fcf5dabdba06c719e089e6c82e6898977a05e3ce64c07250912ce6b09a1fae",
+    "unfilled-reconnect-073.json": "c0f96af196f40a68e4d3a4ef96b27adb85dd5866746ecbe4e25678765646c2a6",
+    "recovery-deployment-073.json": "a59b6e6620a8623d36abc2cb95d878a32700a4fb5e0e270f544cae089ec4616c",
+    "probe-074.json": "be06f00e1f645768481d256cc89c87fda92ff7d8d111fef96011497a6dde3e42"
+  }
+}

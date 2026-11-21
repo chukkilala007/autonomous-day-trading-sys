@@ -43,6 +43,16 @@ def reconcile_cleanup(db, account, now):
         for row in c.execute("SELECT id,body FROM checkpoints WHERE id LIKE 'gateway-management:%'").fetchall():
             value=json.loads(row['body']);fields=value['fields']
             if value['status']!='UNKNOWN' or str(fields.get('ctidTraderAccountId'))!=str(account): continue
+            if value['request']=='ProtoOACancelOrderReq':
+                from .unfilled import UnfilledCertificate
+                proofs=[UnfilledCertificate.model_validate_json(r['body']) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'provider-unfilled:%'")]
+                matches=[p for p in proofs if p.account_id==str(account) and p.order_id==str(fields['orderId']) and p.owner==value['owner']]
+                if len(matches)==1:
+                    p=matches[0];order=c.execute('SELECT body FROM checkpoints WHERE id=?',('broker-order:'+p.order_id,)).fetchone()
+                    if order and digest(json.loads(order['body'])['record'])==p.order_hash:
+                        value.update(status='TARGET_RESOLVED',outcome=p.outcome,request_acceptance_confirmed=False,reconciled_at=now,terminal_review_hash=digest(p))
+                        c.execute('UPDATE checkpoints SET body=? WHERE id=?',(canonical(value),row['id']))
+                continue
             if value['request']!='ProtoOAClosePositionReq': continue
             pid=str(fields['positionId'])
             position=c.execute('SELECT body FROM checkpoints WHERE id=?',('broker-position:'+pid,)).fetchone()

@@ -30,25 +30,37 @@ def advance_completed_test(db, account, next_test_id, economics, now):
         if send['instance']!=attempt['owner'] or str(send['fields']['ctidTraderAccountId'])!=account or send['status']!='OBSERVED':
             raise ValueError('prior entry scope unresolved')
         raw=rows.get('provider-settlement:'+attempt['command_id'])
-        if raw is None:raise ValueError('prior settlement required')
-        settlement=Settlement.model_validate_json(canonical(raw));pid=settlement.position_id
+        unfilled=rows.get('provider-unfilled:'+attempt['command_id'])
         positions={k:v for k,v in rows.items() if k.startswith('broker-position:')}
-        if set(positions)!={'broker-position:'+pid}:raise ValueError('unexpected prior positions')
-        position=positions['broker-position:'+pid]
-        if (not position['closed'] or Decimal(position['quantity'])!=0 or position['owner']!=attempt['owner']
-                or settlement.command_id!=attempt['command_id']):raise ValueError('owned settled closure required')
+        if raw is not None and unfilled is None:
+            settlement=Settlement.model_validate_json(canonical(raw));pid=settlement.position_id
+            if set(positions)!={'broker-position:'+pid}:raise ValueError('unexpected prior positions')
+            position=positions['broker-position:'+pid]
+            if (not position['closed'] or Decimal(position['quantity'])!=0 or position['owner']!=attempt['owner']
+                    or settlement.command_id!=attempt['command_id']):raise ValueError('owned settled closure required')
+        elif unfilled is not None and raw is None:
+            from .unfilled import UnfilledCertificate
+            proof=UnfilledCertificate.model_validate_json(canonical(unfilled))
+            order=rows.get('broker-order:'+proof.order_id)
+            if (proof.account_id!=account or proof.command_id!=attempt['command_id'] or proof.owner!=attempt['owner']
+                    or not order or not order['terminal'] or digest(order['record'])!=proof.order_hash
+                    or proof.order_id!=send.get('broker_order_id')):raise ValueError('unfilled prior review mismatch')
+            pid=str(order['record'].get('positionId',''))
+            if any(k!='broker-position:'+pid or Decimal(p['quantity'])!=0 or p['record'].get('positionStatus')!='POSITION_STATUS_CREATED' for k,p in positions.items()):
+                raise ValueError('unexpected unfilled position')
+        else:raise ValueError('exactly one prior completion review required')
         for key,value in rows.items():
-            if key.startswith('broker-order:') and (not value['terminal'] or str(value['record'].get('positionId'))!=pid):
+            if key.startswith('broker-order:') and (not value['terminal'] or str(value['record'].get('positionId',''))!=pid):
                 raise ValueError('nonterminal or foreign order history')
             if key.startswith('gateway-management:') and (value['status']!='TARGET_RESOLVED' or value['owner']!=attempt['owner']):
                 raise ValueError('unresolved cleanup')
-            if key.startswith('provider-settlement:') and key!='provider-settlement:'+attempt['command_id']:
+            if key.startswith(('provider-settlement:','provider-unfilled:')) and key not in ('provider-settlement:'+attempt['command_id'],'provider-unfilled:'+attempt['command_id']):
                 raise ValueError('unexpected settlement')
         halts=[dict(r) for r in c.execute('SELECT id,reason FROM halts')]
         if any(h['id']!='protection:'+pid or h['reason']!='UNCONFIRMED_BROKER_PROTECTION' for h in halts):
             raise ValueError('unresolved unrelated halt')
         prefixes=('attended-attempt:','attended-monitor:','gateway-send:','gateway-management:',
-                  'broker-position:','broker-order:','broker-deal:','execution:','provider-settlement:')
+                  'broker-position:','broker-order:','broker-deal:','execution:','provider-settlement:','provider-unfilled:')
         archived={k:v for k,v in rows.items() if k.startswith(prefixes)}
         if any(k.startswith(('attended-attempt:','attended-monitor:')) and k not in ('attended-attempt:'+account,'attended-monitor:'+account) for k in archived):
             raise ValueError('foreign account cycle')
