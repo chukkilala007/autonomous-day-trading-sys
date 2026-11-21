@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "images": {
+    "baseline": "sha256:a41418934711d201b5024d2ce4d9b456fe004b9739363bfeb0f1e4b360d09f01",
+    "candidate": "sha256:bafdb3abadbf45b38e3d9a99088ba9dc81e2763cd9a477786740885e096d589e"
+  },
+  "scenarios": [
+    {
+      "scenario": "pending",
+      "container_restart": true,
+      "upgrade_and_rollback": false,
+      "writes": [
+        "ProtoOANewOrderReq",
+        "ProtoOACancelOrderReq"
+      ],
+      "status": "COMPLETE",
+      "command_id": "786bc4c66862eb9cf8705b77a12f853cd2f623951b57bdd6719efddaccd4afb3"
+    },
+    {
+      "scenario": "cancel",
+      "container_restart": true,
+      "upgrade_and_rollback": false,
+      "writes": [
+        "ProtoOANewOrderReq",
+        "ProtoOACancelOrderReq"
+      ],
+      "status": "COMPLETE",
+      "command_id": "a1715c983cd02a5fe94a88e5d064b250d7b1436d72a7aeca9ce60c9ae2b58585"
+    },
+    {
+      "scenario": "close",
+      "container_restart": true,
+      "upgrade_and_rollback": true,
+      "writes": [
+        "ProtoOANewOrderReq",
+        "ProtoOAClosePositionReq"
+      ],
+      "status": "CLEANUP_UNCONFIRMED",
+      "command_id": "36cb81e61eae749878f7da41e2573a7d02b82e71040f5cfb05f98955b8900ccd"
+    }
+  ],
+  "scope": "Synthetic broker; exact-container restart plus compatible image replacement; no schema migration or broker connection",
+  "gateway_image": "sha256:041219433663a6c6a2f890ed12a659c974f78823e8f1b4fef5a0c2dfc1807501",
+  "gateway_source_hash": "9121e386dee9688eef56e9dc5df518aff6a8fc3536194278fd2c37901bad104a",
+  "installed_source_matches_local": true,
+  "restore_tests": 14,
+  "full_suite": {
+    "passed": 690,
+    "subtests": 4,
+    "warnings": 11,
+    "seconds": 21.88
+  },
+  "real_broker_orders": 0,
+  "real_demo_ledger_modified": false
+}

@@ -35,7 +35,12 @@ class DemoTransport:
     def __init__(self,db,session,*,authorized=False):
         self.db=db;self.session=session;self.authorized=authorized;self.fence=Fence(db,session.account_id)
 
+    def check_restore_guard(self):
+        if self.db.connection.execute("SELECT 1 FROM halts WHERE id='restore:attended'").fetchone() or self.db.connection.execute("SELECT 1 FROM checkpoints WHERE id='restore:attended'").fetchone():
+            raise ValueError('restored attended ledger inhibits new entries')
+
     def prepare(self,command,core_id,epoch,report,quote,now,account_observed_at):
+        self.check_restore_guard()
         self.fence.check(core_id,epoch)
         if not self.authorized: raise ValueError('explicit demo qualification authorization required')
         if not self.session.ready: raise ValueError('broker account unavailable')
