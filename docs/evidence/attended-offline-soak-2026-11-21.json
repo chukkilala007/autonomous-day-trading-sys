@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "limits": {
+    "duration_seconds": 300,
+    "cycles_per_second": 1,
+    "minimum_cycles": 250,
+    "warmup_cycles": 20,
+    "maximum_p95_seconds": 1,
+    "maximum_rss_mib": 256,
+    "maximum_post_warmup_growth_mib": 32,
+    "scope": "Offline synthetic attended cycles in one process and retained SQLite database; not broker or production qualification"
+  },
+  "cycles": 300,
+  "elapsed_seconds": 300.005688595,
+  "p95_seconds": 0.08474466699999539,
+  "peak_sampled_rss_mib": 85.1015625,
+  "post_warmup_rss_range_mib": 7.93359375,
+  "synthetic_writes": 750,
+  "archives": 300,
+  "checkpoint_count": 905,
+  "database_bytes": 2621440,
+  "unresolved_active_checkpoints": 0,
+  "integrity": "ok",
+  "date": "2026-11-21",
+  "gateway_image": "sha256:06b213b0ad7302be993710ab642af64ab294092bcd01dedbebc24d18fdf4c9de",
+  "soak_image": "sha256:fc645a78eb17bfc954966aed74e4a5f7bf7657c40834e8ce912022db79492dc8",
+  "installed_gateway_source_hash": "c9a4c26f20da8b516813d7ccd97d900474e43a6f59b4bca4be4f97de1ba3512b",
+  "local_source_matches_installed_gateway": true,
+  "broker_connections": 0,
+  "gateway_rebuilt": true,
+  "broker_approvals_renewed": false,
+  "installed_suite": {
+    "passed": 676,
+    "subtests": 4,
+    "warnings": 11,
+    "seconds": 14.79
+  }
+}
