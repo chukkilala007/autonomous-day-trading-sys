@@ -14,7 +14,7 @@ def test_external_account_exposure_cannot_be_allocated_to_strategies(tmp_path):
     with Database(tmp_path/'db') as db:
         session=SimpleNamespace(account_id=12,generation=1,ready=True)
         provider=Provider(session,db,lambda:{},lambda:None,lambda:T)
-        provider.economics=SimpleNamespace(collect=lambda:succeed(dict(account_id='12',observed_at=T.isoformat(),account=dict(balance='100',equity='100',free_margin='50',currency='GBP'),reconciliation=dict(position=[dict(positionId='1')],order=[]))))
+        provider.economics=SimpleNamespace(collect=lambda:succeed(dict(account_id='12',observed_at=T.isoformat(),account=dict(balance='100',equity='100',free_margin='50',currency='GBP'),reconciliation=dict(position=[dict(positionId='1',positionStatus='POSITION_STATUS_OPEN')],order=[]))))
         results=[];provider.reconcile().addCallback(results.append)
         assert json.loads(results[0]['valuation'])['external_exposure'] is True
         assert not results[0]['execution_events']
@@ -75,3 +75,21 @@ def test_verified_closure_resolves_equal_revision_created_event(tmp_path):
         assert read()['closed'] is False
         ledger.apply(dict(ctidTraderAccountId='12',order=order,position=closed,settlement_evidence_hash='a'*64))
         assert read()['closed'] is True and read()['quantity']=='0'
+
+
+def test_owned_pending_placeholder_is_not_external_exposure(tmp_path):
+    from test_economics import pending_fixture
+    from trading_platform.contracts.values import canonical
+    trader,current,pnl,assets=pending_fixture()
+    order=current['order'][0]
+    order.update(clientOrderId='cmd',limitPrice=99,utcLastUpdateTimestamp='1000',orderType='LIMIT')
+    with Database(tmp_path/'db') as db:
+        fields=dict(clientOrderId='cmd',symbolId=1,volume=1,tradeSide=1,limitPrice=99)
+        db.connection.execute('INSERT INTO checkpoints VALUES (?,?)',('gateway-send:cmd',canonical(dict(fields=fields,instance='x',at=T-timedelta(seconds=5)))))
+        session=SimpleNamespace(account_id=12,generation=1,ready=True,read=lambda name,**kw:succeed(dict(ctidTraderAccountId='12',hasMore=False)))
+        provider=Provider(session,db,lambda:{},lambda:None,lambda:T)
+        provider.economics=SimpleNamespace(collect=lambda:succeed(dict(account_id='12',observed_at=T.isoformat(),account=dict(balance='100',equity='100',free_margin='100',currency='GBP'),reconciliation=current)))
+        results=[];errors=[];provider.reconcile().addCallbacks(results.append,errors.append)
+        assert results and not errors
+        assert json.loads(results[0]['valuation'])['external_exposure'] is False
+        assert results[0]['execution_events'][0]['order']['orderStatus']=='ORDER_STATUS_ACCEPTED'

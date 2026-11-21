@@ -66,3 +66,33 @@ def test_max_margin_empty_account():
     trader,rec,pnl,assets=fixture();trader['trader']['totalMarginCalculationType']='MAX'
     rec['position']=[];pnl['positionUnrealizedPnL']=[]
     assert account_money('12',trader,rec,pnl,assets)['free_margin']=='10000'
+
+
+def pending_fixture():
+    trader,rec,pnl,assets=fixture()
+    rec['position']=[dict(positionId='9',positionStatus='POSITION_STATUS_CREATED',usedMargin='0',commission='0',swap='0',moneyDigits=2,tradeData=dict(symbolId='1',tradeSide='BUY',volume='0'))]
+    rec['order']=[dict(orderId='10',positionId='9',orderStatus='ORDER_STATUS_ACCEPTED',executedVolume='0',tradeData=dict(symbolId='1',tradeSide='BUY',volume='1'))]
+    pnl['positionUnrealizedPnL']=[]
+    return trader,rec,pnl,assets
+
+
+@pytest.mark.parametrize('zero_pnl',[False,True])
+def test_empty_created_position_is_not_funded_exposure(zero_pnl):
+    trader,rec,pnl,assets=pending_fixture()
+    if zero_pnl:pnl['positionUnrealizedPnL']=[dict(positionId='9',netUnrealizedPnL='0',grossUnrealizedPnL='0')]
+    assert account_money('12',trader,rec,pnl,assets)==dict(currency='GBP',balance='10000',equity='10000',free_margin='10000')
+
+
+@pytest.mark.parametrize('fault',['quantity','margin','fee','missing_cost','unlinked','partial','side','pnl','duplicate'])
+def test_unverified_created_position_is_never_ignored(fault):
+    trader,rec,pnl,assets=pending_fixture();p=rec['position'][0];o=rec['order'][0]
+    if fault=='quantity':p['tradeData']['volume']='1'
+    if fault=='margin':p['usedMargin']='1'
+    if fault=='fee':p['commission']='1'
+    if fault=='missing_cost':del p['swap']
+    if fault=='unlinked':rec['order']=[]
+    if fault=='partial':o['executedVolume']='1'
+    if fault=='side':o['tradeData']['tradeSide']='SELL'
+    if fault=='pnl':pnl['positionUnrealizedPnL']=[dict(positionId='9',netUnrealizedPnL='1',grossUnrealizedPnL='1')]
+    if fault=='duplicate':rec['order']*=2
+    with pytest.raises(ValueError):account_money('12',trader,rec,pnl,assets)

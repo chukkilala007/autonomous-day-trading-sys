@@ -137,3 +137,15 @@ def test_filled_protected_position_is_not_pending_expiry(adapter):
     x.clock[0]=T+timedelta(seconds=61)
     assert result(m.tick())['status']=='MONITORING'
     assert len(calls)==1
+
+
+def test_expiry_trial_waits_until_approved_fallback_deadline(adapter):
+    from trading_platform.contracts.values import digest
+    x,a,calls,m,p,b=setup(adapter)
+    a.approval=a.approval.model_copy(update={'pending_cancel_after_seconds':65})
+    a.approved_hash=digest(a.approval)
+    attempt=m._read(a.key);attempt['approval_hash']=a.approved_hash;x.feed.put(a.key,attempt)
+    x.clock[0]=T+timedelta(seconds=61)
+    assert result(m.tick())['status']=='EXPIRY_UNCONFIRMED' and len(calls)==1
+    x.clock[0]=T+timedelta(seconds=65)
+    result(m.tick());assert calls[-1].DESCRIPTOR.name=='ProtoOACancelOrderReq'

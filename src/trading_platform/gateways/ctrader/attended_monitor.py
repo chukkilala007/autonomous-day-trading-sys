@@ -84,7 +84,7 @@ class Monitor:
                 state['status']='POST_COMPLETION_EXPOSURE_HALT';return self._save(state)
             if state['status']=='POST_COMPLETION_EXPOSURE_HALT': return self._save(state)
             actions=[]
-            if pending and (elapsed>=20 or filled>0): actions.append(('cancel',send['broker_order_id']))
+            if pending and (elapsed>=a.approval.pending_cancel_after_seconds or filled>0): actions.append(('cancel',send['broker_order_id']))
             if opened and (not position['protected'] or elapsed>=120): actions.append(('close',str(pid)))
             phase='OWNED_CLEANUP'
             for action,target in actions:
@@ -98,7 +98,16 @@ class Monitor:
             elif order['terminal'] and not pending and not opened:
                 if filled==0:
                     # No fill cannot qualify fees, cancellation refund or cash settlement.
-                    state['status']='TERMINAL_UNFILLED_COST_REVIEW_REQUIRED'
+                    proof=self._read('provider-unfilled:'+attempt['command_id'])
+                    if proof is not None:
+                        from .unfilled import UnfilledCertificate
+                        proof=UnfilledCertificate.model_validate_json(canonical(proof))
+                        if (proof.account_id!=a.approval.account_id or proof.command_id!=attempt['command_id']
+                                or proof.order_id!=send['broker_order_id'] or proof.owner!=a.approval.test_id
+                                or proof.order_hash!=digest(order['record']) or proof.outcome!=order['record']['orderStatus']):
+                            raise ValueError('unfilled completion changed')
+                        state['status']='COMPLETE';state['completed_once']=True
+                    else:state['status']='TERMINAL_UNFILLED_COST_REVIEW_REQUIRED'
                 elif any(s.command_id==attempt['command_id'] and s.position_id==str(pid) for s in value.settlements):
                     state['status']='COMPLETE';state['completed_once']=True
                 else: state['status']='AWAITING_SETTLEMENT'
@@ -111,14 +120,20 @@ class Monitor:
             return self._save(state)
         except Exception as error:
             # Fixed codes only: never serialize broker text, tokens or payloads.
-            codes={'account changed during valuation':'ACCOUNT_CHANGED_DURING_VALUATION',
+            codes={'unexpected reconciled position status':'UNSUPPORTED_POSITION_STATE',
+                   'incomplete position P&L':'INCOMPLETE_POSITION_PNL',
+                   'stale valuation':'STALE_VALUATION',
+                   'account changed during valuation':'ACCOUNT_CHANGED_DURING_VALUATION',
                    'stale account economics':'STALE_ACCOUNT_ECONOMICS',
                    'broker changed during monitor reconciliation':'BROKER_CHANGED_DURING_RECONCILIATION',
                    'conflicting order revision':'CONFLICTING_ORDER_REVISION',
                    'unresolved original order; never resend':'ORIGINAL_ORDER_UNRESOLVED'}
             code=codes.get(str(error),'UNCLASSIFIED_RECONCILIATION_FAILURE')
             state['failure_count']=state.get('failure_count',0)+1
-            state['last_failure']=dict(code=code,phase=phase,at=self.now())
+            error_type=type(error).__name__
+            if error_type not in ('ValueError','KeyError','TypeError','TimeoutError','FirstError','CancelledError'):error_type='OTHER'
+            state['last_failure']=dict(code=code,phase=phase,at=self.now(),error_type=error_type)
+            state['recent_failures']=(state.get('recent_failures',[])+[state['last_failure']])[-8:]
             state['status']='RECONCILIATION_REQUIRED'
             return self._save(state)
         finally:
