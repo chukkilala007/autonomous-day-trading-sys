@@ -52,6 +52,13 @@ def reconcile_cleanup(db, account, now):
                     if order and digest(json.loads(order['body'])['record'])==p.order_hash:
                         value.update(status='TARGET_RESOLVED',outcome=p.outcome,request_acceptance_confirmed=False,reconciled_at=now,terminal_review_hash=digest(p))
                         c.execute('UPDATE checkpoints SET body=? WHERE id=?',(canonical(value),row['id']))
+                if value['status']=='UNKNOWN':
+                    proof=settled_cancel_target(c,account,fields['orderId'],value['owner'])
+                    if proof is not None:
+                        value.update(status='TARGET_RESOLVED',outcome=proof['outcome'],
+                            request_acceptance_confirmed=False,reconciled_at=now,
+                            settlement_hash=proof['settlement_hash'])
+                        c.execute('UPDATE checkpoints SET body=? WHERE id=?',(canonical(value),row['id']))
                 continue
             if value['request']!='ProtoOAClosePositionReq': continue
             pid=str(fields['positionId'])
@@ -69,3 +76,39 @@ def reconcile_cleanup(db, account, now):
             value.update(status='TARGET_RESOLVED',outcome='OWNED_POSITION_CLOSED',request_acceptance_confirmed=False,
                          reconciled_at=now,settlement_hash=digest(s))
             c.execute('UPDATE checkpoints SET body=? WHERE id=?',(canonical(value),row['id']))
+
+
+
+def settled_cancel_target(connection, account, order_id, owner):
+    """Resolve a terminal filled target only after its exact owned settlement."""
+    from .valuation import Settlement
+    from trading_platform.execution.recovery import matches
+    c=connection
+    row=c.execute('SELECT body FROM checkpoints WHERE id=?',('broker-order:'+str(order_id),)).fetchone()
+    if not row: return None
+    order=json.loads(row['body']);raw=order['record']
+    if (order['owner']!=owner or not order['terminal']
+            or raw.get('orderStatus') not in ('ORDER_STATUS_FILLED','ORDER_STATUS_CANCELLED','ORDER_STATUS_EXPIRED')
+            or str(raw.get('orderId'))!=str(order_id)):
+        return None
+    filled=D(raw.get('executedVolume','0'))/100
+    if filled<=0: return None
+    pid=str(raw.get('positionId'))
+    row=c.execute('SELECT body FROM checkpoints WHERE id=?',('broker-position:'+pid,)).fetchone()
+    if not row: return None
+    position=json.loads(row['body'])
+    if position['owner']!=owner or not position['closed'] or D(position['quantity'])!=0: return None
+    proofs=[]
+    for row in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'provider-settlement:%'"):
+        settlement=Settlement.model_validate_json(row['body'])
+        if settlement.position_id!=pid or settlement.opened!=filled or settlement.closed!=filled: continue
+        row=c.execute('SELECT body FROM checkpoints WHERE id=?',('gateway-send:'+settlement.command_id,)).fetchone()
+        if not row: continue
+        send=json.loads(row['body'])
+        if (send['instance']!=owner or str(send.get('broker_order_id'))!=str(order_id)
+                or str(send['fields'].get('ctidTraderAccountId'))!=str(account)
+                or not matches(send['fields'],raw)):
+            continue
+        proofs.append(settlement)
+    if len(proofs)!=1: return None
+    return dict(outcome=raw['orderStatus'],settlement_hash=digest(proofs[0]))
