@@ -46,3 +46,21 @@ def test_unresolved_cycles_never_rotate(tmp_path,fault):
   before=list(db.connection.execute('SELECT id,body FROM checkpoints'))
   with pytest.raises(ValueError):advance_completed_test(db,'12','first' if fault=='reuse' else 'second',e,T)
   assert [tuple(r) for r in db.connection.execute('SELECT id,body FROM checkpoints')]==[tuple(r) for r in before]
+
+
+def test_transition_does_not_decode_retained_archives(tmp_path,monkeypatch):
+ from trading_platform.gateways.ctrader import test_cycle
+ with Database(tmp_path/'db') as db:
+  e,values=populate(db)
+  history=canonical(dict(immutable_history=True,payload='x'*1000000))
+  for number in range(20):
+   db.connection.execute('INSERT INTO checkpoints VALUES (?,?)',
+       ('completed-test:12:old-'+str(number),history))
+  original=test_cycle.json.loads
+  def checked(body,*args,**kwargs):
+   assert 'immutable_history' not in body
+   return original(body,*args,**kwargs)
+  monkeypatch.setattr(test_cycle.json,'loads',checked)
+  assert advance_completed_test(db,'12','second',e,T)['status']=='NEXT_CYCLE_PREPARED'
+  assert db.connection.execute(
+      "SELECT count(*) FROM checkpoints WHERE id GLOB 'completed-test:12:old-*'").fetchone()[0]==20

@@ -1,4 +1,6 @@
 """Run installed attended components with synthetic broker fixtures, never credentials."""
+import argparse
+from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
@@ -23,9 +25,16 @@ def rss_mib():
 
 
 def main():
-    limits=json.loads(Path('config/attended-soak-acceptance.json').read_text())
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--limits',default='config/attended-soak-acceptance.json')
+    parser.add_argument('--state-dir')
+    args=parser.parse_args()
+    limits=json.loads(Path(args.limits).read_text())
+    if args.state_dir:
+        Path(args.state_dir).mkdir(parents=True,exist_ok=False)
+    context=nullcontext(args.state_dir) if args.state_dir else tempfile.TemporaryDirectory()
     start=time.monotonic();latencies=[];memory=[];writes=0
-    with tempfile.TemporaryDirectory() as folder:
+    with context as folder:
         path=Path(folder);cycle=0
         while time.monotonic()-start<limits['duration_seconds']:
             before=time.monotonic()
@@ -69,7 +78,9 @@ def main():
             latencies.append(time.monotonic()-before)
             memory.append(rss_mib())
             if cycle%30==0:
-                print(json.dumps(dict(progress_cycles=cycle,rss_mib=memory[-1])),flush=True)
+                print(json.dumps(dict(progress_cycles=cycle,rss_mib=memory[-1],
+                    elapsed_seconds=time.monotonic()-start,
+                    cycle_seconds=latencies[-1],database_bytes=(path/'state').stat().st_size)),flush=True)
             time.sleep(max(0,start+cycle/limits['cycles_per_second']-time.monotonic()))
         warm=memory[limits['warmup_cycles']:]
         growth=max(warm)-min(warm) if warm else float('inf')

@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "date": "2026-11-21",
+  "limits": {
+    "duration_seconds": 7200,
+    "cycles_per_second": 1,
+    "minimum_cycles": 6000,
+    "warmup_cycles": 20,
+    "maximum_p95_seconds": 1,
+    "maximum_rss_mib": 256,
+    "maximum_post_warmup_growth_mib": 32,
+    "scope": "Two-hour offline attended soak; synthetic clock and broker, retained SQLite history; not production qualification"
+  },
+  "cycles": 7200,
+  "elapsed_seconds": 7200.007313448,
+  "p95_seconds": 0.5685255420003159,
+  "peak_sampled_rss_mib": 86.62890625,
+  "post_warmup_rss_range_mib": 7.703125,
+  "synthetic_writes": 18000,
+  "archives": 7200,
+  "checkpoint_count": 21605,
+  "database_bytes": 60497920,
+  "unresolved_active_checkpoints": 0,
+  "integrity": "ok",
+  "container_exit_code": 0,
+  "gateway_image": "sha256:7be3cbb92cf9404f8e13d1d4585c8fc42628f8c2f93221ecda333621c50c03fd",
+  "soak_image": "sha256:da817c2209433bd1cccb4cbde6cf260f3ba20fc7615cbc11fdb9cb0b43e87965",
+  "installed_gateway_source_hash": "fedc67f5e459c457f5cdccf3071ed6bf61c620443d3e0cd3fde7ea741f5175e8",
+  "installed_suite": {
+    "passed": 691,
+    "subtests": 4,
+    "warnings": 11,
+    "seconds": 20.06
+  },
+  "broker_connections": 0,
+  "real_orders": 0,
+  "real_demo_ledger_modified": false
+}
