@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "scope": "offline synthetic execution dashboard and alert-state acceptance",
+  "date": "2026-11-22",
+  "branch": "feature/execution_dashboard_alert_states",
+  "test_image": "sha256:2689635e8d50c0c84d26767c91240586335c033f7e6d2966e67561d25b96164e",
+  "simulated_input": {
+    "commands": {"QUEUED": 1, "UNKNOWN": 1, "CLOSED": 1},
+    "alert_transitions": ["OPEN", "RECOVERED"],
+    "alert_code": "BROKER_UNAVAILABLE"
+  },
+  "observed_projection": {"PENDING": 1, "UNCERTAIN": 1, "SETTLED": 1, "RECOVERED": 1},
+  "visible_browser_acceptance": "PASS",
+  "targeted_tests": "6 passed in 0.63s",
+  "full_suite": "693 passed, 11 warnings, 4 subtests passed in 12.53s",
+  "isolation": {"broker_network": false, "credentials": false, "orders": false, "retained_demo_ledger_mutation": false},
+  "limitations": [
+    "Synthetic operator-display acceptance only",
+    "Does not qualify broker execution, market data, profitability or live trading",
+    "Does not complete the broader F7.1 drawdown, version, protection and authoritative-fill acceptance"
+  ]
+}

@@ -3,6 +3,16 @@ from datetime import datetime,timezone
 from trading_platform.contracts.values import utc
 
 
+def _execution_state(command):
+    """Return a small, stable operator-facing state without exposing command bodies."""
+    value=command['status']
+    if value in ('UNKNOWN','SUBMITTING'):
+        return 'UNCERTAIN'
+    if value in ('CLOSED','CANCELLED','EXPIRED','REJECTED'):
+        return 'SETTLED'
+    return 'PENDING'
+
+
 def status(db,now=None):
     now=now or datetime.now(timezone.utc)
     with db.mutex:
@@ -21,12 +31,17 @@ def status(db,now=None):
         provider_raw=json.loads(provider_row['body']) if provider_row else {}
         provider={k:provider_raw[k] for k in ('connection_state','generation','coverage_complete','capability_blockers','observed_at','source') if k in provider_raw}
         provider['stale']=not provider.get('observed_at') or not 0<=(now-utc(provider['observed_at'])).total_seconds()<=30
+        orders=[dict(r) for r in c.execute('SELECT id,instance,instrument,status,revision FROM commands')]
+        alerts=[json.loads(r['body']) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'alert:%' ORDER BY rowid DESC LIMIT 100")]
+        execution_states=[dict(command_id=o['id'],instance=o['instance'],instrument=o['instrument'],state=_execution_state(o),broker_status=o['status'],revision=o['revision']) for o in orders]
+        execution_summary={name:sum(item['state']==name for item in execution_states) for name in ('PENDING','UNCERTAIN','SETTLED')}
+        execution_summary['RECOVERED']=sum(a.get('kind')=='RECOVERED' for a in alerts)
         return dict(provider=provider,identity=identity,observed_at=now.isoformat(),data_age_seconds=lag,stale=lag is None or lag>30,
             instances=[dict(r) for r in c.execute('SELECT id,package,cursor,status,halt FROM instances')],
-            orders=[dict(r) for r in c.execute('SELECT id,instance,instrument,status,revision FROM commands')],
+            orders=orders,execution_states=execution_states,execution_summary=execution_summary,
             positions=[json.loads(r['body']) for r in c.execute('SELECT body FROM positions')],risk=risk,
             controls=[json.loads(r['body']) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'control:%'")],
-            alerts=[json.loads(r['body']) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'alert:%' ORDER BY rowid DESC LIMIT 100")],
+            alerts=alerts,
             limits=[json.loads(r['body']) for r in c.execute("SELECT body FROM checkpoints WHERE id LIKE 'risk:%'")],
             halts=[dict(r) for r in c.execute('SELECT * FROM halts')],decisions=decisions,
             executions=[json.loads(r['body']) for r in c.execute('SELECT body FROM broker_events ORDER BY rowid DESC LIMIT 100')])
