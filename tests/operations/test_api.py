@@ -40,3 +40,37 @@ def test_provider_status_is_explicitly_filtered_and_expiring(tmp_path):
         assert data['generation']==3 and data['capability_blockers']=={'X':['tick_grid']} and not data['stale']
         assert 'access_token' not in data
         assert status(db,at+timedelta(seconds=31))['provider']['stale']
+
+
+def test_execution_dashboard_projects_pending_uncertain_settled_and_recovery(tmp_path):
+    from datetime import datetime,timezone,timedelta
+    from trading_platform.api.status import status
+    from trading_platform.contracts.values import canonical
+    from trading_platform.observability.alerts import Alerts
+    at=datetime(2026,11,22,tzinfo=timezone.utc)
+    with Database(tmp_path/'db') as db:
+        with db.transaction() as c:
+            for id,state,revision in (('pending','QUEUED',0),('uncertain','UNKNOWN',1),('settled','CLOSED',3)):
+                c.execute('INSERT INTO commands(id,instance,instrument,body,status,revision) VALUES (?,?,?,?,?,?)',
+                          (id,'strategy-a','EURUSD','{}',state,revision))
+        alerts=Alerts(db)
+        alerts.transition('broker',True,'BROKER_UNAVAILABLE',at.isoformat())
+        alerts.transition('broker',False,'BROKER_UNAVAILABLE',(at+timedelta(seconds=1)).isoformat())
+        view=status(db,at+timedelta(seconds=2))
+        assert view['execution_summary']=={'PENDING':1,'UNCERTAIN':1,'SETTLED':1,'RECOVERED':1}
+        assert {row['command_id']:row['state'] for row in view['execution_states']}=={
+            'pending':'PENDING','uncertain':'UNCERTAIN','settled':'SETTLED'}
+        assert [a['kind'] for a in view['alerts']]==['RECOVERED','OPEN']
+        assert all('body' not in row for row in view['execution_states'])
+
+
+def test_dashboard_assets_render_execution_and_alert_projection():
+    from pathlib import Path
+    root=Path('src/trading_platform/api')
+    html=(root/'dashboard.html').read_text()
+    script=(root/'dashboard.js').read_text()
+    for id in ('execution-summary','execution-states','alerts'):
+        assert f'id="{id}"' in html
+        assert f"'{id}'" in script
+    for state in ('PENDING','UNCERTAIN','SETTLED','RECOVERED'):
+        assert state in script
