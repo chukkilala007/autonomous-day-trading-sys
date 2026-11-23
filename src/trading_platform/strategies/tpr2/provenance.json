@@ -1,0 +1,8 @@
+{
+  "strategy": "TPR-2",
+  "status": "preregistered research variant",
+  "signal_dependency": "TPR-1 causal structure and completed M1 rejection",
+  "material_change": "After rejection, place a limit retest at the reclaimed-zone edge for two subsequent M1 bars instead of a stop entry beyond the trigger candle.",
+  "unchanged_rules": ["trend pivots", "impulse", "pullback zone", "completed rejection", "structural stop", "nearest causal target", "minimum gross 2R"],
+  "claim_limit": "No profitability or live-readiness claim. Qualification requires deterministic replay, untouched chronological evaluation and forward shadow evidence."
+}

@@ -27,6 +27,33 @@
     ]
   },
   {
+    "package": "tpr2@1",
+    "digest": "6742d47944a27cc1e993db989f8bfd5e48d0e2feedb8bdfbdf439f94000f23cc",
+    "entrypoint": "trading_platform.strategies.tpr2.adapter:TPR2",
+    "subscriptions": [
+      "bar",
+      "timer"
+    ],
+    "history": [
+      [
+        "M1",
+        400
+      ],
+      [
+        "M5",
+        80
+      ],
+      [
+        "M15",
+        24
+      ],
+      [
+        "H1",
+        16
+      ]
+    ]
+  },
+  {
     "package": "timer_fixture@1",
     "digest": "edca669866f390df853a8bc9af52badf1b3d27ab37cfaa4af337ee09ffd3c1ef",
     "entrypoint": "trading_platform.strategies.timer_fixture.adapter:Timer",
