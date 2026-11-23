@@ -16,14 +16,14 @@ Two-job cycle register: [J01–J10](job-cycles.md).
 |---|---|
 | Verified baseline | S1–S4 complete; S5–S7 partial; S8 unstarted |
 | Latest features | F5.2o actual Algo capture validated; F6.4a–i attended execution boundary; F7.1a execution-state and alert dashboard acceptance; attended recovery/restore and two-hour soak acceptance |
-| Account state | Demo49644649 is flat atUSD10001.12 after tests097/100. Both were cancelled unfilled with zero cash change; independent reviews098/101 and recoveries099/102 are COMPLETE. Prior test archives retained. |
+| Account state | Demo49644649 is flat atUSD10001.29 after tests103/107. Test103 filled protected, reconnected, closed and settled +USD0.17; test107 cancel-first race ended unfilled with zero cash change. Recoveries106/109 COMPLETE; prior archives retained. |
 | Actual qualification | EURUSD capture003 tick0.00001; NAS100 capture004 tick0.01/valueUSD0.01, pip1/valueUSD1; account/nonce/time/volume checks passed. No execution capability promoted |
 | Actual shadow result | EURUSD025:601.8s,326spots,zero quote rejections,530decisions,zero orders. Buffer enabled but no holding needed. XAUUSD022 separately exercised1288buffered releases |
-| Current blocker | Requested automatic cancellation and active-pending-order reconnect tests are complete. Remaining S6 production-level acceptance still needs filled-position/protection, cancellation-race and realized-settlement broker evidence; demo configured assumptions do not certify live capability. |
-| Next concrete action | Decide whether to authorize the next bounded demo scenario: filled-position disconnect/protection and settlement. Renew account/config/runtime/quote/clock evidence and exact approval pins before any new order. Offline lifecycle, restart/recovery, settlement, container replacement, archive restore, two-hour soak and execution dashboard/alert-state acceptance pass. |
-| Capability blockers | Written broker confirmations optional for configured modeled demo trials. Real acceptance/settlement remains unobserved; configured assumptions do not certify production/live capability. Explicit order authorization still required |
+| Current blocker | Requested filled-position reconnect/protection, owned close, realized settlement and cancel-first race tests are complete. Actual late-fill-after-cancel, partial fill and triggered stop/target outcomes did not occur; they remain deterministic offline evidence, not actual broker observations. Demo configured assumptions do not certify live capability. |
+| Next concrete action | Define the next release boundary: a bounded autonomous strategy-driven demo pilot or further rare-outcome qualification. Renew account/config/runtime/quote/clock evidence and exact approval before any new order. Do not repeat orders merely to chase probabilistic partial/late-fill outcomes. |
+| Capability blockers | Bounded demo lifecycle acceptance is observed. Production/live capability remains blocked by live-specific broker facts, operational mandate and explicit authorization. Exact zero-cost settlement does not establish a general fee convention. |
 | Working branch policy | One feature/<feature_name> from develop; test, commit, merge --no-ff; publish tested changes |
-| Latest tests | Final offline suite710tests+4subtests passed13.97s,11known warnings. Online qualification077 passed120.9s with zero quote rejections; automatic cancellation097/099 and active-order reconnect100/102 both COMPLETE with one entry, one cancellation, zero fill, zero cash change and final flat account. Two-hour soak passed7200cycles/18000synthetic writes. |
+| Latest tests | Offline suite710tests+4subtests passed,11known warnings. Online test103: protected0.01 fill, reconnect1→3, one owned close, exact+USD0.17 settlement, recovery106 COMPLETE. Cancel/fill-race test107: cancel transport invoked, broker CANCELLED zero fill/cash change, recovery109 COMPLETE. Final account flatUSD10001.29. |
 | External inputs | This Mac/Docker is demo host. User explicitly authorized necessary bounded demo tests on account49644649. No live-account authorization. Off-host backup destination unspecified. |
 | Publication | Algo exporter4c48d3d/dbb125e and disabled rehearsal8eb7707/13dd4ae pushed. Actual capture evidence follows feature branch/test/merge/push; runtime gates unchanged |
 
@@ -370,7 +370,7 @@ Primary dependency chain: S1 → S2 → S3 → S4 → S6 → S7 → S8. S5 follo
 
 **Accept:** accepted-but-unacknowledged command is found without duplicate submission; inconclusive matching remains halted; failed protection repair triggers policy; inability to close while disconnected is recorded rather than reported as successful. No unowned position mutation.
 
-### F6.4 — Demo qualification suite and report — BLOCKED
+### F6.4 — Demo qualification suite and report — IN_PROGRESS
 
 **Depends on:** F6.3. **Code:** `tests/broker/`, integration harness, evidence reports.
 
@@ -1405,3 +1405,13 @@ Offline coverage includes positive observed shapes and negative nonzero, ambiguo
 Fresh read-only qualification077 observed SCHEDULED_OPEN for120.9seconds, successful forced reconnect generation1→3,120 repaired M1 rows in each generation,351 spots,108 fresh samples,66 post-reconnect fresh samples and zero quote/read failures. Normal test097 submitted one minimum-size far-away NAS100 order and issued one automatic owned cancellation before expiry; broker order251130050 was CANCELLED with zero fill/cash change and recovery099 completed. Test100 waited for acceptance of order251130127, forcibly disconnected the TCP session, reauthenticated generation1→3, resubscribed/repaired the feed and resumed management without resubmitting. It issued one cancellation, ended CANCELLED with zero fill/cash change and recovery102 completed. Final account reconciliation was flat atUSD10001.12.
 
 Evidence: docs/evidence/online-cancellation-reconnect-2026-11-23.json and .md. This closes the requested pending-order cancellation and active-pending-order reconnect acceptance. It does not qualify filled-position disconnect/protection, cancellation races involving fills, realized settlement, production broker facts or live accounts. Any next demo order needs fresh account/quote/clock/configuration/runtime inputs and a new exact bounded approval.
+
+### Filled-position reconnect, settlement and cancellation race — DONE for observed bounded outcomes (2026-11-23)
+
+Branch feature/filled_position_disconnect_settlement. Fresh clock and send-time account/configuration/quote checks preceded each single-use approval. Test103 submitted one minimum-size protected NAS100 limit. Entry order251134898 filled0.01 at25847.25; position155953105 exposed server stop25747.25, target25947.25 and TRADE stop trigger before deliberate TCP interruption. Authentication advanced generation1→3, spot subscription/repair repeated and the entry was not duplicated. After the120second cleanup boundary, the monitor issued one owned close; order251134991 filled0.01 at25864.00.
+
+Independent complete-history review observed exactly two deals, zero deposits/withdrawals, commission, swap and conversion fee, and USD0.17 gross. Balance changed exactly USD10001.12→USD10001.29. Exact-lifecycle settlement105 and recovery106 completed; the zero-cost classification is scoped to this lifecycle and is not a general broker fee rule.
+
+Test107 submitted one minimum-size order one point below bid and invoked one owned cancellation immediately after acceptance. This created the requested cancellation/fill decision envelope; broker cancellation won. Order251135078 was CANCELLED in broker history with zero execution/cash change. The monitor preserved a transient ORIGINAL_ORDER_UNRESOLVED state until history caught up. Scoped certificate108 resolved the cleanup journal and recovery109 completed without retry or exposure. The evidence window correctly used the fresh post-test103 flat snapshot, rather than falsely comparing against the earlier pre-profit balance.
+
+Evidence: docs/evidence/filled-reconnect-settlement-race-2026-11-23.json and .md. The actual broker did not produce late fill after cancellation, partial fill or a triggered stop/target; deterministic offline tests cover those logic branches, but actual observation is explicitly unclaimed. Do not repeat live-like demo orders solely to chase probabilistic rare outcomes. Final account is flat atUSD10001.29. No live-account capability or authorization follows.

@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-23",
+  "environment": "cTrader demo",
+  "account_id": "49644649",
+  "native_login": "10655835",
+  "instrument": "NAS100",
+  "quantity": "0.01",
+  "runtime": {
+    "image_id": "sha256:d452ffa1dcd58f8f6295e1fe9eb46dca14fdf0ff822ee1427c680e9075bf238d",
+    "source_hash": "e45d29cf490ff63b5407f494e483c51fdf527e4bd7476969e6677f6cdc1436a6",
+    "bundle_hash": "798a4f71da627ba57002fe942981e112b2c1d25c06e83645a07638656f792851"
+  },
+  "filled_position_disconnect": {
+    "test_id": "nas100-demo-103",
+    "entry_order_id": "251134898",
+    "position_id": "155953105",
+    "entry_quantity": "0.01",
+    "entry_price": "25847.25",
+    "entry_status": "ORDER_STATUS_FILLED",
+    "stop_loss": "25747.25",
+    "take_profit": "25947.25",
+    "stop_trigger_method": "TRADE",
+    "protected_before_disconnect": true,
+    "generation_before": 1,
+    "generation_after": 3,
+    "application_auth_requests": 2,
+    "account_auth_requests": 2,
+    "spot_subscription_requests": 2,
+    "owned_close_requests": 1,
+    "close_order_id": "251134991",
+    "close_quantity": "0.01",
+    "close_price": "25864.00",
+    "close_status": "ORDER_STATUS_FILLED",
+    "duplicate_entries": 0,
+    "recovery_status": "COMPLETE"
+  },
+  "realized_settlement": {
+    "deals": 2,
+    "opened": "0.01",
+    "closed": "0.01",
+    "gross_profit_usd": "0.17",
+    "commission_usd": "0",
+    "swap_usd": "0",
+    "conversion_fee_usd": "0",
+    "balance_before_usd": "10001.12",
+    "balance_after_usd": "10001.29",
+    "settlement_complete": true,
+    "costs_complete_for_this_exact_lifecycle": true,
+    "settlement_hash": "314bbfe84c72967048a8c6c218e8511eabda53901eb0d803e29c9a8af64b1d32"
+  },
+  "cancel_fill_race": {
+    "test_id": "nas100-demo-107",
+    "order_id": "251135078",
+    "near_market_offset_below_bid": "1",
+    "cancel_transport_invoked": true,
+    "outcome": "ORDER_STATUS_CANCELLED",
+    "executed_quantity": "0",
+    "cash_change": "0",
+    "entry_requests": 1,
+    "cancel_requests": 1,
+    "retry_requests": 0,
+    "cleanup_status": "TARGET_RESOLVED",
+    "recovery_status": "COMPLETE"
+  },
+  "final_account": {
+    "balance": "10001.29",
+    "equity": "10001.29",
+    "free_margin": "10001.29",
+    "currency": "USD",
+    "open_orders": 0,
+    "open_positions": 0
+  },
+  "limitations": [
+    "Demo-only evidence; no live-account authorization or capability.",
+    "The actual cancellation race resolved cancel-first with zero fill. A late-fill-after-cancel outcome remains covered deterministically offline but was not produced by this broker run.",
+    "Server protection was observed attached before disconnect; neither stop nor target was triggered, so trigger-price behavior was not exercised.",
+    "Zero observed costs qualify only this exact lifecycle and do not establish a general broker fee convention.",
+    "No partial fill occurred in these runs.",
+    "Private credentials, raw captures and per-test mandates remain excluded from version control."
+  ]
+}
