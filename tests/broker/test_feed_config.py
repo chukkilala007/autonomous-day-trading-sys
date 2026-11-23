@@ -50,3 +50,23 @@ def test_prepare_selects_only_requested_strategy_without_reducing_others(tmp_pat
     assert set(deployment['workers'])=={'timer_fixture'}
     assert deployment['instances']==['/analysis/timer_fixture.json']
     assert (output/'tpr1.json').exists()  # Compatible optional Compose mount, not active.
+    assert (output/'tpr2.json').exists()
+
+
+def test_prepare_selects_tpr2_with_its_full_history_contract(tmp_path,monkeypatch):
+    import runpy,sys
+    _,_,reports=inputs();now=datetime.now(timezone.utc)
+    report=reports['X'].model_copy(update={'evidence':tuple(e.model_copy(update={
+        'observed_at':now-timedelta(seconds=1),'valid_until':now+timedelta(hours=1)}) for e in reports['X'].evidence)})
+    probe=tmp_path/'probe.json';probe.write_text(json.dumps({'status':'COLLECTED','account_id':'12',
+        'economics':{'account':{'currency':'USD'}},
+        'capability_audit':{'symbols':{'X':{'capability':report.model_dump(mode='json')}}}}))
+    output=tmp_path/'config'
+    monkeypatch.setattr(sys,'argv',['prepare_shadow','--probe',str(probe),'--account','12','--symbol','X',
+        '--instances','tpr2','--destination',str(output)])
+    runpy.run_path('scripts/prepare_shadow.py',run_name='__main__')
+    feed=json.loads((output/'feed.json').read_text());deployment=json.loads((output/'deployment.json').read_text())
+    assert feed['requirements']==[['X','bid',1,400],['X','bid',5,80],['X','bid',15,24],['X','bid',60,16]]
+    assert deployment['workers']=={'tpr2':{'host':'shadow-tpr2'}}
+    assert deployment['instances']==['/analysis/tpr2.json']
+    assert (output/'tpr2.token').stat().st_mode & 0o777 == 0o600

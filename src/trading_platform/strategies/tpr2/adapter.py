@@ -69,7 +69,9 @@ class TPR2:
                 triggers = [e for e in raw['events'] if e['event'] == 'TRIGGERED' and e['candidate_id'] == current['id']]
                 trigger = triggers[-1] if triggers else None
                 quote = next((q for q in reversed(snapshot.quotes) if q.instrument == symbol), None)
-                supplied = json.loads(event.payload).get('execution_evidence', {})
+                payload = json.loads(event.payload)
+                supplied = payload.get('execution_evidence_by_symbol', {}).get(symbol,
+                    payload.get('execution_evidence', {}))
                 if not supplied or quote is None:
                     reasons += ['EXECUTION_UNVERIFIED']
                 elif trigger and trigger['geometry_pass'] and current['entry_expires'] and utc(current['entry_expires']) > snapshot.cutoff:
