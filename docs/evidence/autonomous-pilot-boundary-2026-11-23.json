@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-23",
+  "classification": "offline_autonomous_demo_pilot_boundary",
+  "delivered": [
+    "deployment-pinned one-entry PilotMandate",
+    "canonical strategy Decision validation at the gateway",
+    "exact instance, package, configuration, account, instrument and bundle binding",
+    "freshness, proposal lifetime, geometry, quantity and USD 5 loss limits",
+    "durable one-entry consumption immediately before UNKNOWN-before-send transport",
+    "autonomous submit refusal when no pilot mandate is installed",
+    "pure PREPARED_DISABLED strategy/broker preflight"
+  ],
+  "focused_tests": {
+    "passed": 17,
+    "warnings": 1
+  },
+  "full_regression": {
+    "tests_passed": 725,
+    "subtests_passed": 4,
+    "warnings": 11,
+    "duration_seconds": 20.86,
+    "network": "none",
+    "root_filesystem": "read_only"
+  },
+  "orders_sent": 0,
+  "broker_network_used": false,
+  "current_blockers": [
+    "No current reviewed strategy package emits the protected limit profile supported by the qualified cTrader path.",
+    "TPR-1 remains paper-only and emits stop-limit proposals; the timer package is a synthetic market-order fixture.",
+    "Intended-host gateway launcher configuration and fresh pilot pins have not been prepared.",
+    "A naturally generated eligible decision has not yet passed shadow observation."
+  ],
+  "limitations": [
+    "This change supplies authorization and protocol boundaries, not a trading signal or profitability evidence.",
+    "The example mandate is intentionally disabled and invalid until independently reviewed.",
+    "No demo or live order authorization follows from offline tests."
+  ]
+}

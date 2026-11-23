@@ -1,5 +1,7 @@
 # Deployment
 
+Autonomous demo pilot boundary and activation sequence: [autonomous-demo-pilot.md](autonomous-demo-pilot.md).
+
 The root Compose file runs the persistent offline paper stack: core, two strategy workers and a simulator. See the root README for launch, status, testing and shutdown commands.
 
 Named volumes preserve core and simulator state independently. The isolated smoke drill uses a unique project and removes its own test volumes; normal operations should retain volumes.
