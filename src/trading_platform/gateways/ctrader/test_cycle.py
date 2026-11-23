@@ -52,7 +52,9 @@ def advance_completed_test(db, account, next_test_id, economics, now):
                     or not order or not order['terminal'] or digest(order['record'])!=proof.order_hash
                     or proof.order_id!=send.get('broker_order_id')):raise ValueError('unfilled prior review mismatch')
             pid=str(order['record'].get('positionId',''))
-            if any(k!='broker-position:'+pid or Decimal(p['quantity'])!=0 or p['record'].get('positionStatus')!='POSITION_STATUS_CREATED' for k,p in positions.items()):
+            if any(k!='broker-position:'+pid or Decimal(p['quantity'])!=0
+                    or p['record'].get('positionStatus') not in ('POSITION_STATUS_CREATED','POSITION_STATUS_CLOSED')
+                    for k,p in positions.items()):
                 raise ValueError('unexpected unfilled position')
         else:raise ValueError('exactly one prior completion review required')
         for key,value in rows.items():

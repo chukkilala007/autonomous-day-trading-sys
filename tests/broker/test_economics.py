@@ -83,6 +83,46 @@ def test_empty_created_position_is_not_funded_exposure(zero_pnl):
     assert account_money('12',trader,rec,pnl,assets)==dict(currency='GBP',balance='10000',equity='10000',free_margin='10000')
 
 
+@pytest.mark.parametrize('zero_pnl',[False,True])
+def test_empty_open_pending_placeholder_is_not_funded_exposure(zero_pnl):
+    trader,rec,pnl,assets=pending_fixture()
+    rec['position'][0]['positionStatus']='POSITION_STATUS_OPEN'
+    if zero_pnl:pnl['positionUnrealizedPnL']=[dict(positionId='9',netUnrealizedPnL='0',grossUnrealizedPnL='0')]
+    assert account_money('12',trader,rec,pnl,assets)==dict(currency='GBP',balance='10000',equity='10000',free_margin='10000')
+
+
+def test_empty_open_position_without_linked_pending_order_is_rejected():
+    trader,rec,pnl,assets=pending_fixture()
+    rec['position'][0]['positionStatus']='POSITION_STATUS_OPEN';rec['order']=[]
+    with pytest.raises(ValueError):account_money('12',trader,rec,pnl,assets)
+
+
+def pnl_only_pending_fixture():
+    trader,rec,pnl,assets=pending_fixture()
+    rec['position']=[]
+    pnl['positionUnrealizedPnL']=[dict(positionId='9',netUnrealizedPnL='0',grossUnrealizedPnL='0')]
+    return trader,rec,pnl,assets
+
+
+def test_zero_pnl_only_pending_placeholder_is_not_funded_exposure():
+    trader,rec,pnl,assets=pnl_only_pending_fixture()
+    assert account_money('12',trader,rec,pnl,assets)==dict(currency='GBP',balance='10000',equity='10000',free_margin='10000')
+
+
+@pytest.mark.parametrize('fault',['unlinked','duplicate','terminal','partial','volume','side','net','gross'])
+def test_unverified_pnl_only_pending_placeholder_is_rejected(fault):
+    trader,rec,pnl,assets=pnl_only_pending_fixture();o=rec['order'][0];p=pnl['positionUnrealizedPnL'][0]
+    if fault=='unlinked':o['positionId']='8'
+    if fault=='duplicate':rec['order'].append(dict(o,orderId='11'))
+    if fault=='terminal':o['orderStatus']='ORDER_STATUS_CANCELLED'
+    if fault=='partial':o['executedVolume']='1'
+    if fault=='volume':o['tradeData']['volume']='0'
+    if fault=='side':o['tradeData']['tradeSide']='UNKNOWN'
+    if fault=='net':p['netUnrealizedPnL']='1'
+    if fault=='gross':p['grossUnrealizedPnL']='1'
+    with pytest.raises(ValueError):account_money('12',trader,rec,pnl,assets)
+
+
 @pytest.mark.parametrize('fault',['quantity','margin','fee','missing_cost','unlinked','partial','side','pnl','duplicate'])
 def test_unverified_created_position_is_never_ignored(fault):
     trader,rec,pnl,assets=pending_fixture();p=rec['position'][0];o=rec['order'][0]
