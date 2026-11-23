@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-23",
+  "environment": "cTrader demo",
+  "account_id": "49644649",
+  "native_login": "10655835",
+  "instrument": "NAS100",
+  "quantity": "0.01",
+  "scope": [
+    "fresh market and reconnect qualification",
+    "automatic pending-order cancellation",
+    "active-order disconnect, reauthentication, feed repair and cancellation"
+  ],
+  "runtime": {
+    "image_id": "sha256:d452ffa1dcd58f8f6295e1fe9eb46dca14fdf0ff822ee1427c680e9075bf238d",
+    "source_hash": "e45d29cf490ff63b5407f494e483c51fdf527e4bd7476969e6677f6cdc1436a6",
+    "bundle_hash": "798a4f71da627ba57002fe942981e112b2c1d25c06e83645a07638656f792851",
+    "cost_policy_hash": "31221a013ad83d96180e18083264f074195e913e5de0e2ef38293c49b8bfb7db"
+  },
+  "market_qualification": {
+    "artifact": "nas100-qualification-077.json",
+    "status": "OBSERVED",
+    "schedule": "SCHEDULED_OPEN",
+    "duration_seconds": 120.902765222,
+    "spots": 351,
+    "fresh_samples": 108,
+    "post_reconnect_fresh_samples": 66,
+    "generations": [1, 3],
+    "history_rows_per_generation": 120,
+    "quote_rejections": 0,
+    "read_failures": 0
+  },
+  "automatic_cancellation": {
+    "test_id": "nas100-demo-097",
+    "order_id": "251130050",
+    "outcome": "ORDER_STATUS_CANCELLED",
+    "executed_quantity": "0",
+    "cash_change": "0",
+    "entry_requests": 1,
+    "cancel_requests": 1,
+    "retry_requests": 0,
+    "recovery_status": "COMPLETE",
+    "exposure_resolved": true
+  },
+  "active_order_reconnect": {
+    "test_id": "nas100-demo-100",
+    "order_id": "251130127",
+    "disconnect_after_broker_acceptance": true,
+    "generation_before": 1,
+    "generation_after": 3,
+    "application_auth_requests": 2,
+    "account_auth_requests": 2,
+    "spot_subscription_requests": 2,
+    "outcome": "ORDER_STATUS_CANCELLED",
+    "executed_quantity": "0",
+    "cash_change": "0",
+    "entry_requests": 1,
+    "cancel_requests": 1,
+    "retry_requests": 0,
+    "recovery_status": "COMPLETE",
+    "exposure_resolved": true
+  },
+  "final_account": {
+    "balance": "10001.12",
+    "equity": "10001.12",
+    "free_margin": "10001.12",
+    "currency": "USD",
+    "open_orders": 0,
+    "open_positions": 0
+  },
+  "offline_regression": {
+    "tests_passed": 710,
+    "subtests_passed": 4,
+    "warnings": 11
+  },
+  "limitations": [
+    "Demo-only evidence; no live-account authorization or capability.",
+    "Both bounded orders remained unfilled, so this does not qualify filled-position protection or realized settlement.",
+    "Configured broker assumptions remain demo-trial inputs, not production broker certification.",
+    "Private credentials, mandates and raw broker captures remain excluded from version control."
+  ]
+}

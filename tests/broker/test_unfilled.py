@@ -31,6 +31,27 @@ def test_unfilled_completion_and_cancel_reconciliation_archive(tmp_path):
   assert advance_completed_test(db,'12','second',e['economics'],T)['status']=='NEXT_CYCLE_PREPARED'
 
 
+def test_unfilled_review_accepts_exact_prior_archived_certificate_in_wider_history(tmp_path):
+ with Database(tmp_path/'db') as db:
+  b,e=fixture(db);old=dict(e['orders'][0],orderId='2',clientOrderId='old')
+  proof=dict(account_id='12',command_id='old',order_id='2',owner='old-test',outcome='ORDER_STATUS_CANCELLED',observed_at=T,
+             evidence_hash='b'*64,order_hash=digest(old),cash_change='0',executed_quantity='0')
+  archive=dict(checkpoints={'provider-unfilled:old':proof,'broker-order:2':dict(record=old)})
+  db.connection.execute('INSERT INTO checkpoints VALUES (?,?)',('completed-test:12:old-test',canonical(archive)))
+  e['orders'].insert(0,old)
+  assert certify_unfilled(db,'12',b,e,T).order_id=='3'
+
+
+def test_unfilled_review_rejects_changed_prior_archived_order(tmp_path):
+ with Database(tmp_path/'db') as db:
+  b,e=fixture(db);old=dict(e['orders'][0],orderId='2',clientOrderId='old')
+  proof=dict(account_id='12',command_id='old',order_id='2',owner='old-test',outcome='ORDER_STATUS_CANCELLED',observed_at=T,
+             evidence_hash='b'*64,order_hash=digest(old),cash_change='0',executed_quantity='0')
+  db.connection.execute('INSERT INTO checkpoints VALUES (?,?)',('completed-test:12:old-test',canonical(dict(checkpoints={'provider-unfilled:old':proof,'broker-order:2':dict(record=old)}))))
+  e['orders'].insert(0,dict(old,executedVolume='1'))
+  with pytest.raises(ValueError):certify_unfilled(db,'12',b,e,T)
+
+
 @pytest.mark.parametrize('fault',['fill','deal','cashflow','balance','version','stale','open','foreign','ambiguous','pending','window'])
 def test_unfilled_review_rejects_unproven_completion(tmp_path,fault):
  with Database(tmp_path/'db') as db:

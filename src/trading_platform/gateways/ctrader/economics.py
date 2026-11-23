@@ -23,11 +23,16 @@ def funded_positions(reconcile):
     """Separate a strictly empty pending-order placeholder from funded exposure."""
     rows=rows_by_id(reconcile.get('position',[]),'positionId');opened={}
     for pid,p in rows.items():
-        if p.get('positionStatus')=='POSITION_STATUS_OPEN':
-            opened[pid]=p;continue
         trade=p.get('tradeData',{})
+        # Some cTrader brokers expose a reserved pending-order position as
+        # OPEN rather than CREATED even though its volume and economics are
+        # still exactly zero. Only the fully linked zero placeholder below is
+        # excluded; missing/positive volume remains funded exposure.
+        volume=integer(trade.get('volume',-1))
+        if p.get('positionStatus')=='POSITION_STATUS_OPEN' and volume!=0:
+            opened[pid]=p;continue
         linked=[o for o in reconcile.get('order',[]) if str(o.get('positionId'))==pid]
-        if (p.get('positionStatus')!='POSITION_STATUS_CREATED' or integer(trade.get('volume',-1))!=0
+        if (p.get('positionStatus') not in ('POSITION_STATUS_CREATED','POSITION_STATUS_OPEN') or volume!=0
                 or any(money(p,k)!=0 for k in ('usedMargin','commission','swap')) or len(linked)!=1):
             raise ValueError('unexpected reconciled position status')
         o=linked[0];ot=o.get('tradeData',{})
@@ -53,12 +58,26 @@ def account_money(account,trader,reconcile,pnl,assets):
     positions=funded_positions(reconcile)
     all_positions=rows_by_id(reconcile.get('position',[]),'positionId')
     profits=rows_by_id(pnl.get('positionUnrealizedPnL',[]),'positionId')
-    rows_by_id(reconcile.get('order',[]),'orderId')
+    orders=rows_by_id(reconcile.get('order',[]),'orderId')
     empty=set(all_positions)-set(positions)
     for pid in empty & set(profits):
         if any(money(dict(profits[pid],moneyDigits=pnl['moneyDigits']),k)!=0 for k in ('netUnrealizedPnL','grossUnrealizedPnL')):
             raise ValueError('nonzero empty-position P&L')
-    if set(positions)!=set(profits)-empty or set(profits)-set(all_positions): raise ValueError('incomplete position P&L')
+    # Observed cTrader shape: an accepted, wholly unfilled pending order can
+    # have a zero P&L row keyed by its reserved position ID while Reconcile
+    # omits the position row entirely. Treat only that exact linked zero row
+    # as an empty placeholder; it is not funded exposure.
+    pnl_only=set(profits)-set(all_positions)
+    for pid in pnl_only:
+        linked=[o for o in orders.values() if str(o.get('positionId'))==pid]
+        row=dict(profits[pid],moneyDigits=pnl['moneyDigits'])
+        if (len(linked)!=1 or linked[0].get('orderStatus')!='ORDER_STATUS_ACCEPTED'
+                or integer(linked[0].get('executedVolume',-1))!=0
+                or integer(linked[0].get('tradeData',{}).get('volume',0))<=0
+                or linked[0].get('tradeData',{}).get('tradeSide') not in ('BUY','SELL')
+                or any(money(row,k)!=0 for k in ('netUnrealizedPnL','grossUnrealizedPnL'))):
+            raise ValueError('unverified P&L-only pending placeholder')
+    if set(positions)!=set(profits)-empty-pnl_only: raise ValueError('incomplete position P&L')
     balance=money(raw,'balance')
     if balance is None: raise ValueError('balance scale required')
     used=Decimal(0);net=Decimal(0);sides={}

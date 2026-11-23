@@ -21,6 +21,23 @@ class UnfilledCertificate(Record):
     executed_quantity: Literal['0'] = '0'
 
 
+def _reviewed_prior_orders(db,account):
+    """Return exact terminal orders already certified in immutable cycle archives."""
+    known=set()
+    rows=db.connection.execute("SELECT body FROM checkpoints WHERE id LIKE ?",('completed-test:'+account+':%',))
+    for row in rows:
+        archive=json.loads(row['body']);checkpoints=archive.get('checkpoints',{})
+        for key,value in checkpoints.items():
+            if not key.startswith('provider-unfilled:'):continue
+            proof=UnfilledCertificate.model_validate_json(canonical(value))
+            order=checkpoints.get('broker-order:'+proof.order_id)
+            if (proof.account_id!=account or not order or proof.order_hash!=digest(order.get('record'))
+                    or proof.outcome!=order.get('record',{}).get('orderStatus')):
+                raise ValueError('archived unfilled review mismatch')
+            known.add((proof.order_id,proof.order_hash))
+    return known
+
+
 def certify_unfilled(db, account, baseline, evidence, now):
     """Caller collects authenticated complete history; persist only after exact checks."""
     account=str(account);e=evidence['economics'];reconcile=e['reconciliation']
@@ -43,9 +60,12 @@ def certify_unfilled(db, account, baseline, evidence, now):
     attempt=json.loads(row[0]);command=attempt['command_id']
     send=json.loads(db.connection.execute('SELECT body FROM checkpoints WHERE id=?',('gateway-send:'+command,)).fetchone()[0])
     orders=evidence['orders'];candidates=[o for o in orders if matches(send['fields'],o)]
-    if (len(candidates)!=1 or len(orders)!=1 or send['instance']!=attempt['owner']
+    if (len(candidates)!=1 or send['instance']!=attempt['owner']
             or str(send['fields']['ctidTraderAccountId'])!=account):raise ValueError('ambiguous unfilled history')
     order=candidates[0]
+    prior=_reviewed_prior_orders(db,account)
+    if any(o is not order and (str(o.get('orderId')),digest(o)) not in prior for o in orders):
+        raise ValueError('ambiguous unfilled history')
     if (order.get('orderStatus') not in ('ORDER_STATUS_CANCELLED','ORDER_STATUS_EXPIRED','ORDER_STATUS_REJECTED')
             or Decimal(str(order.get('executedVolume',0)))!=0):raise ValueError('order is not terminal unfilled')
     result=UnfilledCertificate(account_id=account,command_id=command,order_id=str(order['orderId']),owner=attempt['owner'],
