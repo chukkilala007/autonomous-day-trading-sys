@@ -14,9 +14,12 @@ from trading_platform.risk.sizing import Contract
 
 
 class DemoAPI:
-    def __init__(self,gateway,ledger,feed,reports,valuation,now,requirements=(),contract_quote=None):
+    def __init__(self,gateway,ledger,feed,reports,valuation,now,requirements=(),contract_quote=None,pilot_gate=None):
         self.gateway=gateway;self.ledger=ledger;self.feed=feed;self.reports=reports
-        self.valuation=valuation;self.now=now;self.projection=Projection(gateway.db);self.requirements=requirements;self.contract_quote=contract_quote
+        self.valuation=valuation;self.now=now;self.projection=Projection(gateway.db);self.requirements=requirements;self.contract_quote=contract_quote;self.pilot_gate=pilot_gate
+        if pilot_gate is not None and (pilot_gate.db is not gateway.db
+                or pilot_gate.mandate.account_id!=str(gateway.session.account_id)):
+            raise ValueError('foreign autonomous pilot gate')
 
     def check(self,body):
         if str(body['account_id'])!=str(self.gateway.session.account_id): raise ValueError('foreign account')
@@ -97,6 +100,8 @@ class DemoAPI:
         if op not in ('submit','manage'): raise ValueError('unsupported demo operation')
         command=body['command'];now=self.now()
         if op=='submit':
+            if self.pilot_gate is None: raise ValueError('autonomous pilot mandate required')
+            self.pilot_gate.validate(command,now)
             view=self.view()
             if view['blockers']: raise ValueError('broker observation blocked')
             symbol=command['body']['decision']['proposal']['instrument']
@@ -118,6 +123,9 @@ class DemoAPI:
             raw=self.feed.get('quote:'+symbol)
             from trading_platform.contracts.events import Quote
             quote=Quote.model_validate_json(json.dumps(raw))
+            # Consume the one-entry pilot only after every read-only check and
+            # immediately before the durable UNKNOWN transport boundary.
+            self.pilot_gate.consume(command,now)
             result=yield self.gateway.send(command,body['core_id'],body['epoch'],self.reports[symbol],quote,now,utc(view['observed_at']))
         else:
             view=self.view()

@@ -16,6 +16,7 @@ from trading_platform.market_data.service import Feed
 from trading_platform.risk.sizing import Contract
 from trading_platform.execution.outbox import Executor
 from trading_platform.execution.demo_broker import DemoBroker
+from trading_platform.contracts.values import digest
 from trading_platform.gateways.ctrader.orders import DemoTransport
 from trading_platform.gateways.ctrader.execution import ExecutionLedger
 from trading_platform.gateways.ctrader.demo_api import DemoAPI
@@ -25,12 +26,11 @@ from trading_platform.gateways.ctrader.demo_api import DemoAPI
 def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(tmp_path,request,exact):
     fixture=runpy.run_path('tests/broker/test_demo_transport.py');command,report,quote=fixture['fixture']();now=fixture['T']
     contract=Contract(instrument='X',account_currency='GBP',valuation_currency='GBP',quote_to_account='1',contract_value_per_unit='1',commission_per_unit='0',slippage_per_unit='0',minimum='1',maximum='100',step='1',tick='.01',margin_per_unit='1',verified_at=now,provenance='offline-protocol-fixture')
-    data=json.loads(Path('config/instances/tpr1.json').read_text());data.update(mode='demo',universe=['X']);data['account'].update(environment='demo',broker_account='12')
+    data=json.loads(Path('config/instances/tpr1.json').read_text());data.update(mode='demo',universe=['X'],allocation='0.0005');data['account'].update(environment='demo',broker_account='12',total_risk='0.001',per_trade='0.0005',concentration='0.0005')
     instance=Instance.model_validate_json(json.dumps(data))
     decision=Decision(instance=instance.instance_id,account=instance.account.alias,environment='demo',package=instance.strategy,config_hash=instance.hash,event_id='offline',snapshot_hash='offline-snapshot',at=now,outcome='ENTRY',proposal=command['body']['decision']['proposal'])
     if exact:
         from trading_platform.risk.sizing import ExactCosts,QuantityCost
-        from trading_platform.contracts.values import digest
         contract=contract.model_copy(update={'margin_per_unit':D('0'),'exact_costs':ExactCosts(account_id='12',proposal_hash=digest(decision.proposal),evidence_hash='a'*64,observed_at=now,rows=(QuantityCost(quantity='2',costs='3',margin='4'),QuantityCost(quantity='5',costs='3',margin='20')))})
     raw={};calls=[]
     class Client:
@@ -62,6 +62,18 @@ def test_protocol_accept_fill_close_releases_shared_risk_only_after_settlement(t
         assert broker.contract_for(decision.proposal)==contract
         executor=Executor(db,instance.account);executor.book.limits.observe(now,D('10000'))
         cid=executor.enqueue(decision,instance,quote,contract,now,D('10000'),D('10000'),D('10000'),'X')
+        with pytest.raises(TimeoutError,match='reconciliation'):
+            broker.submit(executor.command(cid),quote,now)
+        assert calls==[]
+        from trading_platform.gateways.ctrader.pilot import PilotMandate,PilotGate
+        queued=executor.command(cid)
+        mandate=PilotMandate(account_id='12',account_alias=instance.account.alias,test_id='offline-pilot',
+            instance=instance.instance_id,package=instance.strategy,config_hash=instance.hash,instrument='X',
+            quantity=queued['body']['size']['quantity'],maximum_loss='5',maximum_stop_distance='2',
+            minimum_reward_risk='1',maximum_decision_age_seconds=2,maximum_proposal_lifetime_seconds=60,
+            valid_from=now-timedelta(seconds=1),submit_before=now+timedelta(seconds=10),
+            reviewed_bundle_hash='a'*64,source_hash='b'*64,image_digest='c'*64)
+        api.pilot_gate=PilotGate(gdb,mandate,approved_hash=digest(mandate))
         if exact:
             import copy
             altered=copy.deepcopy(executor.command(cid))
