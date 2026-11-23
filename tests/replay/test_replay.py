@@ -13,7 +13,7 @@ def test_both_packages_replay_deterministically():
     q=Quote(instrument='TEST',bid='100',ask='100.01',source_time=s.cutoff,received_at=s.cutoff)
     s=s.model_copy(update={'quotes':s.quotes+(q,)})
     e=Event(event_id='1',kind='bar',instrument='XAUUSD',source_time=s.cutoff,available_at=s.cutoff)
-    for name in ('tpr1','timer_fixture'):
+    for name in ('tpr1','tpr2','timer_fixture'):
         i=Instance.model_validate_json(Path(f'config/instances/{name}.json').read_text())
         a=replay(i,load_registry('config/registry.json'),[(e,s)])
         b=replay(i,load_registry('config/registry.json'),[(e,s)])
