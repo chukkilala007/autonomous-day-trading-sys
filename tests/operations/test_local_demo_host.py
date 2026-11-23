@@ -13,7 +13,8 @@ def inputs():
 def test_exact_local_pins_without_registry_or_order_activation():
     report, override = qualify(*inputs())
     assert report['passed'] and not report['orders_enabled']
-    assert len(override['services']) == 4
+    assert len(override['services']) == 5
+    assert 'shadow-tpr2' in override['services']
     assert all(v == {'image': 'sha256:' + 'a' * 64, 'pull_policy': 'never'} for v in override['services'].values())
     assert 'explicit_demo_order_authorization' in report['remaining_gates']
 

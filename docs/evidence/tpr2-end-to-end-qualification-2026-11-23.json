@@ -1,0 +1,120 @@
+{
+  "classification": "tpr2_operational_shadow_qualification",
+  "date": "2026-11-23",
+  "status": "IN_PROGRESS",
+  "orders_authorized": false,
+  "performance_claim": false,
+  "strategy": {
+    "package": "tpr2@1",
+    "digest": "25682866af3cb126ada26f12f7d7ce608f1569ec09ae629542bf22306de8f509",
+    "evaluation": "tpr2-shadow-v1",
+    "window": [
+      "2026-11-23T23:00:00Z",
+      "2026-12-21T23:00:00Z"
+    ]
+  },
+  "offline": {
+    "full_suite": "743 passed, 4 subtests passed",
+    "warnings": [
+      "upstream protobuf utcfromtimestamp deprecation"
+    ],
+    "validated": [
+      "causal long and short mechanics",
+      "limit retest direction and expiry",
+      "gap and same-bar ambiguity",
+      "isolated authenticated strategy worker",
+      "durable core and worker restart",
+      "zero-order shadow boundary",
+      "protected-limit proposal validation",
+      "disabled one-entry pilot compatibility",
+      "fresh execution-evidence omission on missing or stale facts",
+      "read-only forward qualification reporting"
+    ]
+  },
+  "fresh_probe": {
+    "status": "COLLECTED",
+    "orders_enabled": false,
+    "symbols": {
+      "EURUSD": 1,
+      "XAUUSD": 41
+    },
+    "candle_basis": "bid",
+    "basis_samples_per_symbol": 3,
+    "execution_blockers": [
+      "commission",
+      "contract_value",
+      "currency_conversion",
+      "expiry",
+      "margin",
+      "order_types",
+      "protection_sides",
+      "session_state",
+      "tick_grid"
+    ],
+    "private_sha256": "15e255c58ec376e974568f59af7e47ac8f5f20b4d593ec46eca962dd1e62acdb"
+  },
+  "verified_xauusd_closure": {
+    "start": "2026-11-23T22:00:00Z",
+    "end": "2026-11-23T23:00:00Z",
+    "status": "NO_TICKS_REPORTED",
+    "proof_sha256": "2892fd7e5435abeae29d4e3afe80efa18ade6f32c931277db971b6db33b67a37"
+  },
+  "online_runs": {
+    "EURUSD": {
+      "gateway_status": "PASS",
+      "generations": [1, 3],
+      "complete_snapshots": 6,
+      "spot_events": 69,
+      "decisions": 60,
+      "outcomes": {"WATCH": 60},
+      "triggers": 0,
+      "natural_limit_proposals": 0,
+      "commands": 0,
+      "reservations": 0,
+      "positions": 0,
+      "database_integrity": "ok",
+      "gateway_report_sha256": "af407257f130d2f6ad722c7f0eaa4453a33b01e3260cdf3c7db2aab0dcc7d53b",
+      "database_sha256": "0da3f80741e613dde976d2795fcf4c837f2b22fff5c2784c86f3d56cce5f5e44"
+    },
+    "XAUUSD": {
+      "gateway_status": "PASS",
+      "generations": [1, 3],
+      "complete_snapshots": 9,
+      "spot_events": 203,
+      "decisions": 86,
+      "outcomes": {"WATCH": 86},
+      "triggers": 1,
+      "trigger_lifecycle": "ENTRY_EXPIRED_WITHOUT_EXECUTION_QUALIFICATION",
+      "natural_limit_proposals": 0,
+      "commands": 0,
+      "reservations": 0,
+      "positions": 0,
+      "database_integrity": "ok",
+      "gateway_report_sha256": "7c1445e2f6e6682e1bfa1f4bf3af9348b5283ae5e29843ec9cb9416c2180b210",
+      "database_sha256": "d5ee48583c516994709b6cc43ec9c9cd5a4f90c32db47565f7f7f8d61588970f"
+    }
+  },
+  "combined_report": {
+    "status": "IN_PROGRESS",
+    "blockers": [],
+    "sample_shortfalls": [
+      "EURUSD:DECISIONS",
+      "EURUSD:TRIGGERS",
+      "EURUSD:NATURAL_LIMIT_PROPOSALS",
+      "XAUUSD:DECISIONS",
+      "XAUUSD:TRIGGERS",
+      "XAUUSD:NATURAL_LIMIT_PROPOSALS"
+    ],
+    "private_sha256": "c4f663e8f37ed863a5582a3ba34b81c4e83ea2b5be7cfa63748749d12203f51c"
+  },
+  "images": {
+    "gateway": "sha256:2913e8b482ad0e393b9623b9fb3d7d4361321226ecc1e9ecb85c6094c9c707a5",
+    "runtime": "sha256:6e1fe84356422c5ca8bab25271293a865572d8a3b5224349cc343706c4b1cf67"
+  },
+  "remaining": [
+    "continue the locked forward window to the declared sample and end-date gates",
+    "observe a natural still-fresh protected-limit proposal",
+    "supply current reviewed tick, session, cost, conversion, protection and expiry facts",
+    "renew exact account, quote, margin, clock, configuration, source and image pins before a disabled demo pilot preflight"
+  ]
+}

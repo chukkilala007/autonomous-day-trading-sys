@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 SERVICES = {'shadow-gateway': 'gateway', 'shadow-core': 'runtime',
-            'shadow-tpr': 'runtime', 'shadow-timer': 'runtime'}
+            'shadow-tpr': 'runtime', 'shadow-tpr2': 'runtime', 'shadow-timer': 'runtime'}
 
 
 def qualify(info, images):

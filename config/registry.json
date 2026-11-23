@@ -28,7 +28,7 @@
   },
   {
     "package": "tpr2@1",
-    "digest": "6742d47944a27cc1e993db989f8bfd5e48d0e2feedb8bdfbdf439f94000f23cc",
+    "digest": "25682866af3cb126ada26f12f7d7ce608f1569ec09ae629542bf22306de8f509",
     "entrypoint": "trading_platform.strategies.tpr2.adapter:TPR2",
     "subscriptions": [
       "bar",

@@ -1,6 +1,6 @@
 # TPR-2 preregistered test specification
 
-Status: research and shadow qualification only. This document freezes the selected trend-pullback continuation variant before chronological testing. It does not claim profitability and does not authorize an order.
+Status: offline end-to-end mechanics passed; forward shadow evaluation preregistered and pending. This document freezes the selected trend-pullback continuation variant before chronological testing. It does not claim profitability and does not authorize an order.
 
 ## Inherited causal signal rules
 
@@ -20,5 +20,7 @@ For bid-basis candles, executable conversion is explicit: a long entry adds the 
 2. Replay: untouched chronological data with no parameter changes; report detections and exclusions, not P&L where executable bid/ask history is absent.
 3. Shadow: natural forward decisions with complete broker evidence, zero order writes and stable reconnect behavior.
 4. Demo pilot: only after a fresh reviewed broker bundle, exact disabled-to-enabled pilot mandate, account/config/image pins and a new explicit authorization. Maximum one bounded entry.
+
+The forward operational contract is `config/evaluation/tpr2-shadow-v1.json`; the execution procedure is `deploy/tpr2-shadow-qualification.md`. The observation window cannot pass early, insufficient samples extend without tuning, and the report always sets performance and order authorization false.
 
 Live mode is explicitly rejected. Any parameter or pattern change creates another strategy version and a new untouched evaluation period.

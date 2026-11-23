@@ -45,11 +45,12 @@ services:
     volumes:
       - "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/deployment.json:/analysis/deployment.json:ro"
       - "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/tpr1.json:/analysis/tpr1.json:ro"
+      - "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/tpr2.json:/analysis/tpr2.json:ro"
       - "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/timer_fixture.json:/analysis/timer_fixture.json:ro"
       - "${SHADOW_CORE_STATE_DIR:-./var/shadow-core-state}:/state"
-    secrets: [gateway_token, tpr1_token, timer_fixture_token, reader_token]
+    secrets: [gateway_token, tpr1_token, tpr2_token, timer_fixture_token, reader_token]
     networks: [broker, workers]
-    depends_on: [shadow-gateway, shadow-tpr, shadow-timer]
+    depends_on: [shadow-gateway, shadow-tpr, shadow-tpr2, shadow-timer]
   shadow-tpr:
     profiles: [analysis]
     build: {context: ., target: runtime}
@@ -88,6 +89,25 @@ services:
     command: [python, -m, trading_platform.runtime.worker, --instance, timer_fixture, --token-file, /run/secrets/timer_fixture_token, --registry, /app/config/registry.json]
     secrets: [timer_fixture_token]
     networks: [workers]
+  shadow-tpr2:
+    profiles: [analysis]
+    build: {context: ., target: runtime}
+    image: autonomous-trading-paper:local
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: [/tmp]
+    mem_limit: 256m
+    pids_limit: 128
+    cpus: 1
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+    command: [python, -m, trading_platform.runtime.worker, --instance, tpr2, --token-file, /run/secrets/tpr2_token, --registry, /app/config/registry.json]
+    secrets: [tpr2_token]
+    networks: [workers]
 networks:
   egress: {}
   broker: {internal: true}
@@ -95,5 +115,6 @@ networks:
 secrets:
   gateway_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/gateway.token"}
   tpr1_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/tpr1.token"}
+  tpr2_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/tpr2.token"}
   timer_fixture_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/timer_fixture.token"}
   reader_token: {file: "${SHADOW_ANALYSIS_DIR:-./var/shadow-analysis}/reader.token"}

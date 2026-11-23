@@ -37,7 +37,9 @@ def main():
                 wall=datetime.now(timezone.utc)
                 if not 0<=(wall-snapshot.cutoff).total_seconds()<=2: raise ValueError('stale gateway snapshot')
                 if not snapshot.coverage_complete: raise ValueError('incomplete market coverage')
-                event=Event(event_id='shadow:'+snapshot.hash,kind='timer',instrument='ACCOUNT',source_time=snapshot.cutoff,available_at=snapshot.cutoff)
+                execution=data.get('provider',{}).get('execution_evidence',{})
+                event=Event(event_id='shadow:'+snapshot.hash,kind='timer',instrument='ACCOUNT',source_time=snapshot.cutoff,available_at=snapshot.cutoff,
+                    payload=canonical({'execution_evidence_by_symbol':execution}) if execution else '{}')
                 runtime.process(event,snapshot,data['account'])
                 with db.transaction() as c: c.execute('INSERT OR REPLACE INTO checkpoints VALUES (?,?)',('shadow:account',canonical(data['account'])))
                 print(json.dumps({'mode':'shadow','processed':event.event_id,'order_writes':0}),flush=True)
