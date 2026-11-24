@@ -4,7 +4,7 @@ This runbook qualifies analysis and proposal generation only. The shadow gateway
 
 ## Frozen evaluation
 
-The immutable evaluation contract is `config/evaluation/tpr2-shadow-v1.json`. It was registered before the observation window and binds `tpr2@1`, its source digest, EURUSD and XAUUSD, minimum samples, maximum unavailable fraction, reconnect generation, zero-write requirement and the no-performance-claim boundary. Do not edit it after observations begin. A strategy or parameter change requires a new package, plan and untouched window.
+The active immutable evaluation contract is `config/evaluation/tpr2-shadow-v2.json`; its schedule is defined in `deploy/tpr2-qualification-schedule.md`. The original v1 contract is retained unchanged with its historical evidence and is not combined into v2. V2 was registered before its observation window and binds `tpr2@1`, its source digest, EURUSD and XAUUSD, minimum samples, maximum unavailable fraction, reconnect generation, zero-write requirement and the no-performance-claim boundary. Do not edit it after observations begin. A strategy or parameter change requires a new package, plan and untouched window.
 
 Run EURUSD and XAUUSD as separate single-symbol shadow deployments and state databases. This preserves per-symbol candidate state and makes sample/recovery evidence attributable. Insufficient observations extend the same locked evaluation through the declared maximum date; they do not justify parameter changes.
 
@@ -35,7 +35,7 @@ After a clean shutdown, copy each stopped core database before inspection. The r
 
 ```text
 python3 scripts/tpr2_qualification.py \
-  --plan config/evaluation/tpr2-shadow-v1.json \
+  --plan config/evaluation/tpr2-shadow-v2.json \
   --run EURUSD=PRIVATE_EURUSD_DB_COPY_1 \
   --run EURUSD=PRIVATE_EURUSD_DB_COPY_2 \
   --run XAUUSD=PRIVATE_XAUUSD_DB_COPY_1 \
@@ -49,7 +49,7 @@ python3 scripts/tpr2_qualification.py \
 
 The output is `IN_PROGRESS` until the preregistered end date. Afterwards it can be `OPERATIONAL_SHADOW_PASS`, `INCONCLUSIVE_EXTEND`, `INCONCLUSIVE`, or `FAIL`. It never reports P&L, edge, live readiness or order authorization.
 
-The currently accumulated validated sample through 24 November 2026 is 162 EURUSD decisions with zero triggers/proposals and 2,891 XAUUSD decisions with one unique trigger and zero proposals. Both symbols have zero commands, reservations and positions. The campaign therefore remains `IN_PROGRESS`; additional bounded observations are required, especially for EURUSD and natural trigger/proposal evidence.
+The v1 accumulated sample through 24 November 2026 is historical rehearsal evidence only: 162 EURUSD decisions with zero triggers/proposals and 2,891 XAUUSD decisions with one unique trigger and zero proposals. V2 starts with empty counts at 07:00 Europe/London on 25 November 2026.
 
 ## Demo-order transition
 

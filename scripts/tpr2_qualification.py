@@ -6,7 +6,7 @@ from trading_platform.qualification.tpr2 import run
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--plan',default='config/evaluation/tpr2-shadow-v1.json')
+    parser.add_argument('--plan',default='config/evaluation/tpr2-shadow-v2.json')
     parser.add_argument('--run',action='append',required=True,metavar='SYMBOL=STOPPED_DB_COPY')
     parser.add_argument('--gateway-report',action='append',required=True,metavar='SYMBOL=GATEWAY_REPORT')
     parser.add_argument('--output',required=True)
