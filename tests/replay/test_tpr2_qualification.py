@@ -10,6 +10,13 @@ def plan():
     return QualificationPlan.model_validate_json(Path('config/evaluation/tpr2-shadow-v1.json').read_text())
 
 
+def test_v2_has_exact_two_week_window_and_one_week_extension():
+    value=QualificationPlan.model_validate_json(Path('config/evaluation/tpr2-shadow-v2.json').read_text())
+    assert value.ends_at-value.starts_at==__import__('datetime').timedelta(weeks=2)
+    assert value.maximum_extension_ends_at-value.ends_at==__import__('datetime').timedelta(weeks=1)
+    assert value.registered_at<value.starts_at
+
+
 def run(symbol,**changes):
     base={'instrument':symbol,'decisions':1000,'outcomes':{'WATCH':999,'ENTRY':1},'candidate_count':20,
         'trigger_count':10,'natural_limit_proposals':1,'invalid_proposals':0,'reason_counts':{},

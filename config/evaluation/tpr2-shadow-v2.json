@@ -1,0 +1,22 @@
+{
+  "evaluation_id": "tpr2-shadow-v2",
+  "package": "tpr2@1",
+  "package_digest": "25682866af3cb126ada26f12f7d7ce608f1569ec09ae629542bf22306de8f509",
+  "registered_at": "2026-11-24T19:25:00Z",
+  "starts_at": "2026-11-25T07:00:00Z",
+  "ends_at": "2026-12-09T07:00:00Z",
+  "maximum_extension_ends_at": "2026-12-16T07:00:00Z",
+  "instruments": [
+    "EURUSD",
+    "XAUUSD"
+  ],
+  "minimum_decisions_per_instrument": 1000,
+  "minimum_triggers_per_instrument": 10,
+  "minimum_natural_limit_proposals_per_instrument": 1,
+  "maximum_unavailable_fraction": "0.01",
+  "required_final_connection_generation": 3,
+  "require_zero_order_writes": true,
+  "parameters_locked": true,
+  "performance_claim_permitted": false,
+  "insufficient_sample_action": "extend_without_parameter_change_until_maximum_extension_then_report_inconclusive"
+}
