@@ -20,7 +20,8 @@ def main():
         symbol,separator,path=value.partition('=')
         if not separator or not symbol or not path: parser.error('--gateway-report requires SYMBOL=GATEWAY_REPORT')
         gateways.append((symbol,path))
-    if {symbol for symbol,_ in gateways}!={symbol for symbol,_ in pairs}:
+    from collections import Counter
+    if Counter(symbol for symbol,_ in gateways)!=Counter(symbol for symbol,_ in pairs):
         parser.error('each run requires one matching gateway report')
     result=run(args.plan,pairs,args.output,datetime.now(timezone.utc),gateways);print(result['status'])
 

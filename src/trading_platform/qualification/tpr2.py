@@ -45,7 +45,7 @@ def summarize(path, instrument, gateway_report=None):
         decisions=[json.loads(row['body']) for row in connection.execute(
             "SELECT body FROM decisions WHERE instance='tpr2' ORDER BY event_seq,id")]
         outcomes=Counter(row['outcome'] for row in decisions);candidates=set();triggered=set();reason_counts=Counter()
-        invalid_proposals=0;limit_proposals=0;packages=set();config_hashes=set();times=[]
+        invalid_proposals=0;limit_proposals=set();packages=set();config_hashes=set();times=[]
         for row in decisions:
             packages.add(row['package']);config_hashes.add(row['config_hash']);times.append(utc(row['at']))
             reason_counts.update(row.get('reasons',()))
@@ -60,10 +60,12 @@ def summarize(path, instrument, gateway_report=None):
                 valid=(proposal.get('kind')=='entry' and proposal.get('order_type')=='limit'
                        and proposal.get('profile')=='protected' and proposal.get('target') is not None
                        and proposal.get('instrument')==instrument)
-                invalid_proposals+=int(not valid);limit_proposals+=int(valid)
+                invalid_proposals+=int(not valid)
+                candidate=(diagnostics.get('current_candidate') or {}).get('id')
+                if valid: limit_proposals.add(candidate or row.get('event_id') or row['at'])
         provider=connection.execute("SELECT body FROM checkpoints WHERE id='operations:provider'").fetchone()
         provider=json.loads(provider['body']) if provider else {}
-        gateway={};gateway_hash=None
+        gateway={};gateway_hash=None;started=None;ended=None
         if gateway_report:
             raw=Path(gateway_report).read_bytes();gateway_hash=hashlib.sha256(raw).hexdigest();gateway=json.loads(raw)
             if (gateway.get('status')!='PASS' or gateway.get('mode')!='shadow'
@@ -74,7 +76,7 @@ def summarize(path, instrument, gateway_report=None):
             if times and (min(times)<started or max(times)>ended): raise ValueError('gateway/database time mismatch')
         count=lambda table:connection.execute(f'SELECT count(*) FROM {table}').fetchone()[0]
         return {'instrument':instrument,'decisions':len(decisions),'outcomes':dict(outcomes),
-            'candidate_count':len(candidates),'trigger_count':len(triggered),'natural_limit_proposals':limit_proposals,
+            'candidate_count':len(candidates),'trigger_count':len(triggered),'natural_limit_proposals':len(limit_proposals),
             'invalid_proposals':invalid_proposals,'reason_counts':dict(reason_counts),
             'packages':sorted(packages),'config_hashes':sorted(config_hashes),
             'first_decision_at':None if not times else min(times).isoformat(),
@@ -82,8 +84,46 @@ def summarize(path, instrument, gateway_report=None):
             'final_connection_generation':gateway.get('generation',provider.get('generation')),
             'reconciled_generations':gateway.get('reconciled_generations',[]),
             'gateway_report_sha256':gateway_hash,
+            'gateway_started_at':None if started is None else started.isoformat(),
+            'gateway_ended_at':None if ended is None else ended.isoformat(),
+            '_candidate_ids':sorted(candidates),'_trigger_ids':sorted(triggered),
+            '_proposal_ids':sorted(limit_proposals),
             'commands':count('commands'),'reservations':count('reservations'),'positions':count('positions')}
     finally: connection.close()
+
+
+def aggregate(instrument, runs):
+    """Combine non-overlapping, independently bound stopped runs for one instrument."""
+    if not runs: raise ValueError('at least one run required')
+    runs=sorted(runs,key=lambda row:utc(row['gateway_started_at']))
+    windows=[]
+    for row in runs:
+        if row['instrument']!=instrument: raise ValueError('instrument mismatch')
+        if not row.get('gateway_started_at') or not row.get('gateway_ended_at'):
+            raise ValueError('gateway window required')
+        windows.append((utc(row['gateway_started_at']),utc(row['gateway_ended_at'])))
+    windows.sort()
+    if any(current[0] < previous[1] for previous,current in zip(windows,windows[1:])):
+        raise ValueError('overlapping qualification windows')
+    outcomes=Counter();reasons=Counter();packages=set();configs=set();candidates=set();triggers=set();proposals=set()
+    for row in runs:
+        outcomes.update(row['outcomes']);reasons.update(row['reason_counts']);packages.update(row['packages'])
+        configs.update(row['config_hashes']);candidates.update(row.get('_candidate_ids',()))
+        triggers.update(row.get('_trigger_ids',()));proposals.update(row.get('_proposal_ids',()))
+    first=[utc(row['first_decision_at']) for row in runs if row.get('first_decision_at')]
+    last=[utc(row['last_decision_at']) for row in runs if row.get('last_decision_at')]
+    return {'instrument':instrument,'run_count':len(runs),'decisions':sum(row['decisions'] for row in runs),
+        'outcomes':dict(outcomes),'candidate_count':len(candidates),'trigger_count':len(triggers),
+        'natural_limit_proposals':len(proposals),'invalid_proposals':sum(row['invalid_proposals'] for row in runs),
+        'reason_counts':dict(reasons),'packages':sorted(packages),'config_hashes':sorted(configs),
+        'first_decision_at':None if not first else min(first).isoformat(),
+        'last_decision_at':None if not last else max(last).isoformat(),
+        'final_connection_generation':runs[-1]['final_connection_generation'],
+        'reconciled_generations':runs[-1]['reconciled_generations'],
+        'all_reconnects_proven':all(row['final_connection_generation']==3 and row['reconciled_generations']==[1,3] for row in runs),
+        'gateway_report_sha256':[row['gateway_report_sha256'] for row in runs],
+        'commands':sum(row['commands'] for row in runs),'reservations':sum(row['reservations'] for row in runs),
+        'positions':sum(row['positions'] for row in runs)}
 
 
 def assess(plan, runs, now):
@@ -100,6 +140,7 @@ def assess(plan, runs, now):
             blockers.append(symbol+':RECONNECT_NOT_PROVEN')
         if run.get('reconciled_generations') != [1,plan.required_final_connection_generation]:
             blockers.append(symbol+':RECONNECT_GENERATIONS')
+        if run.get('all_reconnects_proven') is False: blockers.append(symbol+':RUN_RECONNECT_NOT_PROVEN')
         if run.get('first_decision_at') and utc(run['first_decision_at']) < plan.starts_at:
             blockers.append(symbol+':PREWINDOW_CONTAMINATION')
         unavailable=run.get('outcomes',{}).get('UNAVAILABLE',0)
@@ -122,8 +163,16 @@ def assess(plan, runs, now):
 
 def run(plan_path, run_paths, output, now, gateway_reports=None):
     plan=QualificationPlan.model_validate_json(Path(plan_path).read_text())
-    gateway_reports=dict(gateway_reports or ())
-    reports=[summarize(path,symbol,gateway_reports.get(symbol)) for symbol,path in run_paths]
+    gateway_by_symbol={}
+    for symbol,path in gateway_reports or (): gateway_by_symbol.setdefault(symbol,[]).append(path)
+    run_by_symbol={}
+    for symbol,path in run_paths: run_by_symbol.setdefault(symbol,[]).append(path)
+    if set(gateway_by_symbol)!=set(run_by_symbol) or any(len(gateway_by_symbol[s])!=len(paths) for s,paths in run_by_symbol.items()):
+        raise ValueError('each stopped run requires one matching gateway report')
+    reports=[]
+    for symbol in plan.instruments:
+        summaries=[summarize(path,symbol,gateway) for path,gateway in zip(run_by_symbol.get(symbol,()),gateway_by_symbol.get(symbol,()))]
+        if summaries: reports.append(aggregate(symbol,summaries))
     result=assess(plan,reports,now)
     with Path(output).open('x') as stream: json.dump(result,stream,indent=2);stream.write('\n')
     return result
