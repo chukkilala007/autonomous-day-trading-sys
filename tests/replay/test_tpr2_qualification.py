@@ -1,7 +1,7 @@
 import json
 from datetime import datetime,timezone
 from pathlib import Path
-from trading_platform.qualification.tpr2 import QualificationPlan,assess,summarize
+from trading_platform.qualification.tpr2 import QualificationPlan,aggregate,assess,summarize
 from trading_platform.persistence.database import Database
 from trading_platform.contracts.values import canonical
 
@@ -56,3 +56,23 @@ def test_stopped_database_summary_is_read_only_and_counts_natural_limit(tmp_path
     assert result['commands']==result['reservations']==result['positions']==0
     assert result['final_connection_generation']==3 and result['reconciled_generations']==[1,3]
     assert path.read_bytes()==before
+
+
+def test_multiple_bounded_runs_deduplicate_candidates_and_require_reconnects():
+    first=run('EURUSD',decisions=600,candidate_count=2,trigger_count=1,natural_limit_proposals=1,
+        gateway_report_sha256='1'*64,gateway_started_at='2026-11-24T00:00:00Z',gateway_ended_at='2026-11-24T01:00:00Z',
+        _candidate_ids=['A','B'],_trigger_ids=['B'],_proposal_ids=['B'])
+    second=run('EURUSD',decisions=500,candidate_count=2,trigger_count=1,natural_limit_proposals=1,
+        gateway_report_sha256='2'*64,gateway_started_at='2026-11-24T02:00:00Z',gateway_ended_at='2026-11-24T03:00:00Z',
+        _candidate_ids=['B','C'],_trigger_ids=['B'],_proposal_ids=['B'])
+    result=aggregate('EURUSD',[first,second])
+    assert result['run_count']==2 and result['decisions']==1100
+    assert result['candidate_count']==3 and result['trigger_count']==1 and result['natural_limit_proposals']==1
+    assert result['all_reconnects_proven'] is True
+
+
+def test_multiple_bounded_runs_reject_overlapping_windows():
+    first=run('EURUSD',gateway_started_at='2026-11-24T00:00:00Z',gateway_ended_at='2026-11-24T02:00:00Z')
+    second=run('EURUSD',gateway_started_at='2026-11-24T01:00:00Z',gateway_ended_at='2026-11-24T03:00:00Z')
+    import pytest
+    with pytest.raises(ValueError,match='overlapping'): aggregate('EURUSD',[first,second])

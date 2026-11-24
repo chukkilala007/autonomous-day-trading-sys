@@ -25,23 +25,31 @@ Before startup, resolve `compose.shadow.yaml` with the analysis profile and exac
 
 ## Bounded acceptance run
 
-Start one symbol at a time with a unique Compose project name. Require fresh full coverage before decisions. Force one gateway reconnect after warm-up and require authenticated/subscribed generation 3. Keep the run long enough to cross the plan's minimum decision sample; stop and preserve evidence if any order-write counter becomes nonzero, package/config changes, data gaps enter a candidate lifecycle, the account changes, or quote/session evidence becomes stale.
+Start each bounded symbol observation with a unique Compose project name, database and gateway report. Require fresh full coverage before decisions. Force one gateway reconnect after warm-up and require authenticated/subscribed generation 3. Stop and preserve evidence if any order-write counter becomes nonzero, package/config changes, data gaps enter a candidate lifecycle, the account changes, or quote/session evidence becomes stale. Repeated runs should cover different liquid sessions; do not run indefinitely merely to force a trigger.
+
+On Docker Desktop, never open a bind-mounted SQLite WAL database from macOS while its container writer is active. Monitor active runs through container lifecycle and gateway logs only. Stop the core cleanly, then copy and integrity-check the database. Opening the live WAL from both the Linux VM and host crosses locking domains and invalidates the evidence.
 
 The gateway may export execution evidence only when reviewed tick grid, bid/ask basis and an actual `OPEN` session observation are all current. Missing, stale, closed or malformed facts are omitted. In that case TPR-2 may produce structural `WATCH` decisions but must not produce an execution-qualified `ENTRY`.
 
-After a clean shutdown, copy each stopped core database before inspection. Generate the combined report:
+After a clean shutdown, copy each stopped core database before inspection. The reporter accepts repeated `--run` and `--gateway-report` pairs for a symbol. Each stopped database is bound to the corresponding same-position gateway report for that symbol. Windows must not overlap. Candidate, trigger and proposal identities are deduplicated across runs while decisions and zero-order-path checks are accumulated:
 
 ```text
 python3 scripts/tpr2_qualification.py \
   --plan config/evaluation/tpr2-shadow-v1.json \
-  --run EURUSD=PRIVATE_EURUSD_DB_COPY \
-  --run XAUUSD=PRIVATE_XAUUSD_DB_COPY \
-  --gateway-report EURUSD=PRIVATE_EURUSD_GATEWAY_REPORT \
-  --gateway-report XAUUSD=PRIVATE_XAUUSD_GATEWAY_REPORT \
+  --run EURUSD=PRIVATE_EURUSD_DB_COPY_1 \
+  --run EURUSD=PRIVATE_EURUSD_DB_COPY_2 \
+  --run XAUUSD=PRIVATE_XAUUSD_DB_COPY_1 \
+  --run XAUUSD=PRIVATE_XAUUSD_DB_COPY_2 \
+  --gateway-report EURUSD=PRIVATE_EURUSD_GATEWAY_REPORT_1 \
+  --gateway-report EURUSD=PRIVATE_EURUSD_GATEWAY_REPORT_2 \
+  --gateway-report XAUUSD=PRIVATE_XAUUSD_GATEWAY_REPORT_1 \
+  --gateway-report XAUUSD=PRIVATE_XAUUSD_GATEWAY_REPORT_2 \
   --output NEW_PRIVATE_REPORT.json
 ```
 
 The output is `IN_PROGRESS` until the preregistered end date. Afterwards it can be `OPERATIONAL_SHADOW_PASS`, `INCONCLUSIVE_EXTEND`, `INCONCLUSIVE`, or `FAIL`. It never reports P&L, edge, live readiness or order authorization.
+
+The currently accumulated validated sample through 24 November 2026 is 162 EURUSD decisions with zero triggers/proposals and 2,891 XAUUSD decisions with one unique trigger and zero proposals. Both symbols have zero commands, reservations and positions. The campaign therefore remains `IN_PROGRESS`; additional bounded observations are required, especially for EURUSD and natural trigger/proposal evidence.
 
 ## Demo-order transition
 
